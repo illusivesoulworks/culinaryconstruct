@@ -9,6 +9,7 @@
 package c4.culinaryconstruct.common.util;
 
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.oredict.OreDictionary;
@@ -37,6 +38,17 @@ public class BreadHelper {
                     "foodDatenutbread",
                     "foodFairybread",
                     "foodHoneybread");
+        }
+
+        //Actually Additions
+        if (Loader.isModLoaded("actuallyadditions")) {
+            Item item = Item.getByNameOrId("actuallyadditions:item_food");
+            if (item != null) {
+                OreDictionary.registerOre("bread", new ItemStack(item,1, 10));
+                OreDictionary.registerOre("bread", new ItemStack(item,1, 15));
+                OreDictionary.registerOre("bread", new ItemStack(item,1, 17));
+                OreDictionary.registerOre("bread", new ItemStack(item,1, 19));
+            }
         }
     }
 
