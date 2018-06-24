@@ -9,6 +9,7 @@
 package c4.culinaryconstruct.common.inventory;
 
 import c4.culinaryconstruct.api.BreadRegistry;
+import c4.culinaryconstruct.common.item.ItemSandwich;
 import c4.culinaryconstruct.common.tileentity.TileEntitySandwichStation;
 import c4.culinaryconstruct.common.util.NBTHelper;
 import c4.culinaryconstruct.proxy.CommonProxy;
@@ -302,7 +303,7 @@ public class ContainerSandwichStation extends Container {
         @Override
         public boolean isItemValid(ItemStack stack)
         {
-            return stack.getItem() instanceof ItemFood;
+            return stack.getItem() instanceof ItemFood && !(stack.getItem() instanceof ItemSandwich);
         }
     }
 
