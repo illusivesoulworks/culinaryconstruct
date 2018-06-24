@@ -240,9 +240,11 @@ public class ContainerSandwichStation extends Container {
             }
             else if (index >= 7)
             {
-                if (index < 43 && !this.mergeItemStack(itemstack1, 0, 6, false))
+                if (index < 43)
                 {
-                    return ItemStack.EMPTY;
+                    if (!this.mergeItemStack(itemstack1, 5, 6, false) && !this.mergeItemStack(itemstack1, 0, 5, false)) {
+                        return ItemStack.EMPTY;
+                    }
                 }
             }
             else if (!this.mergeItemStack(itemstack1, 7, 43, false))
