@@ -4,9 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project does not adhere to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 This project uses MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
 
-## [Unreleased]
+## [1.1.0] - 2018.06.24
 ### Added
 - OreDict entry for "bread"
+- Added Chinese localization (thank you DYColdWind)
 ### Changed
 - Sandwiches can no longer be nested into other sandwiches to prevent potentially long NBT tags
 - All bread checks now use the new "bread" oreDict entry
