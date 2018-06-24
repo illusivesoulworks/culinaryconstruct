@@ -1,0 +1,20 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "s",
+    "c"
+  ],
+  "key": {
+    "c": {
+      "type": "forge:ore_dict",
+      "ore": "workbench"
+    },
+    "s": {
+      "type": "forge:ore_dict",
+      "ore": "slabWood"
+    }
+  },
+  "result": {
+    "item": "culinaryconstruct:sandwich_station"
+  }
+}

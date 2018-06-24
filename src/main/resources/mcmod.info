@@ -1,0 +1,16 @@
+[
+{
+  "modid": "culinaryconstruct",
+  "name": "Culinary Construct",
+  "description": "Make sandwiches out of your favorite food items! And maybe your not so favorite, anything's possible.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["C4"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
