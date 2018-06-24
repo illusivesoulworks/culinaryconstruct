@@ -1,7 +1,6 @@
 tile.culinaryconstruct.sandwich_station.name=Sandwich Station
 
 item.culinaryconstruct.sandwich.name=Sandwich
-item.culinaryconstruct.sandwich.creative=Epic Sandwich
 
 tooltip.culinaryconstruct.ingredients.name=Ingredients
 tooltip.culinaryconstruct.ingredients=Hold §e§oShift§r§7 for Ingredients
