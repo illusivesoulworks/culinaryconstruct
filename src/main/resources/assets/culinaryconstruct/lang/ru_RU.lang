@@ -1,0 +1,14 @@
+tile.culinaryconstruct.sandwich_station.name=Станция по изготовлению бутербродов
+
+item.culinaryconstruct.sandwich.name=Бутерброд
+
+tooltip.culinaryconstruct.ingredients.name=Ингридиенты
+tooltip.culinaryconstruct.ingredients=Зажмите §e§oShift§r§7 для ингридиентов
+tooltip.culinaryconstruct.quality.name=Качество
+tooltip.culinaryconstruct.quality.0=Очень невкусный
+tooltip.culinaryconstruct.quality.1=Невкусный
+tooltip.culinaryconstruct.quality.2=Средний
+tooltip.culinaryconstruct.quality.3=Вкусный
+tooltip.culinaryconstruct.quality.4=Очень вкусный
+
+container.culinaryconstruct.sandwich_station=Создание и название
