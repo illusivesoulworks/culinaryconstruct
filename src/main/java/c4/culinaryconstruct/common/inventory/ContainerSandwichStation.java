@@ -326,6 +326,7 @@ public class ContainerSandwichStation extends Container {
                     ingredients.setInventorySlotContents(i, ItemStack.EMPTY);
                 }
             }
+            ContainerSandwichStation.this.updateSandwichOutput();
             return stack;
         }
     }
