@@ -47,7 +47,7 @@ public class CommonProxy {
     }
 
     public void postInit(FMLPostInitializationEvent evt) {
-        BreadHelper.initBreadRegistry();
+        BreadHelper.initOreDict();
     }
 
     @SubscribeEvent

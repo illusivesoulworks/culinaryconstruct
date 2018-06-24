@@ -8,9 +8,9 @@
 
 package c4.culinaryconstruct.common.inventory;
 
-import c4.culinaryconstruct.api.BreadRegistry;
 import c4.culinaryconstruct.common.item.ItemSandwich;
 import c4.culinaryconstruct.common.tileentity.TileEntitySandwichStation;
+import c4.culinaryconstruct.common.util.BreadHelper;
 import c4.culinaryconstruct.common.util.NBTHelper;
 import c4.culinaryconstruct.proxy.CommonProxy;
 import net.minecraft.entity.player.EntityPlayer;
@@ -165,7 +165,7 @@ public class ContainerSandwichStation extends Container {
                             break;
                         }
                     }
-                    if (flag && !BreadRegistry.isValidBread(stack)) complexity++;
+                    if (flag && !BreadHelper.isValidBread(stack)) complexity++;
                     ItemStack copy = stack.copy();
                     if (copy.getCount() > 1) {
                         copy.setCount(1);
@@ -289,7 +289,7 @@ public class ContainerSandwichStation extends Container {
         @Override
         public boolean isItemValid(ItemStack stack)
         {
-            return BreadRegistry.isValidBread(stack);
+            return BreadHelper.isValidBread(stack);
         }
     }
 

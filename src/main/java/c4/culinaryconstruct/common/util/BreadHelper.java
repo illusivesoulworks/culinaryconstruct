@@ -8,27 +8,52 @@
 
 package c4.culinaryconstruct.common.util;
 
-import c4.culinaryconstruct.api.BreadRegistry;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.oredict.OreDictionary;
+
+import java.util.*;
 
 public class BreadHelper {
 
-    public static void initBreadRegistry() {
-        BreadRegistry.registerBread(new ItemStack(Items.BREAD));
+    private static Set<String> breadOres = new HashSet<>();
 
+    public static void initOreDict() {
+
+        //Vanilla
+        OreDictionary.registerOre("bread", Items.BREAD);
+        addBreadOre("bread");
+
+        //Harvestcraft
         if (Loader.isModLoaded("harvestcraft")) {
-            String s = "harvestcraft:";
-            BreadRegistry.registerBread(s + "pumpkinbreaditem");
-            BreadRegistry.registerBread(s + "gingerbreaditem");
-            BreadRegistry.registerBread(s + "garlicbreaditem");
-            BreadRegistry.registerBread(s + "zucchinibreaditem");
-            BreadRegistry.registerBread(s + "walnutraisinbreaditem");
-            BreadRegistry.registerBread(s + "banananutbreaditem");
-            BreadRegistry.registerBread(s + "datenutbreaditem");
-            BreadRegistry.registerBread(s + "fairybreaditem");
-            BreadRegistry.registerBread(s + "honeybreaditem");
+            addBreadOres(
+                    "foodPumpkinbread",
+                    "foodGingerbread",
+                    "foodGarlicbread",
+                    "foodZucchinibread",
+                    "foodWalnutraisinbread",
+                    "foodBanananutbread",
+                    "foodDatenutbread",
+                    "foodFairybread",
+                    "foodHoneybread");
         }
+    }
+
+    private static void addBreadOre(String ore) {
+        breadOres.add(ore);
+    }
+
+    private static void addBreadOres(String... ore) {
+        breadOres.addAll(Arrays.asList(ore));
+    }
+
+    public static boolean isValidBread(ItemStack stack) {
+        for (String oreDictEntry : breadOres) {
+            if (OreDictionary.containsMatch(true, OreDictionary.getOres(oreDictEntry), stack)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
