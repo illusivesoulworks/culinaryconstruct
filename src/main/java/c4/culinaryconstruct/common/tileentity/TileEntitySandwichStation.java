@@ -21,7 +21,12 @@ import javax.annotation.Nullable;
 
 public class TileEntitySandwichStation extends TileEntity {
 
-    private ItemStackHandler inventory = new ItemStackHandler(6);
+    private ItemStackHandler inventory = new ItemStackHandler(6) {
+        @Override
+        protected void onContentsChanged(int slot) {
+            TileEntitySandwichStation.this.markDirty();
+        }
+    };
 
     @Nonnull
     @Override
