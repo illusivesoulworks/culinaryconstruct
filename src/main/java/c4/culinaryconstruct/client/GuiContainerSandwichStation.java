@@ -144,10 +144,6 @@ public class GuiContainerSandwichStation extends GuiContainer implements IContai
 
             this.nameField.setText(stack.isEmpty() ? "" : this.nameField.getText());
             this.nameField.setEnabled(!stack.isEmpty());
-
-            if (!stack.isEmpty()) {
-                this.nameSandwich();
-            }
         }
     }
 
