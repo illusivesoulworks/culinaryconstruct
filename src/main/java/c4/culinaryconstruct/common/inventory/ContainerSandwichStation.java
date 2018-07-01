@@ -13,9 +13,11 @@ import c4.culinaryconstruct.common.tileentity.TileEntitySandwichStation;
 import c4.culinaryconstruct.common.util.BreadHelper;
 import c4.culinaryconstruct.common.util.NBTHelper;
 import c4.culinaryconstruct.proxy.CommonProxy;
+import net.minecraft.block.BlockCake;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.*;
+import net.minecraft.item.ItemBlockSpecial;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -152,34 +154,43 @@ public class ContainerSandwichStation extends Container {
         for (int i = 0; i < this.ingredientSlots.getSizeInventory(); i++) {
             ItemStack stack = this.ingredientSlots.getStackInSlot(i);
             if (!stack.isEmpty()) {
-                if (!(stack.getItem() instanceof ItemFood)) {
+                if (stack.getItem() instanceof ItemFood) {
+                    totalFood += ((ItemFood) stack.getItem()).getHealAmount(stack);
+                } else if (stack.getItem() instanceof ItemBlockSpecial && ((ItemBlockSpecial) stack.getItem()).getBlock() instanceof BlockCake) {
+                    totalFood += 14;
+                } else {
                     this.outputSlot.setInventorySlotContents(0, ItemStack.EMPTY);
                     return;
-                } else {
-                    ItemFood food = (ItemFood) stack.getItem();
-                    totalFood += food.getHealAmount(stack);
-                    boolean flag = true;
-                    for (ItemStack existing : ingredientsList) {
-                        if (!existing.isEmpty() && existing.getItem() == stack.getItem() && (!stack.getHasSubtypes() || stack.getMetadata() == existing.getMetadata()) && ItemStack.areItemStackTagsEqual(stack, existing)) {
-                            flag = false;
-                            break;
-                        }
-                    }
-                    if (flag && !BreadHelper.isValidBread(stack)) complexity++;
-                    ItemStack copy = stack.copy();
-                    if (copy.getCount() > 1) {
-                        copy.setCount(1);
-                    }
-                    ingredientsList.add(copy);
                 }
+                boolean flag = true;
+                for (ItemStack existing : ingredientsList) {
+                    if (!existing.isEmpty() && existing.getItem() == stack.getItem() && (!stack.getHasSubtypes() || stack.getMetadata() == existing.getMetadata()) && ItemStack.areItemStackTagsEqual(stack, existing)) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag && !BreadHelper.isValidBread(stack)) complexity++;
+                ItemStack copy = stack.copy();
+                if (copy.getCount() > 1) {
+                    copy.setCount(1);
+                }
+                ingredientsList.add(copy);
             }
         }
 
         for (ItemStack stack : ingredientsList) {
-            if (!stack.isEmpty() && stack.getItem() instanceof ItemFood) {
-                ItemFood food = (ItemFood) stack.getItem();
-                double proportion = ((double) food.getHealAmount(stack)) / ((double) totalFood);
-                totalSaturation += proportion * food.getSaturationModifier(stack);
+            double proportion = 0.0D;
+            double saturationModifier = 0.0D;
+            if (!stack.isEmpty()) {
+                if (stack.getItem() instanceof ItemFood) {
+                    proportion = ((double) ((ItemFood) stack.getItem()).getHealAmount(stack)) / ((double) totalFood);
+                    saturationModifier = ((ItemFood) stack.getItem()).getSaturationModifier(stack);
+                }
+                else if (stack.getItem() instanceof ItemBlockSpecial && ((ItemBlockSpecial) stack.getItem()).getBlock() instanceof BlockCake) {
+                    proportion = 14.0D / ((double) totalFood);
+                    saturationModifier = 2.8D;
+                }
+                totalSaturation += proportion * saturationModifier;
             }
         }
 
@@ -303,7 +314,8 @@ public class ContainerSandwichStation extends Container {
         @Override
         public boolean isItemValid(ItemStack stack)
         {
-            return stack.getItem() instanceof ItemFood && !(stack.getItem() instanceof ItemSandwich);
+            return (stack.getItem() instanceof ItemFood || (stack.getItem() instanceof ItemBlockSpecial && ((ItemBlockSpecial) stack.getItem()).getBlock() instanceof BlockCake))
+                    && !(stack.getItem() instanceof ItemSandwich);
         }
     }
 
