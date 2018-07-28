@@ -1,0 +1,13 @@
+tile.culinaryconstruct.sandwich_station.name=Stół do robienia kanapek
+item.culinaryconstruct.sandwich.name=Kanapka
+
+tooltip.culinaryconstruct.ingredients.name=Składniki
+tooltip.culinaryconstruct.ingredients=Przytrzymaj §e§oShift§r§7 by zobaczyć składniki
+tooltip.culinaryconstruct.quality.name=Jakość
+tooltip.culinaryconstruct.quality.0=Bardzo Niedobra
+tooltip.culinaryconstruct.quality.1=Niesmaczna
+tooltip.culinaryconstruct.quality.2=Średnio Smaczna
+tooltip.culinaryconstruct.quality.3=Smaczna
+tooltip.culinaryconstruct.quality.4=Bardzo Smaczna
+
+container.culinaryconstruct.sandwich_station=Stwórz i Nazwij

@@ -1,0 +1,14 @@
+tile.culinaryconstruct.sandwich_station.name=Sandwich-Station
+
+item.culinaryconstruct.sandwich.name=Sandwich
+
+tooltip.culinaryconstruct.ingredients.name=Zutaten
+tooltip.culinaryconstruct.ingredients=Für Zutaten §e§oUmschalt§r§7 gedrückt halten
+tooltip.culinaryconstruct.quality.name=Qualität
+tooltip.culinaryconstruct.quality.0=Sehr fad
+tooltip.culinaryconstruct.quality.1=Fad
+tooltip.culinaryconstruct.quality.2=Durchschnittlich
+tooltip.culinaryconstruct.quality.3=Lecker
+tooltip.culinaryconstruct.quality.4=Sehr lecker
+
+container.culinaryconstruct.sandwich_station=Handwerk & Name
