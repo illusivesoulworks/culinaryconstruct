@@ -1,14 +1,14 @@
-tile.culinaryconstruct.sandwich_station.name=Станция Сэндвича
+tile.culinaryconstruct.sandwich_station.name=Сэндвичная станция 
 
 item.culinaryconstruct.sandwich.name=Сэндвич
 
 tooltip.culinaryconstruct.ingredients.name=Ингредиенты
-tooltip.culinaryconstruct.ingredients=Зажми §e§oShift§r§7 для ингредиентов
+tooltip.culinaryconstruct.ingredients=Зажмит §e§oShift§r§7 для ингредиентов
 tooltip.culinaryconstruct.quality.name=Качество
-tooltip.culinaryconstruct.quality.0=Очень Мягкий
+tooltip.culinaryconstruct.quality.0=Очень мягкий
 tooltip.culinaryconstruct.quality.1=Мягкий
 tooltip.culinaryconstruct.quality.2=Средний
 tooltip.culinaryconstruct.quality.3=Вкусный
-tooltip.culinaryconstruct.quality.4=Очень Вкусный
+tooltip.culinaryconstruct.quality.4=Очень вкусный
 
 container.culinaryconstruct.sandwich_station=Приготовление & Название
