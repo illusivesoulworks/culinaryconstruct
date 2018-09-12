@@ -14,6 +14,7 @@ import c4.culinaryconstruct.common.block.BlockSandwichStation;
 import c4.culinaryconstruct.common.util.BreadHelper;
 import c4.culinaryconstruct.common.item.ItemSandwich;
 import c4.culinaryconstruct.common.tileentity.TileEntitySandwichStation;
+import c4.culinaryconstruct.common.util.SandwichHelper;
 import c4.culinaryconstruct.network.NetworkHandler;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -48,6 +49,7 @@ public class CommonProxy {
 
     public void postInit(FMLPostInitializationEvent evt) {
         BreadHelper.initOreDict();
+        SandwichHelper.initBlacklist();
     }
 
     @SubscribeEvent

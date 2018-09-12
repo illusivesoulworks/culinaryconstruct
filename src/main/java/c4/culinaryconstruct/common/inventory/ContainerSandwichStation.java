@@ -11,12 +11,15 @@ package c4.culinaryconstruct.common.inventory;
 import c4.culinaryconstruct.common.item.ItemSandwich;
 import c4.culinaryconstruct.common.tileentity.TileEntitySandwichStation;
 import c4.culinaryconstruct.common.util.BreadHelper;
+import c4.culinaryconstruct.common.util.ConfigHandler;
 import c4.culinaryconstruct.common.util.NBTHelper;
+import c4.culinaryconstruct.common.util.SandwichHelper;
 import c4.culinaryconstruct.proxy.CommonProxy;
 import net.minecraft.block.BlockCake;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.*;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlockSpecial;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
@@ -315,7 +318,33 @@ public class ContainerSandwichStation extends Container {
         public boolean isItemValid(ItemStack stack)
         {
             return (stack.getItem() instanceof ItemFood || (stack.getItem() instanceof ItemBlockSpecial && ((ItemBlockSpecial) stack.getItem()).getBlock() instanceof BlockCake))
-                    && !(stack.getItem() instanceof ItemSandwich);
+                    && !(stack.getItem() instanceof ItemSandwich) && !isBlacklisted(stack);
+        }
+
+        private boolean isBlacklisted(ItemStack stack) {
+            Item item = stack.getItem();
+            int food = 0;
+            double saturation = 0.0D;
+            boolean blacklisted = false;
+
+            if (item instanceof ItemFood) {
+                ItemFood itemFood = (ItemFood)item;
+                food = itemFood.getHealAmount(stack);
+                saturation = itemFood.getSaturationModifier(stack);
+            } else if (stack.getItem() instanceof ItemBlockSpecial && ((ItemBlockSpecial) stack.getItem()).getBlock()
+                    instanceof BlockCake) {
+                food = 14;
+                saturation = 2.8D;
+            }
+
+            if (ConfigHandler.maxFood >= 0) {
+                blacklisted = food > ConfigHandler.maxFood;
+            }
+
+            if (ConfigHandler.maxSaturation >= 0) {
+                blacklisted = blacklisted || saturation > ConfigHandler.maxSaturation;
+            }
+            return blacklisted || SandwichHelper.blacklist.contains(item);
         }
     }
 
