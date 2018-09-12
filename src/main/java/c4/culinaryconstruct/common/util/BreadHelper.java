@@ -50,6 +50,26 @@ public class BreadHelper {
                 OreDictionary.registerOre("bread", new ItemStack(item,1, 19));
             }
         }
+
+        //Reliquary
+        if (Loader.isModLoaded("xreliquary")) {
+            Item item = Item.getByNameOrId("xreliquary:glowing_bread");
+            if (item != null) {
+                OreDictionary.registerOre("bread", new ItemStack(item));
+            }
+        }
+
+        //AshenWheat
+        if (Loader.isModLoaded("ashenwheat")) {
+            Item item = Item.getByNameOrId("ashenwheat:ashbread");
+            if (item != null) {
+                OreDictionary.registerOre("bread", new ItemStack(item));
+            }
+            item = Item.getByNameOrId("ashenwheat:scintillabread");
+            if (item != null) {
+                OreDictionary.registerOre("bread", new ItemStack(item));
+            }
+        }
     }
 
     private static void addBreadOre(String ore) {
