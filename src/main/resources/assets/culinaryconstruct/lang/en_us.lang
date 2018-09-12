@@ -1,3 +1,16 @@
+#################
+#     Config    #
+#################
+culinaryconstruct.general.maxsaturation=Max Ingredient Saturation
+culinaryconstruct.general.maxsaturation.tooltip=Blacklist ingredients with more than this max saturation modifier, -1 to disable
+culinaryconstruct.general.maxfood=Max Ingredient Food
+culinaryconstruct.general.maxfood.tooltip=Blacklist ingredients with more than this max food value, -1 to disable
+culinaryconstruct.general.blacklist=Blacklist
+culinaryconstruct.general.blacklist.tooltip=List of items to blacklist as sandwich ingredients
+
+#################
+#    General    #
+#################
 tile.culinaryconstruct.sandwich_station.name=Sandwich Station
 
 item.culinaryconstruct.sandwich.name=Sandwich
