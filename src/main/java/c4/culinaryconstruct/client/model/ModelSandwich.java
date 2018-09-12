@@ -159,9 +159,9 @@ public final class ModelSandwich implements IModel {
         @Override
         public boolean accepts(ResourceLocation modelLocation)
         {
-            return modelLocation.getResourceDomain().equals(CulinaryConstruct.MODID)
-                    && modelLocation.getResourcePath().contains("sandwich")
-                    && !modelLocation.getResourcePath().contains("station");
+            return modelLocation.getNamespace().equals(CulinaryConstruct.MODID)
+                    && modelLocation.getPath().contains("sandwich")
+                    && !modelLocation.getPath().contains("station");
         }
 
         @Nonnull
@@ -198,7 +198,7 @@ public final class ModelSandwich implements IModel {
         {
             NBTTagCompound data = NBTHelper.getCompoundSafe(stack);
             IBakedModel output = originalModel;
-            if (!data.hasNoTags()) {
+            if (!data.isEmpty()) {
                 BakedSandwichModel original = (BakedSandwichModel) originalModel;
                 CacheKey key = getCacheKey(stack, original);
                 try {

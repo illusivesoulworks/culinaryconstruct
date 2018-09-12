@@ -39,7 +39,7 @@ public class BlockSandwichStation extends Block {
     public BlockSandwichStation() {
         super(Material.WOOD);
         this.setRegistryName("sandwich_station");
-        this.setUnlocalizedName(CulinaryConstruct.MODID + ".sandwich_station");
+        this.setTranslationKey(CulinaryConstruct.MODID + ".sandwich_station");
         this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 

@@ -41,7 +41,7 @@ public class ItemSandwich extends ItemFood {
     public ItemSandwich() {
         super(0, false);
         this.setRegistryName("sandwich");
-        this.setUnlocalizedName(CulinaryConstruct.MODID + ".sandwich");
+        this.setTranslationKey(CulinaryConstruct.MODID + ".sandwich");
         this.setCreativeTab(CreativeTabs.FOOD);
     }
 
