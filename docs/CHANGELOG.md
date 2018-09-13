@@ -8,7 +8,7 @@ This project uses MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
 ### Added
 - Reliquary breads support
 - Ashenwheat breads support
-- Config options to control blacklisting ingredients [#10](https://github.com/TheIllusiveC4/CulinaryConstruct/issues/4)
+- Config options to control blacklisting ingredients [#10](https://github.com/TheIllusiveC4/CulinaryConstruct/issues/10)
 ### Fixed
 - Updated Russian translation (thank you AlekseiVoronin and Prosta4okua)
 
