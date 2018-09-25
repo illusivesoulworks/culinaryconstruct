@@ -24,4 +24,15 @@ tooltip.culinaryconstruct.quality.2=Average
 tooltip.culinaryconstruct.quality.3=Tasty
 tooltip.culinaryconstruct.quality.4=Very Tasty
 
+tooltip.culinaryconstruct.count.2=Double
+tooltip.culinaryconstruct.count.3=Triple
+tooltip.culinaryconstruct.count.4=Quadruple
+tooltip.culinaryconstruct.count.5=Quintuple
+
+tooltip.culinaryconstruct.list.1=%s
+tooltip.culinaryconstruct.list.2=%s and %s
+tooltip.culinaryconstruct.list.3=%s, %s, and %s
+tooltip.culinaryconstruct.list.4=%s, %s, %s, and %s
+tooltip.culinaryconstruct.list.5=%s, %s, %s, %s, and %s
+
 container.culinaryconstruct.sandwich_station=Craft & Name

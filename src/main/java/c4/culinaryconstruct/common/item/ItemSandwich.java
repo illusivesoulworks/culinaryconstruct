@@ -11,6 +11,7 @@ package c4.culinaryconstruct.common.item;
 import c4.culinaryconstruct.CulinaryConstruct;
 import c4.culinaryconstruct.client.model.ModelSandwich;
 import c4.culinaryconstruct.common.util.NBTHelper;
+import c4.culinaryconstruct.common.util.SandwichHelper;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
@@ -32,7 +33,8 @@ import org.lwjgl.input.Keyboard;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ItemSandwich extends ItemFood {
 
@@ -61,6 +63,36 @@ public class ItemSandwich extends ItemFood {
     public float getSaturationModifier(ItemStack stack)
     {
         return NBTHelper.getSaturationModifier(stack);
+    }
+
+    @Nonnull
+    @Override
+    public String getItemStackDisplayName(@Nonnull ItemStack stack) {
+        StringBuilder fullName = new StringBuilder();
+        NonNullList<ItemStack> ingredients = NBTHelper.getIngredientsList(stack, false);
+
+        if (!ingredients.isEmpty()) {
+            Map<String, Long> countMap = ingredients.stream().collect(Collectors.groupingBy(ItemStack::getDisplayName, Collectors
+                    .counting()));
+            List<String> names = new ArrayList<>();
+            if (!countMap.isEmpty()) {
+                for (String name : countMap.keySet()) {
+                    long size = countMap.get(name);
+                    StringBuilder builder = new StringBuilder();
+
+                    if (size > 1L) {
+                        builder.append(I18n.format("tooltip.culinaryconstruct.count." + size));
+                        builder.append(" ");
+                    }
+                    builder.append(name);
+                    names.add(builder.toString());
+                }
+            }
+            fullName.append(I18n.format("tooltip.culinaryconstruct.list." + names.size(), names.toArray()).trim());
+            fullName.append(" ");
+        }
+        fullName.append(I18n.format(this.getUnlocalizedNameInefficiently(stack) + ".name").trim());
+        return fullName.toString();
     }
 
     @SideOnly(Side.CLIENT)
