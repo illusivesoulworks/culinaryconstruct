@@ -17,6 +17,7 @@ import c4.culinaryconstruct.common.util.SandwichHelper;
 import c4.culinaryconstruct.proxy.CommonProxy;
 import net.minecraft.block.BlockCake;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.*;
 import net.minecraft.item.Item;
@@ -314,6 +315,7 @@ public class ContainerSandwichStation extends Container {
                 }
             }
             ContainerSandwichStation.this.updateSandwichOutput();
+            ContainerSandwichStation.this.detectAndSendChanges();
             return stack;
         }
     }
