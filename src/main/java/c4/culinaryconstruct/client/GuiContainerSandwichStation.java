@@ -123,9 +123,10 @@ public class GuiContainerSandwichStation extends GuiContainer implements IContai
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.ySize);
-        this.drawTexturedModalRect(i + 59, j + 20, 0, this.ySize + (this.inventorySlots.getSlot(6).getHasStack() ? 0 : 16), 110, 16);
+        this.drawTexturedModalRect(i + 59, j + 20, 0, this.ySize + (this.inventorySlots.getSlot(6).getHasStack()
+                ? 0 : 16), 110, 16);
 
-        if (this.inventorySlots.getSlot(5).getHasStack() && !this.inventorySlots.getSlot(6).getHasStack())
+        if (this.inventorySlots.getSlot(0).getHasStack() && !this.inventorySlots.getSlot(6).getHasStack())
         {
             this.drawTexturedModalRect(i + 120, j + 47, this.xSize, 0, 28, 21);
         }

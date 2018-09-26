@@ -12,6 +12,7 @@ import c4.culinaryconstruct.CulinaryConstruct;
 import c4.culinaryconstruct.client.model.ModelSandwich;
 import c4.culinaryconstruct.common.util.NBTHelper;
 import c4.culinaryconstruct.common.util.SandwichHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;

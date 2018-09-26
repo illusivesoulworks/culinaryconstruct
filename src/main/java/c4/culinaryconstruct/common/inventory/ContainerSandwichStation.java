@@ -23,13 +23,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlockSpecial;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.SlotItemHandler;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -37,15 +38,7 @@ import javax.annotation.Nonnull;
 public class ContainerSandwichStation extends Container {
 
     private final InventoryCraftResult outputSlot = new InventoryCraftResult();
-    private final IInventory ingredientSlots = new InventoryBasic("Ingredients", true, 6) {
-
-        @Override
-        public void markDirty()
-        {
-            super.markDirty();
-            ContainerSandwichStation.this.onCraftMatrixChanged(this);
-        }
-    };
+    private final IItemHandler ingredientHandler;
     private final BlockPos pos;
     private final World world;
     private String sandwichName;
@@ -55,34 +48,18 @@ public class ContainerSandwichStation extends Container {
         this.pos = pos;
         this.world = world;
         this.sandwichStation = te;
+        this.ingredientHandler = sandwichStation.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
         initSlots(playerInventory);
-        initInventory();
-    }
-
-    private void initInventory() {
-        IItemHandler inventory = sandwichStation.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.NORTH);
-        if (inventory != null) {
-            for (int i = 0; i < inventory.getSlots(); i++) {
-                ItemStack stack = inventory.getStackInSlot(i);
-                if (!stack.isEmpty()) {
-                    this.inventorySlots.get(i).putStack(inventory.extractItem(i, stack.getCount(), false));
-                }
-            }
-        }
     }
 
     private void initSlots(InventoryPlayer playerInventory) {
-        addLayerSlots();
-        this.addSlotToContainer(new SlotBread(this.ingredientSlots, 5, 10, 50));
+        this.addSlotToContainer(new SlotBread(ingredientHandler, 0, 10, 50));
+
+        for (int i = 1; i < 6; ++i) {
+            this.addSlotToContainer(new SlotLayeredIngredient(ingredientHandler, i, 12 + i * 18, 50));
+        }
         this.addSlotToContainer(new SlotSandwich(this.outputSlot, 6, 150, 50));
         addPlayerSlots(playerInventory);
-    }
-
-    private void addLayerSlots() {
-        for (int i = 0; i < 5; ++i)
-        {
-            this.addSlotToContainer(new SlotLayeredIngredient(this.ingredientSlots, i, 30 + i * 18, 50));
-        }
     }
 
     private void addPlayerSlots(InventoryPlayer playerInventory) {
@@ -108,41 +85,8 @@ public class ContainerSandwichStation extends Container {
         return world.getBlockState(pos).getBlock() == CommonProxy.sandwichStation && playerIn.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
     }
 
-    @Override
-    public void onContainerClosed(EntityPlayer playerIn)
-    {
-        super.onContainerClosed(playerIn);
-
-        if (!this.world.isRemote)
-        {
-            this.clearContainer(playerIn, this.world, this.ingredientSlots);
-        }
-    }
-
-    @Override
-    protected void clearContainer(EntityPlayer playerIn, @Nonnull World worldIn, IInventory inventoryIn)
-    {
-        IItemHandler inventory = sandwichStation.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.NORTH);
-        if (inventory != null) {
-            for (int i = 0; i < inventory.getSlots(); ++i) {
-                inventory.insertItem(i, inventoryIn.removeStackFromSlot(i), false);
-            }
-        }
-    }
-
-    @Override
-    public void onCraftMatrixChanged(IInventory inventoryIn)
-    {
-        super.onCraftMatrixChanged(inventoryIn);
-
-        if (inventoryIn == this.ingredientSlots)
-        {
-            this.updateSandwichOutput();
-        }
-    }
-
     public void updateSandwichOutput() {
-        ItemStack bread = this.ingredientSlots.getStackInSlot(5);
+        ItemStack bread = this.ingredientHandler.getStackInSlot(0);
 
         if (bread.isEmpty()) {
             this.outputSlot.setInventorySlotContents(0, ItemStack.EMPTY);
@@ -154,8 +98,8 @@ public class ContainerSandwichStation extends Container {
         float totalSaturation = 0;
         int complexity = 0;
 
-        for (int i = 0; i < this.ingredientSlots.getSizeInventory(); i++) {
-            ItemStack stack = this.ingredientSlots.getStackInSlot(i);
+        for (int i = 1; i < this.ingredientHandler.getSlots(); i++) {
+            ItemStack stack = this.ingredientHandler.getStackInSlot(i);
             if (!stack.isEmpty()) {
                 if (stack.getItem() instanceof ItemFood) {
                     totalFood += ((ItemFood) stack.getItem()).getHealAmount(stack);
@@ -180,6 +124,20 @@ public class ContainerSandwichStation extends Container {
                 ingredientsList.add(copy);
             }
         }
+
+        //Copy the ingredients check to the bread stack last to maintain list order for backwards-compatibility
+        //TODO: Adjust appropriately in 1.13
+        if (bread.getItem() instanceof ItemFood) {
+            totalFood += ((ItemFood) bread.getItem()).getHealAmount(bread);
+        } else {
+            this.outputSlot.setInventorySlotContents(0, ItemStack.EMPTY);
+            return;
+        }
+        ItemStack copy = bread.copy();
+        if (copy.getCount() > 1) {
+            copy.setCount(1);
+        }
+        ingredientsList.add(copy);
 
         for (ItemStack stack : ingredientsList) {
             double proportion = 0.0D;
@@ -257,7 +215,8 @@ public class ContainerSandwichStation extends Container {
             {
                 if (index < 43)
                 {
-                    if (!this.mergeItemStack(itemstack1, 5, 6, false) && !this.mergeItemStack(itemstack1, 0, 5, false)) {
+                    if (!this.mergeItemStack(itemstack1, 0, 1, false) && !this.mergeItemStack(itemstack1, 1, 6,
+                            false)) {
                         return ItemStack.EMPTY;
                     }
                 }
@@ -293,11 +252,17 @@ public class ContainerSandwichStation extends Container {
         this.updateSandwichOutput();
     }
 
-    private class SlotBread extends Slot
+    private class SlotBread extends SlotItemHandler
     {
-        public SlotBread(IInventory iInventoryIn, int index, int xPosition, int yPosition)
+        public SlotBread(IItemHandler handler, int index, int xPosition, int yPosition)
         {
-            super(iInventoryIn, index, xPosition, yPosition);
+            super(handler, index, xPosition, yPosition);
+        }
+
+        @Override
+        public void onSlotChanged()
+        {
+            ContainerSandwichStation.this.updateSandwichOutput();
         }
 
         @Override
@@ -307,52 +272,31 @@ public class ContainerSandwichStation extends Container {
         }
     }
 
-    private class SlotLayeredIngredient extends Slot
+    private class SlotLayeredIngredient extends SlotItemHandler
     {
-        public SlotLayeredIngredient(IInventory iInventoryIn, int index, int xPosition, int yPosition)
+        public SlotLayeredIngredient(IItemHandler handler, int index, int xPosition, int yPosition)
         {
-            super(iInventoryIn, index, xPosition, yPosition);
+            super(handler, index, xPosition, yPosition);
         }
 
         @Override
         public boolean isItemValid(ItemStack stack)
         {
-            return (stack.getItem() instanceof ItemFood || (stack.getItem() instanceof ItemBlockSpecial && ((ItemBlockSpecial) stack.getItem()).getBlock() instanceof BlockCake))
-                    && !(stack.getItem() instanceof ItemSandwich) && !isBlacklisted(stack);
+            return SandwichHelper.isValidIngredient(stack);
         }
 
-        private boolean isBlacklisted(ItemStack stack) {
-            Item item = stack.getItem();
-            int food = 0;
-            double saturation = 0.0D;
-            boolean blacklisted = false;
-
-            if (item instanceof ItemFood) {
-                ItemFood itemFood = (ItemFood)item;
-                food = itemFood.getHealAmount(stack);
-                saturation = itemFood.getSaturationModifier(stack);
-            } else if (stack.getItem() instanceof ItemBlockSpecial && ((ItemBlockSpecial) stack.getItem()).getBlock()
-                    instanceof BlockCake) {
-                food = 14;
-                saturation = 2.8D;
-            }
-
-            if (ConfigHandler.maxFood >= 0) {
-                blacklisted = food > ConfigHandler.maxFood;
-            }
-
-            if (ConfigHandler.maxSaturation >= 0) {
-                blacklisted = blacklisted || saturation > ConfigHandler.maxSaturation;
-            }
-            return blacklisted || SandwichHelper.blacklist.contains(item);
+        @Override
+        public void onSlotChanged()
+        {
+            ContainerSandwichStation.this.updateSandwichOutput();
         }
     }
 
     private class SlotSandwich extends Slot
     {
-        public SlotSandwich(IInventory iInventoryIn, int index, int xPosition, int yPosition)
+        public SlotSandwich(IInventory inventory, int index, int xPosition, int yPosition)
         {
-            super(iInventoryIn, index, xPosition, yPosition);
+            super(inventory, index, xPosition, yPosition);
         }
 
         @Override
@@ -362,12 +306,11 @@ public class ContainerSandwichStation extends Container {
         @Override
         public ItemStack onTake(EntityPlayer thePlayer, @Nonnull ItemStack stack)
         {
-            IInventory ingredients = ContainerSandwichStation.this.ingredientSlots;
-            for (int i = 0; i < ingredients.getSizeInventory(); i++) {
-                ItemStack slot = ingredients.getStackInSlot(i);
-                slot.shrink(1);
-                if (slot.isEmpty()) {
-                    ingredients.setInventorySlotContents(i, ItemStack.EMPTY);
+            IItemHandler ingredients = ContainerSandwichStation.this.ingredientHandler;
+            if (ingredients != null) {
+                for (int i = 0; i < ingredients.getSlots(); i++) {
+                    ItemStack slot = ingredients.getStackInSlot(i);
+                    slot.shrink(1);
                 }
             }
             ContainerSandwichStation.this.updateSandwichOutput();

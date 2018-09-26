@@ -8,7 +8,10 @@
 
 package c4.culinaryconstruct.common.tileentity;
 
+import c4.culinaryconstruct.common.util.BreadHelper;
+import c4.culinaryconstruct.common.util.SandwichHelper;
 import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -22,6 +25,17 @@ import javax.annotation.Nullable;
 public class TileEntitySandwichStation extends TileEntity {
 
     private ItemStackHandler inventory = new ItemStackHandler(6) {
+
+        @Override
+        @Nonnull
+        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+            if ((slot == 0 && BreadHelper.isValidBread(stack))
+                    || (slot != 0 && SandwichHelper.isValidIngredient(stack))) {
+                return super.insertItem(slot, stack, simulate);
+            }
+            return stack;
+        }
+
         @Override
         protected void onContentsChanged(int slot) {
             TileEntitySandwichStation.this.markDirty();
