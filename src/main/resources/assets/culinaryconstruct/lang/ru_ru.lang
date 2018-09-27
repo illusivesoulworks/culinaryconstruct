@@ -1,14 +1,38 @@
-tile.culinaryconstruct.sandwich_station.name=Сэндвичная станция 
+#################
+#     Config    #
+#################
+culinaryconstruct.general.maxsaturation=Макс. насыщенность ингредиентов
+culinaryconstruct.general.maxsaturation.tooltip=Ингредиенты черного списка с более чем макс. модификатором насыщения, -1 для отключения
+culinaryconstruct.general.maxfood=Макс. пищевой ингредиент
+culinaryconstruct.general.maxfood.tooltip=Ингредиенты черного списка с более чем макс. значением пищи, -1 для отключения
+culinaryconstruct.general.blacklist=Черный список
+culinaryconstruct.general.blacklist.tooltip=Список предметов для черного списка как бутерброд ингредиенты
 
-item.culinaryconstruct.sandwich.name=Сэндвич
+#################
+#    General    #
+#################
+tile.culinaryconstruct.sandwich_station.name=Станция по изготовлению бутербродов
 
-tooltip.culinaryconstruct.ingredients.name=Ингредиенты
-tooltip.culinaryconstruct.ingredients=Зажмит §e§oShift§r§7 для ингредиентов
+item.culinaryconstruct.sandwich.name=Бутерброд
+
+tooltip.culinaryconstruct.ingredients.name=Ингридиенты
+tooltip.culinaryconstruct.ingredients=Зажмите §e§oShift§r§7 для ингридиентов
 tooltip.culinaryconstruct.quality.name=Качество
-tooltip.culinaryconstruct.quality.0=Очень мягкий
-tooltip.culinaryconstruct.quality.1=Мягкий
+tooltip.culinaryconstruct.quality.0=Очень невкусный
+tooltip.culinaryconstruct.quality.1=Невкусный
 tooltip.culinaryconstruct.quality.2=Средний
 tooltip.culinaryconstruct.quality.3=Вкусный
 tooltip.culinaryconstruct.quality.4=Очень вкусный
 
-container.culinaryconstruct.sandwich_station=Приготовление & Название
+tooltip.culinaryconstruct.count.2=Двойной
+tooltip.culinaryconstruct.count.3=Тройной
+tooltip.culinaryconstruct.count.4=Четверной
+tooltip.culinaryconstruct.count.5=Пятикратный
+
+tooltip.culinaryconstruct.list.1=%s
+tooltip.culinaryconstruct.list.2=%s и %s
+tooltip.culinaryconstruct.list.3=%s, %s, и %s
+tooltip.culinaryconstruct.list.4=%s, %s, %s, и %s
+tooltip.culinaryconstruct.list.5=%s, %s, %s, %s, и %s
+
+container.culinaryconstruct.sandwich_station=Создание и название
