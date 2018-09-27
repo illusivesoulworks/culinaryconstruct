@@ -51,6 +51,7 @@ public class ContainerSandwichStation extends Container {
         this.sandwichStation = te;
         this.ingredientHandler = sandwichStation.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
         initSlots(playerInventory);
+        this.updateSandwichOutput();
     }
 
     private void initSlots(InventoryPlayer playerInventory) {
@@ -91,6 +92,7 @@ public class ContainerSandwichStation extends Container {
 
         if (bread.isEmpty()) {
             this.outputSlot.setInventorySlotContents(0, ItemStack.EMPTY);
+            this.detectAndSendChanges();
             return;
         }
 
@@ -108,6 +110,7 @@ public class ContainerSandwichStation extends Container {
                     totalFood += 14;
                 } else {
                     this.outputSlot.setInventorySlotContents(0, ItemStack.EMPTY);
+                    this.detectAndSendChanges();
                     return;
                 }
                 boolean flag = true;
@@ -132,6 +135,7 @@ public class ContainerSandwichStation extends Container {
             totalFood += ((ItemFood) bread.getItem()).getHealAmount(bread);
         } else {
             this.outputSlot.setInventorySlotContents(0, ItemStack.EMPTY);
+            this.detectAndSendChanges();
             return;
         }
         ItemStack copy = bread.copy();
@@ -158,6 +162,7 @@ public class ContainerSandwichStation extends Container {
 
         if (ingredientsList.size() <= 1 || totalFood <= 0 || totalSaturation < 0) {
             this.outputSlot.setInventorySlotContents(0, ItemStack.EMPTY);
+            this.detectAndSendChanges();
             return;
         }
 
@@ -303,6 +308,12 @@ public class ContainerSandwichStation extends Container {
         @Override
         public boolean isItemValid(ItemStack stack) { return false; }
 
+        @Override
+        public void onSlotChanged()
+        {
+            ContainerSandwichStation.this.updateSandwichOutput();
+        }
+
         @Nonnull
         @Override
         public ItemStack onTake(EntityPlayer thePlayer, @Nonnull ItemStack stack)
@@ -315,7 +326,6 @@ public class ContainerSandwichStation extends Container {
                 }
             }
             ContainerSandwichStation.this.updateSandwichOutput();
-            ContainerSandwichStation.this.detectAndSendChanges();
             return stack;
         }
     }
