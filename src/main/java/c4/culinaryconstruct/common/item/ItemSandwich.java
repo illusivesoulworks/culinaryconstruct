@@ -22,6 +22,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
@@ -82,17 +83,18 @@ public class ItemSandwich extends ItemFood {
                     StringBuilder builder = new StringBuilder();
 
                     if (size > 1L) {
-                        builder.append(I18n.format("tooltip.culinaryconstruct.count." + size));
+                        builder.append(new TextComponentTranslation("tooltip.culinaryconstruct.count." + size).getFormattedText());
                         builder.append(" ");
                     }
                     builder.append(name);
                     names.add(builder.toString());
                 }
             }
-            fullName.append(I18n.format("tooltip.culinaryconstruct.list." + names.size(), names.toArray()).trim());
+            fullName.append(new TextComponentTranslation("tooltip.culinaryconstruct.list." + names.size(),
+                    names.toArray()).getFormattedText());
             fullName.append(" ");
         }
-        fullName.append(I18n.format(this.getUnlocalizedNameInefficiently(stack) + ".name").trim());
+        fullName.append(new TextComponentTranslation(this.getUnlocalizedNameInefficiently(stack) + ".name").getFormattedText());
         return fullName.toString();
     }
 
