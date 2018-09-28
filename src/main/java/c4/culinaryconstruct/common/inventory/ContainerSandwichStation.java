@@ -8,19 +8,18 @@
 
 package c4.culinaryconstruct.common.inventory;
 
-import c4.culinaryconstruct.common.item.ItemSandwich;
 import c4.culinaryconstruct.common.tileentity.TileEntitySandwichStation;
 import c4.culinaryconstruct.common.util.BreadHelper;
-import c4.culinaryconstruct.common.util.ConfigHandler;
 import c4.culinaryconstruct.common.util.NBTHelper;
 import c4.culinaryconstruct.common.util.SandwichHelper;
 import c4.culinaryconstruct.proxy.CommonProxy;
 import net.minecraft.block.BlockCake;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.*;
-import net.minecraft.item.Item;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryCraftResult;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemBlockSpecial;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
@@ -28,7 +27,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;

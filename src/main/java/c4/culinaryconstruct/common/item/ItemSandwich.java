@@ -11,8 +11,6 @@ package c4.culinaryconstruct.common.item;
 import c4.culinaryconstruct.CulinaryConstruct;
 import c4.culinaryconstruct.client.model.ModelSandwich;
 import c4.culinaryconstruct.common.util.NBTHelper;
-import c4.culinaryconstruct.common.util.SandwichHelper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
@@ -35,7 +33,9 @@ import org.lwjgl.input.Keyboard;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ItemSandwich extends ItemFood {

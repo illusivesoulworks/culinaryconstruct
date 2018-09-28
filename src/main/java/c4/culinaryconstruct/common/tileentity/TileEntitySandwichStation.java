@@ -10,7 +10,6 @@ package c4.culinaryconstruct.common.tileentity;
 
 import c4.culinaryconstruct.common.util.BreadHelper;
 import c4.culinaryconstruct.common.util.SandwichHelper;
-import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
