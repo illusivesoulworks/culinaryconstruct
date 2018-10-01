@@ -36,3 +36,6 @@ tooltip.culinaryconstruct.list.4=%s, %s, %s, and %s
 tooltip.culinaryconstruct.list.5=%s, %s, %s, %s, and %s
 
 container.culinaryconstruct.sandwich_station=Craft & Name
+
+culinaryconstruct.advancements.sandwich_station.title=Sandwich Lover
+culinaryconstruct.advancements.sandwich_station.description=Craft a sandwich
