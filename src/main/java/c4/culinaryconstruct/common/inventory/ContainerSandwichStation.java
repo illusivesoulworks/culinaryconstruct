@@ -10,6 +10,7 @@ package c4.culinaryconstruct.common.inventory;
 
 import c4.culinaryconstruct.common.tileentity.TileEntitySandwichStation;
 import c4.culinaryconstruct.common.util.BreadHelper;
+import c4.culinaryconstruct.common.util.ConfigHandler;
 import c4.culinaryconstruct.common.util.NBTHelper;
 import c4.culinaryconstruct.common.util.SandwichHelper;
 import c4.culinaryconstruct.proxy.CommonProxy;
@@ -166,7 +167,7 @@ public class ContainerSandwichStation extends Container {
 
         double count = 1.0D;
         int averageFood = MathHelper.ceil(((double) totalFood) / count);
-        while (averageFood > 10) {
+        while (averageFood > ConfigHandler.maxTotalFood) {
             count++;
             averageFood = MathHelper.ceil(((double) totalFood) / count);
         }

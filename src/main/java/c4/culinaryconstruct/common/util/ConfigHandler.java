@@ -21,6 +21,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 @Config(modid = CulinaryConstruct.MODID)
 public class ConfigHandler {
 
+    @Name("Max Food Per Sandwich")
+    @Comment("The maximum amount of food that a single sandwich can give")
+    public static int maxTotalFood = 10;
+
     @Name("Max Ingredient Saturation")
     @Comment("Blacklist ingredients with more than this max saturation modifier, -1 to disable")
     public static double maxSaturation = -1.0D;
