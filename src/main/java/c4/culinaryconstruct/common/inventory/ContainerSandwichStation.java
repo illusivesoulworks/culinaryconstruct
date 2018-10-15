@@ -8,6 +8,7 @@
 
 package c4.culinaryconstruct.common.inventory;
 
+import c4.culinaryconstruct.api.ICulinaryIngredient;
 import c4.culinaryconstruct.common.tileentity.TileEntitySandwichStation;
 import c4.culinaryconstruct.common.util.BreadHelper;
 import c4.culinaryconstruct.common.util.ConfigHandler;
@@ -103,7 +104,9 @@ public class ContainerSandwichStation extends Container {
         for (int i = 1; i < this.ingredientHandler.getSlots(); i++) {
             ItemStack stack = this.ingredientHandler.getStackInSlot(i);
             if (!stack.isEmpty()) {
-                if (stack.getItem() instanceof ItemFood) {
+                if (stack.getItem() instanceof ICulinaryIngredient) {
+                    totalFood += ((ICulinaryIngredient)stack.getItem()).getFoodAmount(stack);
+                } else if (stack.getItem() instanceof ItemFood) {
                     totalFood += ((ItemFood) stack.getItem()).getHealAmount(stack);
                 } else if (stack.getItem() instanceof ItemBlockSpecial && ((ItemBlockSpecial) stack.getItem()).getBlock() instanceof BlockCake) {
                     totalFood += 14;
@@ -147,11 +150,16 @@ public class ContainerSandwichStation extends Container {
             double proportion = 0.0D;
             double saturationModifier = 0.0D;
             if (!stack.isEmpty()) {
-                if (stack.getItem() instanceof ItemFood) {
-                    proportion = ((double) ((ItemFood) stack.getItem()).getHealAmount(stack)) / ((double) totalFood);
-                    saturationModifier = ((ItemFood) stack.getItem()).getSaturationModifier(stack);
+                if (stack.getItem() instanceof ICulinaryIngredient) {
+                    proportion = ((double) ((ICulinaryIngredient)stack.getItem()).getFoodAmount(stack)) /
+                            ((double) totalFood);
+                    saturationModifier = ((ICulinaryIngredient)stack.getItem()).getSaturationModifier(stack);
                 }
-                else if (stack.getItem() instanceof ItemBlockSpecial && ((ItemBlockSpecial) stack.getItem()).getBlock() instanceof BlockCake) {
+                if (stack.getItem() instanceof ItemFood) {
+                    proportion = ((double) ((ItemFood)stack.getItem()).getHealAmount(stack)) / ((double) totalFood);
+                    saturationModifier = ((ItemFood)stack.getItem()).getSaturationModifier(stack);
+                }
+                else if (stack.getItem() instanceof ItemBlockSpecial && ((ItemBlockSpecial)stack.getItem()).getBlock() instanceof BlockCake) {
                     proportion = 14.0D / ((double) totalFood);
                     saturationModifier = 2.8D;
                 }

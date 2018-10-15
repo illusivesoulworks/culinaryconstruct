@@ -9,6 +9,7 @@
 package c4.culinaryconstruct.common.item;
 
 import c4.culinaryconstruct.CulinaryConstruct;
+import c4.culinaryconstruct.api.ICulinaryIngredient;
 import c4.culinaryconstruct.client.model.ModelSandwich;
 import c4.culinaryconstruct.common.util.NBTHelper;
 import net.minecraft.client.renderer.block.model.ModelBakery;
@@ -145,12 +146,16 @@ public class ItemSandwich extends ItemFood {
         {
             NonNullList<ItemStack> ingredients = NBTHelper.getIngredientsList(stack, true);
             for (ItemStack ing : ingredients) {
-                if (!ing.isEmpty() && ing.getItem() instanceof ItemFood) {
-                    try {
-                        ItemFood foodItem = (ItemFood) ing.getItem();
-                        ON_FOOD_EATEN.invoke(foodItem, ing, worldIn, player);
-                    } catch (Exception e) {
-                        CulinaryConstruct.logger.log(Level.ERROR, "Error invoking onFoodEaten for stack " + ing.toString());
+                if (!ing.isEmpty()) {
+                    if (ing.getItem() instanceof ICulinaryIngredient) {
+                        ((ICulinaryIngredient)ing.getItem()).onEaten(player, stack);
+                    } else if (ing.getItem() instanceof ItemFood) {
+                        try {
+                            ItemFood foodItem = (ItemFood) ing.getItem();
+                            ON_FOOD_EATEN.invoke(foodItem, ing, worldIn, player);
+                        } catch (Exception e) {
+                            CulinaryConstruct.logger.log(Level.ERROR, "Error invoking onFoodEaten for stack " + ing.toString());
+                        }
                     }
                 }
             }
