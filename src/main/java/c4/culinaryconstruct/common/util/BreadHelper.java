@@ -23,6 +23,7 @@ public class BreadHelper {
     private static Set<String> breadOres = new HashSet<>();
 
     public static void initOreDict() {
+        Item item;
 
         //Vanilla
         OreDictionary.registerOre("bread", Items.BREAD);
@@ -44,7 +45,7 @@ public class BreadHelper {
 
         //Actually Additions
         if (Loader.isModLoaded("actuallyadditions")) {
-            Item item = Item.getByNameOrId("actuallyadditions:item_food");
+            item = Item.getByNameOrId("actuallyadditions:item_food");
             if (item != null) {
                 OreDictionary.registerOre("bread", new ItemStack(item,1, 10));
                 OreDictionary.registerOre("bread", new ItemStack(item,1, 15));
@@ -55,7 +56,7 @@ public class BreadHelper {
 
         //Reliquary
         if (Loader.isModLoaded("xreliquary")) {
-            Item item = Item.getByNameOrId("xreliquary:glowing_bread");
+            item = Item.getByNameOrId("xreliquary:glowing_bread");
             if (item != null) {
                 OreDictionary.registerOre("bread", new ItemStack(item));
             }
@@ -63,7 +64,7 @@ public class BreadHelper {
 
         //AshenWheat
         if (Loader.isModLoaded("ashenwheat")) {
-            Item item = Item.getByNameOrId("ashenwheat:ashbread");
+            item = Item.getByNameOrId("ashenwheat:ashbread");
             if (item != null) {
                 OreDictionary.registerOre("bread", new ItemStack(item));
             }
@@ -71,6 +72,11 @@ public class BreadHelper {
             if (item != null) {
                 OreDictionary.registerOre("bread", new ItemStack(item));
             }
+        }
+
+        //10pak's Plant Mega Pack
+        if (Loader.isModLoaded("pmp")) {
+            addBreadOre("foodCornBread");
         }
     }
 
