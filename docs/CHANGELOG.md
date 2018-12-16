@@ -7,10 +7,10 @@ This project uses MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
 ## [1.3.0] - 2018.12.15
 ### Added
 - Sandwich Advancement
-- Config option for max sandwich food value per sandwich
+- Config option for max sandwich food value per sandwich [#22](https://github.com/TheIllusiveC4/CulinaryConstruct/issues/22)
 - Compatibility for 10pal's Plant Mega Pack Cornbread
-- Integration with AppleCore's IEdible
-- [API] ICulinaryIngredient API interface
+- Integration with AppleCore's IEdible [#22](https://github.com/TheIllusiveC4/CulinaryConstruct/issues/22)
+- [API] ICulinaryIngredient API interface [#22](https://github.com/TheIllusiveC4/CulinaryConstruct/issues/22)
 
 ## [1.2.0.1] - 2018.09.26
 ### Changed
