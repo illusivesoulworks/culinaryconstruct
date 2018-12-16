@@ -8,6 +8,7 @@
 
 package c4.culinaryconstruct.common.inventory;
 
+import c4.culinaryconstruct.CulinaryConstruct;
 import c4.culinaryconstruct.api.ICulinaryIngredient;
 import c4.culinaryconstruct.common.tileentity.TileEntitySandwichStation;
 import c4.culinaryconstruct.common.util.BreadHelper;
@@ -22,6 +23,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCraftResult;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlockSpecial;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
@@ -33,6 +35,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import org.apache.commons.lang3.StringUtils;
+import squeek.applecore.api.food.IEdible;
 
 import javax.annotation.Nonnull;
 
@@ -147,23 +150,24 @@ public class ContainerSandwichStation extends Container {
         ingredientsList.add(copy);
 
         for (ItemStack stack : ingredientsList) {
-            double proportion = 0.0D;
+            double foodAmount = 0.0D;
             double saturationModifier = 0.0D;
             if (!stack.isEmpty()) {
+                Item item = stack.getItem();
                 if (stack.getItem() instanceof ICulinaryIngredient) {
-                    proportion = ((double) ((ICulinaryIngredient)stack.getItem()).getFoodAmount(stack)) /
-                            ((double) totalFood);
+                    foodAmount = ((ICulinaryIngredient)stack.getItem()).getFoodAmount(stack);
                     saturationModifier = ((ICulinaryIngredient)stack.getItem()).getSaturationModifier(stack);
-                }
-                if (stack.getItem() instanceof ItemFood) {
-                    proportion = ((double) ((ItemFood)stack.getItem()).getHealAmount(stack)) / ((double) totalFood);
+                } else if (stack.getItem() instanceof ItemFood) {
+                    foodAmount = ((ItemFood)stack.getItem()).getHealAmount(stack);
                     saturationModifier = ((ItemFood)stack.getItem()).getSaturationModifier(stack);
-                }
-                else if (stack.getItem() instanceof ItemBlockSpecial && ((ItemBlockSpecial)stack.getItem()).getBlock() instanceof BlockCake) {
-                    proportion = 14.0D / ((double) totalFood);
+                } else if (stack.getItem() instanceof ItemBlockSpecial && ((ItemBlockSpecial)stack.getItem()).getBlock() instanceof BlockCake) {
+                    foodAmount = 14.0D;
                     saturationModifier = 2.8D;
+                } else if (CulinaryConstruct.isAppleCoreLoaded && item instanceof IEdible) {
+                    foodAmount = ((IEdible) item).getFoodValues(stack).hunger;
+                    saturationModifier = ((IEdible) item).getFoodValues(stack).saturationModifier;
                 }
-                totalSaturation += proportion * saturationModifier;
+                totalSaturation += (foodAmount / (double)totalFood) * saturationModifier;
             }
         }
 

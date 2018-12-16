@@ -11,6 +11,7 @@ package c4.culinaryconstruct;
 import c4.culinaryconstruct.debug.CommandHunger;
 import c4.culinaryconstruct.proxy.CommonProxy;
 import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -36,6 +37,8 @@ public class CulinaryConstruct
     @SidedProxy(clientSide = "c4.culinaryconstruct.proxy.ClientProxy", serverSide = "c4.culinaryconstruct.proxy.CommonProxy")
     public static CommonProxy proxy;
 
+    public static boolean isAppleCoreLoaded = false;
+
     @Instance
     public static CulinaryConstruct instance;
 
@@ -54,6 +57,10 @@ public class CulinaryConstruct
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent evt) {
+
+        if (Loader.isModLoaded("applecore")) {
+            isAppleCoreLoaded = true;
+        }
         proxy.postInit(evt);
     }
 
