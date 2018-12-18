@@ -1,13 +1,42 @@
+#################
+#     Config    #
+#################
+culinaryconstruct.general.maxsaturation=Maksymalne nasycenie składnika
+culinaryconstruct.general.maxsaturation.tooltip=Wyłącz składniki z wartością nasycenia większej od tej, -1 by nie wyłączać niczego
+culinaryconstruct.general.maxfood=Maksymalna wartość odżywcza
+culinaryconstruct.general.maxfood.tooltip=Wyłącz składniki z wartością nasycenia większej od tej, -1 by nie wyłączać niczego
+culinaryconstruct.general.blacklist=Czarna lista
+culinaryconstruct.general.blacklist.tooltip=Lista przedmiotów do dodanie do czarnej listy składników
+
+#################
+#    General    #
+#################
 tile.culinaryconstruct.sandwich_station.name=Stół do robienia kanapek
+
 item.culinaryconstruct.sandwich.name=Kanapka
 
 tooltip.culinaryconstruct.ingredients.name=Składniki
 tooltip.culinaryconstruct.ingredients=Przytrzymaj §e§oShift§r§7 by zobaczyć składniki
 tooltip.culinaryconstruct.quality.name=Jakość
-tooltip.culinaryconstruct.quality.0=Bardzo Niedobra
-tooltip.culinaryconstruct.quality.1=Niesmaczna
-tooltip.culinaryconstruct.quality.2=Średnio Smaczna
+tooltip.culinaryconstruct.quality.0=Bardzo Mdła
+tooltip.culinaryconstruct.quality.1=Mdła
+tooltip.culinaryconstruct.quality.2=Przeciętna
 tooltip.culinaryconstruct.quality.3=Smaczna
-tooltip.culinaryconstruct.quality.4=Bardzo Smaczna
+tooltip.culinaryconstruct.quality.4=Wykwintna
+
+tooltip.culinaryconstruct.count.2=Podwójna
+tooltip.culinaryconstruct.count.3=Potrójna
+tooltip.culinaryconstruct.count.4=Poczwórna
+tooltip.culinaryconstruct.count.5=Pięcio-składnikowa
+
+tooltip.culinaryconstruct.list.1=%s
+tooltip.culinaryconstruct.list.2=%s i %s
+tooltip.culinaryconstruct.list.3=%s, %s, i %s
+tooltip.culinaryconstruct.list.4=%s, %s, %s, i %s
+tooltip.culinaryconstruct.list.5=%s, %s, %s, %s, i %s
 
 container.culinaryconstruct.sandwich_station=Stwórz i Nazwij
+
+culinaryconstruct.advancements.sandwich_station.title=Miłośnik Kanapek
+culinaryconstruct.advancements.sandwich_station.description=Stwórz Kanapkę
+
