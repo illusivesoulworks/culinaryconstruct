@@ -23,8 +23,6 @@ public class BreadHelper {
     private static Set<String> breadOres = new HashSet<>();
 
     public static void initOreDict() {
-        Item item;
-
         //Vanilla
         OreDictionary.registerOre("bread", Items.BREAD);
         addBreadOre("bread");
@@ -45,38 +43,26 @@ public class BreadHelper {
 
         //Actually Additions
         if (Loader.isModLoaded("actuallyadditions")) {
-            item = Item.getByNameOrId("actuallyadditions:item_food");
-            if (item != null) {
-                OreDictionary.registerOre("bread", new ItemStack(item,1, 10));
-                OreDictionary.registerOre("bread", new ItemStack(item,1, 15));
-                OreDictionary.registerOre("bread", new ItemStack(item,1, 17));
-                OreDictionary.registerOre("bread", new ItemStack(item,1, 19));
-            }
+            addBreadItems("actuallyadditions:item_food", 10, 15, 17, 19);
         }
 
         //Reliquary
         if (Loader.isModLoaded("xreliquary")) {
-            item = Item.getByNameOrId("xreliquary:glowing_bread");
-            if (item != null) {
-                OreDictionary.registerOre("bread", new ItemStack(item));
-            }
+            addBreadItem("xreliquary:glowing_bread");
         }
 
         //AshenWheat
         if (Loader.isModLoaded("ashenwheat")) {
-            item = Item.getByNameOrId("ashenwheat:ashbread");
-            if (item != null) {
-                OreDictionary.registerOre("bread", new ItemStack(item));
-            }
-            item = Item.getByNameOrId("ashenwheat:scintillabread");
-            if (item != null) {
-                OreDictionary.registerOre("bread", new ItemStack(item));
-            }
+            addBreadItems("ashenwheat:ashbread", "ashenwheat:scintillabread");
         }
 
         //10pak's Plant Mega Pack
         if (Loader.isModLoaded("pmp")) {
             addBreadOre("foodCornBread");
+        }
+
+        for (String s : ConfigHandler.breadItems) {
+            addBreadItem(s);
         }
     }
 
@@ -86,6 +72,32 @@ public class BreadHelper {
 
     private static void addBreadOres(String... ore) {
         breadOres.addAll(Arrays.asList(ore));
+    }
+
+    private static void addBreadItem(String id) {
+        Item item = Item.getByNameOrId(id);
+
+        if (item != null) {
+            OreDictionary.registerOre("bread", new ItemStack(item));
+        }
+    }
+
+    private static void addBreadItems(String... ids) {
+
+        for (String s : ids) {
+            addBreadItem(s);
+        }
+    }
+
+    private static void addBreadItems(String id, int... metadata) {
+        Item item = Item.getByNameOrId(id);
+
+        if (item != null) {
+
+            for (Integer meta : metadata) {
+                OreDictionary.registerOre("bread", new ItemStack(item, 1, meta));
+            }
+        }
     }
 
     public static boolean isValidBread(ItemStack stack) {
