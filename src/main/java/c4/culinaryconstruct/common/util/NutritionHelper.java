@@ -14,6 +14,7 @@ import ca.wescook.nutrition.nutrients.Nutrient;
 import ca.wescook.nutrition.nutrients.NutrientUtils;
 import ca.wescook.nutrition.proxy.ClientProxy;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -23,6 +24,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 
 import java.util.List;
+import java.util.Set;
 import java.util.StringJoiner;
 
 public class NutritionHelper {
@@ -33,7 +35,7 @@ public class NutritionHelper {
     public static void applyNutrients(EntityPlayer player, ItemStack stack) {
         NonNullList<ItemStack> ingredients = NBTHelper.getIngredientsList(stack, true);
         List<Nutrient> foundNutrients = getNutrients(ingredients);
-        float nutritionValue = NutrientUtils.calculateNutrition(stack, foundNutrients) / ingredients.size();
+        float nutritionValue = NutrientUtils.calculateNutrition(stack, foundNutrients);
 
         if (!player.world.isRemote) {
             INutrientManager manager = player.getCapability(NUTRITION_CAPABILITY, null);
@@ -58,7 +60,7 @@ public class NutritionHelper {
             }
         }
         String nutrientString = stringJoiner.toString();
-        float nutritionValue = NutrientUtils.calculateNutrition(stack, foundNutrients) / ingredients.size();
+        float nutritionValue = NutrientUtils.calculateNutrition(stack, foundNutrients);
 
         if (!nutrientString.isEmpty()) {
             return I18n.format("tooltip." + Nutrition.MODID + ":nutrients") + " " +
@@ -70,11 +72,11 @@ public class NutritionHelper {
     }
 
     private static List<Nutrient> getNutrients(NonNullList<ItemStack> ingredients) {
-        List<Nutrient> foundNutrients = Lists.newArrayList();
+        Set<Nutrient> foundNutrients = Sets.newHashSet();
 
         for (ItemStack ing : ingredients) {
             foundNutrients.addAll(NutrientUtils.getFoodNutrients(ing));
         }
-        return foundNutrients;
+        return Lists.newArrayList(foundNutrients);
     }
 }
