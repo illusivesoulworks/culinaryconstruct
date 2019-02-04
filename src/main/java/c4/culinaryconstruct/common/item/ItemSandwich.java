@@ -12,6 +12,7 @@ import c4.culinaryconstruct.CulinaryConstruct;
 import c4.culinaryconstruct.api.ICulinaryIngredient;
 import c4.culinaryconstruct.client.model.ModelSandwich;
 import c4.culinaryconstruct.common.util.NBTHelper;
+import c4.culinaryconstruct.common.util.NutritionHelper;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
@@ -106,6 +107,7 @@ public class ItemSandwich extends ItemFood {
         int bonus = NBTHelper.getBonus(stack);
         tooltip.add(String.format("%s: %s", I18n.format("tooltip.culinaryconstruct.quality.name"), I18n.format("tooltip.culinaryconstruct.quality." + (bonus + 2))));
         tooltip.add("");
+
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
             tooltip.add(TextFormatting.UNDERLINE + I18n.format("tooltip.culinaryconstruct.ingredients.name"));
             for (ItemStack ing : ingredients) {
@@ -115,6 +117,14 @@ public class ItemSandwich extends ItemFood {
             }
         } else {
             tooltip.add(I18n.format("tooltip.culinaryconstruct.ingredients"));
+        }
+
+        if (CulinaryConstruct.isNutritionLoaded) {
+            String nutrients = NutritionHelper.getNutrientsTooltip(stack);
+
+            if (!nutrients.isEmpty()) {
+                tooltip.add(nutrients);
+            }
         }
     }
 
@@ -158,6 +168,10 @@ public class ItemSandwich extends ItemFood {
                         }
                     }
                 }
+            }
+
+            if (CulinaryConstruct.isNutritionLoaded) {
+                NutritionHelper.applyNutrients(player, stack);
             }
         }
     }

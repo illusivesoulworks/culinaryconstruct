@@ -38,6 +38,7 @@ public class CulinaryConstruct
     public static CommonProxy proxy;
 
     public static boolean isAppleCoreLoaded = false;
+    public static boolean isNutritionLoaded = false;
 
     @Instance
     public static CulinaryConstruct instance;
@@ -60,6 +61,10 @@ public class CulinaryConstruct
 
         if (Loader.isModLoaded("applecore")) {
             isAppleCoreLoaded = true;
+        }
+
+        if (Loader.isModLoaded("nutrition")) {
+            isNutritionLoaded = true;
         }
         proxy.postInit(evt);
     }
