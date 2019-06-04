@@ -25,6 +25,10 @@ public class ConfigHandler {
     @Comment("The maximum amount of food that a single sandwich can give")
     public static int maxTotalFood = 10;
 
+    @Name("Max Sandwich Nesting")
+    @Comment("The maximum number of times a sandwich can go into a sandwich")
+    public static int maxSandwichNesting = 3;
+
     @Name("Max Ingredient Saturation")
     @Comment("Blacklist ingredients with more than this max saturation modifier, -1 to disable")
     public static double maxSaturation = -1.0D;

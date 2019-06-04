@@ -16,6 +16,7 @@ import net.minecraft.util.NonNullList;
 public class NBTHelper {
 
     public static final String TAG_INGREDIENTS = "Ingredients";
+    public static final String TAG_DEPTH = "Depth";
     public static final String TAG_FOOD = "Food";
     public static final String TAG_SATURATION = "Saturation";
     public static final String TAG_SIZE = "Size";
@@ -36,6 +37,11 @@ public class NBTHelper {
     public static int getSize(ItemStack stack) {
         NBTTagCompound compound = getCompoundSafe(stack);
         return compound.getInteger(TAG_SIZE);
+    }
+
+    public static int getDepth(ItemStack stack) {
+        NBTTagCompound compound = getCompoundSafe(stack);
+        return compound.getInteger(TAG_DEPTH);
     }
 
     public static int getFoodAmount(ItemStack stack) {
@@ -65,6 +71,12 @@ public class NBTHelper {
     public static void setTagSize(ItemStack stack, int size) {
         NBTTagCompound compound = getCompoundSafe(stack);
         compound.setInteger(TAG_SIZE, size);
+        stack.setTagCompound(compound);
+    }
+
+    public static void setTagDepth(ItemStack stack, int depth) {
+        NBTTagCompound compound = getCompoundSafe(stack);
+        compound.setInteger(TAG_DEPTH, depth);
         stack.setTagCompound(compound);
     }
 
