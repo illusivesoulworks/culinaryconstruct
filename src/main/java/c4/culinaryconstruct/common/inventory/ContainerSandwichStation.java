@@ -103,6 +103,7 @@ public class ContainerSandwichStation extends Container {
         int totalFood = 0;
         float totalSaturation = 0;
         int complexity = 0;
+        int depth = 0;
 
         for (int i = 1; i < this.ingredientHandler.getSlots(); i++) {
             ItemStack stack = this.ingredientHandler.getStackInSlot(i);
@@ -160,6 +161,9 @@ public class ContainerSandwichStation extends Container {
                 } else if (stack.getItem() instanceof ItemFood) {
                     foodAmount = ((ItemFood)stack.getItem()).getHealAmount(stack);
                     saturationModifier = ((ItemFood)stack.getItem()).getSaturationModifier(stack);
+                    if (stack.getItem() == CommonProxy.sandwich) {
+                        depth = Math.max(depth, 1 + NBTHelper.getDepth(stack));
+                    }
                 } else if (stack.getItem() instanceof ItemBlockSpecial && ((ItemBlockSpecial)stack.getItem()).getBlock() instanceof BlockCake) {
                     foodAmount = 14.0D;
                     saturationModifier = 2.8D;
@@ -190,6 +194,7 @@ public class ContainerSandwichStation extends Container {
 
         ItemStack output = new ItemStack(CommonProxy.sandwich);
         NBTHelper.setTagSize(output, size);
+        NBTHelper.setTagDepth(output, depth);
         NBTHelper.setIngredientsList(output, ingredientsList);
         NBTHelper.setTagFood(output, averageFood);
         NBTHelper.setTagSaturation(output, totalSaturation);

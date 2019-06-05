@@ -36,6 +36,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -96,6 +97,8 @@ public class ItemSandwich extends ItemFood {
                     names.toArray()).getFormattedText());
             fullName.append(" ");
         }
+        fullName.append(String.join("", Collections.nCopies(Math.max(0, NBTHelper.getDepth(stack)),
+            new TextComponentTranslation("tooltip.culinaryconstruct.metaprefix").getFormattedText())));
         fullName.append(new TextComponentTranslation(this.getUnlocalizedNameInefficiently(stack) + ".name").getFormattedText());
         return fullName.toString();
     }
@@ -143,6 +146,7 @@ public class ItemSandwich extends ItemFood {
                     new ItemStack(Items.NETHER_STAR),
                     new ItemStack(Items.BREAD)));
             NBTHelper.setTagFood(sub, 20);
+            NBTHelper.setTagDepth(sub, 0);
             NBTHelper.setTagSaturation(sub, 1.0F);
             NBTHelper.setTagBonus(sub, 2);
             items.add(sub);

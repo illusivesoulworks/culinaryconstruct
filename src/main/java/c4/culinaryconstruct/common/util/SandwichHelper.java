@@ -36,7 +36,8 @@ public class SandwichHelper {
     public static boolean isValidIngredient(ItemStack stack) {
         return (stack.getItem() instanceof ItemFood || (stack.getItem() instanceof ItemBlockSpecial
                 && ((ItemBlockSpecial) stack.getItem()).getBlock() instanceof BlockCake))
-                && !(stack.getItem() instanceof ItemSandwich) && !SandwichHelper.isBlacklistedIngredient(stack);
+                && !(stack.getItem() instanceof ItemSandwich && NBTHelper.getDepth(stack) >= ConfigHandler.maxSandwichNesting)
+		&& !SandwichHelper.isBlacklistedIngredient(stack);
     }
 
     public static boolean isBlacklistedIngredient(ItemStack stack) {
