@@ -8,6 +8,7 @@
 
 package c4.culinaryconstruct.common.util;
 
+import c4.culinaryconstruct.common.item.ItemSandwich;
 import ca.wescook.nutrition.Nutrition;
 import ca.wescook.nutrition.capabilities.INutrientManager;
 import ca.wescook.nutrition.nutrients.Nutrient;
@@ -33,8 +34,7 @@ public class NutritionHelper {
     private static final Capability<INutrientManager> NUTRITION_CAPABILITY = null;
 
     public static void applyNutrients(EntityPlayer player, ItemStack stack) {
-        NonNullList<ItemStack> ingredients = NBTHelper.getIngredientsList(stack, true);
-        List<Nutrient> foundNutrients = getNutrients(ingredients);
+        List<Nutrient> foundNutrients = getNutrients(stack);
         float nutritionValue = NutrientUtils.calculateNutrition(stack, foundNutrients);
 
         if (!player.world.isRemote) {
@@ -49,8 +49,7 @@ public class NutritionHelper {
     }
 
     public static String getNutrientsTooltip(ItemStack stack) {
-        NonNullList<ItemStack> ingredients = NBTHelper.getIngredientsList(stack, true);
-        List<Nutrient> foundNutrients = getNutrients(ingredients);
+        List<Nutrient> foundNutrients = getNutrients(stack);
         StringJoiner stringJoiner = new StringJoiner(", ");
 
         for (Nutrient nutrient : foundNutrients) {
@@ -71,11 +70,17 @@ public class NutritionHelper {
         }
     }
 
-    private static List<Nutrient> getNutrients(NonNullList<ItemStack> ingredients) {
+    private static List<Nutrient> getNutrients(ItemStack stack) {
+        NonNullList<ItemStack> ingredients = NBTHelper.getIngredientsList(stack, true);
         Set<Nutrient> foundNutrients = Sets.newHashSet();
 
         for (ItemStack ing : ingredients) {
-            foundNutrients.addAll(NutrientUtils.getFoodNutrients(ing));
+
+            if (ing.getItem() instanceof ItemSandwich) {
+                foundNutrients.addAll(getNutrients(ing));
+            } else {
+                foundNutrients.addAll(NutrientUtils.getFoodNutrients(ing));
+            }
         }
         return Lists.newArrayList(foundNutrients);
     }
