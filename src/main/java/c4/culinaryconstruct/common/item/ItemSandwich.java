@@ -77,8 +77,8 @@ public class ItemSandwich extends ItemFood {
         NonNullList<ItemStack> ingredients = NBTHelper.getIngredientsList(stack, false);
 
         if (!ingredients.isEmpty()) {
-            Map<String, Long> countMap = ingredients.stream().collect(Collectors.groupingBy(ItemStack::getDisplayName, Collectors
-                    .counting()));
+            Map<String, Long> countMap = ingredients.stream().filter(itemstack -> !(itemstack.getItem() instanceof ItemSandwich))
+                    .collect(Collectors.groupingBy(ItemStack::getDisplayName, Collectors.counting()));
             List<String> names = new ArrayList<>();
             if (!countMap.isEmpty()) {
                 for (String name : countMap.keySet()) {
@@ -86,20 +86,24 @@ public class ItemSandwich extends ItemFood {
                     StringBuilder builder = new StringBuilder();
 
                     if (size > 1L) {
-                        builder.append(new TextComponentTranslation("tooltip.culinaryconstruct.count." + size).getFormattedText());
+                        builder.append(new TextComponentTranslation("tooltip.culinaryconstruct.count." + size).getUnformattedText());
                         builder.append(" ");
                     }
                     builder.append(name);
                     names.add(builder.toString());
                 }
+                fullName.append(new TextComponentTranslation("tooltip.culinaryconstruct.list." + names.size(),
+                        names.toArray()).getUnformattedText());
+                fullName.append(" ");
             }
-            fullName.append(new TextComponentTranslation("tooltip.culinaryconstruct.list." + names.size(),
-                    names.toArray()).getFormattedText());
-            fullName.append(" ");
         }
-        fullName.append(String.join("", Collections.nCopies(Math.max(0, NBTHelper.getDepth(stack)),
-            new TextComponentTranslation("tooltip.culinaryconstruct.metaprefix").getFormattedText())));
-        fullName.append(new TextComponentTranslation(this.getUnlocalizedNameInefficiently(stack) + ".name").getFormattedText());
+        int depth = NBTHelper.getDepth(stack);
+
+        if (depth > 0) {
+            fullName.append(depth > 1 ? new TextComponentTranslation("tooltip.culinaryconstruct.metaplus", depth).getUnformattedText() :
+                    new TextComponentTranslation("tooltip.culinaryconstruct.meta").getUnformattedText());
+        }
+        fullName.append(new TextComponentTranslation(this.getUnlocalizedNameInefficiently(stack) + ".name").getUnformattedText());
         return fullName.toString();
     }
 
