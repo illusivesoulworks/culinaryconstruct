@@ -338,7 +338,11 @@ public class ContainerSandwichStation extends Container {
             if (ingredients != null) {
                 for (int i = 0; i < ingredients.getSlots(); i++) {
                     ItemStack slot = ingredients.getStackInSlot(i);
+                    ItemStack container = slot.getItem().getContainerItem(slot);
                     slot.shrink(1);
+                    if (!container.isEmpty()) {
+                        ingredients.insertItem(i, container, false);
+                    }
                 }
             }
             ContainerSandwichStation.this.updateSandwichOutput();
