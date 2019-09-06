@@ -61,9 +61,13 @@ public class BreadHelper {
             addBreadOre("foodCornBread");
         }
 
-	//XL Food Mod
+	      //XL Food Mod
         if (Loader.isModLoaded("xlfoodmod")) {
             addBreadItems("xlfoodmod:cheesy_bread", "xlfoodmod:potato_bread", "xlfoodmod:corn_bread", "xlfoodmod:rice_bread");
+        }
+
+        if (Loader.isModLoaded("gb")) {
+            addBreadItem("gb:glob_bread");
         }
 
         for (String s : ConfigHandler.breadItems) {
