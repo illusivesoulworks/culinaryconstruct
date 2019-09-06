@@ -23,9 +23,9 @@ import org.apache.logging.log4j.Logger;
 @Mod(   modid = CulinaryConstruct.MODID,
         name = CulinaryConstruct.NAME,
         version = CulinaryConstruct.VERSION,
-        dependencies = "required-after:forge@[14.23.4.2705,)",
+        dependencies = "required-after:forge@[14.23.5.2768,)",
         acceptedMinecraftVersions = "[1.12.2, 1.13)",
-        certificateFingerprint = "5d5b8aee896a4f5ea3f3114784742662a67ad32f")
+        certificateFingerprint = "@FINGERPRINT@")
 public class CulinaryConstruct
 {
     public static final String MODID = "culinaryconstruct";
