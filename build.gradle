@@ -8,8 +8,9 @@ buildscript {
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'idea'
 
-version = "1.3.3"
+version = "1.3.3.1"
 group = "c4.culinaryconstruct"
 archivesBaseName = "culinaryconstruct"
 
@@ -44,6 +45,12 @@ sourceSets {
     }
 }
 
+idea {
+    module {
+        inheritOutputDirs = true
+    }
+}
+
 processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
@@ -58,10 +65,6 @@ processResources {
     }
 }
 
-sourceSets {
-    main { output.resourcesDir = output.classesDir }
-}
-
 task signJar(type: SignJar, dependsOn: reobfJar) {
 
     onlyIf {
@@ -71,6 +74,7 @@ task signJar(type: SignJar, dependsOn: reobfJar) {
     keyStore = project.findProperty('keyStore')
     alias = project.findProperty('keyStoreAlias')
     storePass = project.findProperty('keyStorePass')
+    keyPass = project.findProperty('keyStoreKeyPass')
     inputFile = jar.archivePath
     outputFile = jar.archivePath
 }
