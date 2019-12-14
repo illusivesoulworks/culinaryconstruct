@@ -17,16 +17,19 @@
  * License along with Culinary Construct.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package top.theillusivec4.culinaryconstruct.common;
+package top.theillusivec4.culinaryconstruct.common.registry;
 
 import net.minecraft.block.Block;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import top.theillusivec4.culinaryconstruct.common.block.CulinaryStationBlock;
+import top.theillusivec4.culinaryconstruct.common.inventory.CulinaryStationContainer;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class RegistryEventsHandler {
@@ -42,5 +45,11 @@ public class RegistryEventsHandler {
         (new Item.Properties()).group(ItemGroup.DECORATIONS));
     culinaryStation.setRegistryName(CulinaryStationBlock.REGISTRY_NAME);
     evt.getRegistry().register(culinaryStation);
+  }
+
+  @SubscribeEvent
+  public static void onContainerRegistry(final RegistryEvent.Register<ContainerType<?>> evt) {
+    evt.getRegistry().register(IForgeContainerType.create(CulinaryStationContainer::new)
+        .setRegistryName(CulinaryStationContainer.REGISTRY_NAME));
   }
 }

@@ -17,12 +17,14 @@
  * License along with Culinary Construct.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package top.theillusivec4.culinaryconstruct.common;
+package top.theillusivec4.culinaryconstruct.common.registry;
 
 import net.minecraft.block.Block;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraftforge.registries.ObjectHolder;
 import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
 import top.theillusivec4.culinaryconstruct.common.block.CulinaryStationBlock;
+import top.theillusivec4.culinaryconstruct.common.inventory.CulinaryStationContainer;
 
 @ObjectHolder(CulinaryConstruct.MODID)
 public class CulinaryConstructRegistry {
@@ -30,7 +32,11 @@ public class CulinaryConstructRegistry {
   @ObjectHolder(CulinaryStationBlock.REGISTRY_NAME)
   public static final Block CULINARY_STATION;
 
+  @ObjectHolder(CulinaryStationContainer.REGISTRY_NAME)
+  public static final ContainerType<CulinaryStationContainer> CULINARY_STATION_CONTAINER;
+
   static {
     CULINARY_STATION = null;
+    CULINARY_STATION_CONTAINER = null;
   }
 }

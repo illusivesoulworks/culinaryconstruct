@@ -19,12 +19,16 @@
 
 package top.theillusivec4.culinaryconstruct;
 
+import net.minecraft.client.gui.ScreenManager;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import top.theillusivec4.culinaryconstruct.client.CulinaryScreen;
+import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 
 @Mod(CulinaryConstruct.MODID)
 public class CulinaryConstruct {
@@ -35,9 +39,15 @@ public class CulinaryConstruct {
   public CulinaryConstruct() {
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     eventBus.addListener(this::setup);
+    eventBus.addListener(this::clientSetup);
   }
 
   private void setup(final FMLCommonSetupEvent evt) {
 
+  }
+
+  private void clientSetup(final FMLClientSetupEvent evt) {
+    ScreenManager
+        .registerFactory(CulinaryConstructRegistry.CULINARY_STATION_CONTAINER, CulinaryScreen::new);
   }
 }
