@@ -1,0 +1,12 @@
+{
+	"parent": "block/cube",
+	"textures": {
+      "particle": "culinaryconstruct:block/culinary_station_front",
+      "down": "minecraft:block/oak_planks",
+      "up": "culinaryconstruct:block/culinary_station_top",
+      "north": "culinaryconstruct:block/culinary_station_front",
+      "east": "culinaryconstruct:block/culinary_station_side",
+      "south": "culinaryconstruct:block/culinary_station_front",
+      "west": "culinaryconstruct:block/culinary_station_side"
+	}
+}

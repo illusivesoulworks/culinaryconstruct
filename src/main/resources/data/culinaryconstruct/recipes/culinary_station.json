@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "station",
+  "pattern": [
+    "s",
+    "w"
+  ],
+  "key": {
+    "s": {
+      "tag": "minecraft:slabs"
+    },
+    "w": {
+      "item": "minecraft:crafting_table"
+    }
+  },
+  "result": {
+    "item": "culinaryconstruct:culinary_station"
+  }
+}

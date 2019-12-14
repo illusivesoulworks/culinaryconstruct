@@ -15,7 +15,7 @@ culinaryconstruct.general.maxsandwichnesting.tooltip=The maximum number of times
 #################
 #    General    #
 #################
-tile.culinaryconstruct.sandwich_station.name=Sandwich Station
+block.culinaryconstruct.culinary_station=Culinary Station
 
 item.culinaryconstruct.sandwich.name=Sandwich
 
