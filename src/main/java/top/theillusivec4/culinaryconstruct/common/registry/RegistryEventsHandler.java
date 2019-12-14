@@ -24,12 +24,14 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import top.theillusivec4.culinaryconstruct.common.block.CulinaryStationBlock;
 import top.theillusivec4.culinaryconstruct.common.inventory.CulinaryStationContainer;
+import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class RegistryEventsHandler {
@@ -51,5 +53,13 @@ public class RegistryEventsHandler {
   public static void onContainerRegistry(final RegistryEvent.Register<ContainerType<?>> evt) {
     evt.getRegistry().register(IForgeContainerType.create(CulinaryStationContainer::new)
         .setRegistryName(CulinaryStationContainer.REGISTRY_NAME));
+  }
+
+  @SuppressWarnings("ConstantConditions")
+  @SubscribeEvent
+  public static void onTileEntityRegistry(final RegistryEvent.Register<TileEntityType<?>> evt) {
+    evt.getRegistry().register(TileEntityType.Builder
+        .create(CulinaryStationTileEntity::new, CulinaryConstructRegistry.CULINARY_STATION)
+        .build(null).setRegistryName(CulinaryStationTileEntity.REGISTRY_NAME));
   }
 }

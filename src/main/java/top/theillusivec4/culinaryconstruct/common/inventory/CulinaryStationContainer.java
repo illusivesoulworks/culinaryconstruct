@@ -19,14 +19,24 @@
 
 package top.theillusivec4.culinaryconstruct.common.inventory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IWorldPosCallable;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.SlotItemHandler;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
+import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
 
 public class CulinaryStationContainer extends Container {
 
@@ -34,16 +44,42 @@ public class CulinaryStationContainer extends Container {
 
   private final IWorldPosCallable worldPosCallable;
 
+  private List<LazyOptional<IItemHandler>> handlers = new ArrayList<>(
+      Arrays.asList(LazyOptional.empty(), LazyOptional.empty(), LazyOptional.empty()));
+
   public CulinaryStationContainer(int windowId, PlayerInventory playerInventory,
-      PacketBuffer extraData) {
-    this(windowId, playerInventory, IWorldPosCallable.DUMMY);
+      PacketBuffer unused) {
+    this(windowId, playerInventory, IWorldPosCallable.DUMMY, null);
   }
 
   public CulinaryStationContainer(int windowId, PlayerInventory playerInventory,
-      IWorldPosCallable worldPosCallable) {
+      IWorldPosCallable worldPosCallable, @Nullable TileEntity tileEntity) {
     super(CulinaryConstructRegistry.CULINARY_STATION_CONTAINER, windowId);
-    addPlayerSlots(playerInventory);
     this.worldPosCallable = worldPosCallable;
+    this.init(tileEntity);
+    addPlayerSlots(playerInventory);
+    addFoodSlots();
+  }
+
+  private void init(@Nullable TileEntity tileEntity) {
+    if (tileEntity instanceof CulinaryStationTileEntity) {
+      handlers = ((CulinaryStationTileEntity) tileEntity).handlers;
+    }
+  }
+
+  private void addFoodSlots() {
+    IItemHandler inputHandler = handlers.get(0).map(itemHandler -> itemHandler).orElse(new ItemStackHandler());
+    IItemHandler ingredientsHandler = handlers.get(1).map(itemHandler -> itemHandler).orElse(new ItemStackHandler(5));
+    IItemHandler outputHandler = handlers.get(2).map(itemHandler -> itemHandler).orElse(new ItemStackHandler());
+    this.addSlot(new SlotItemHandler(inputHandler, 0, 17, 56));
+
+    this.addSlot(new SlotItemHandler(ingredientsHandler, 0, 71, 38));
+    this.addSlot(new SlotItemHandler(ingredientsHandler, 1, 89, 38));
+
+    for (int i = 2; i < ingredientsHandler.getSlots(); i++) {
+      this.addSlot(new SlotItemHandler(ingredientsHandler, i, 62 + (i - 2) * 18, 56));
+    }
+    this.addSlot(new SlotItemHandler(outputHandler, 0, 144, 56));
   }
 
   private void addPlayerSlots(PlayerInventory playerInventory) {
