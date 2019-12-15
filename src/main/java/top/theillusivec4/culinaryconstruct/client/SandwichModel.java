@@ -30,10 +30,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -143,8 +145,8 @@ public class SandwichModel implements IUnbakedModel {
         List<BakedQuad> quads = model1.getQuads(null, null, random, EmptyModelData.INSTANCE);
 
         for (BakedQuad quad : quads) {
-          ColorTransformer transformer = new ColorTransformer(
-              getAverageColorFromSprite(ingredients.get(i)), quad.getFormat());
+          ColorTransformer transformer = new ColorTransformer(getDominantColor(ingredients.get(i)),
+              quad.getFormat());
           quad.pipe(transformer);
           builder.add(transformer.build());
         }
@@ -155,7 +157,7 @@ public class SandwichModel implements IUnbakedModel {
         transform.isIdentity());
   }
 
-  private int getAverageColorFromSprite(TextureAtlasSprite sprite) {
+  private int getDominantColor(TextureAtlasSprite sprite) {
     int iconWidth = sprite.getWidth();
     int iconHeight = sprite.getHeight();
     int frameCount = sprite.getFrameCount();
@@ -163,32 +165,32 @@ public class SandwichModel implements IUnbakedModel {
     if (iconWidth <= 0 || iconHeight <= 0 || frameCount <= 0) {
       return 0xFFFFFF;
     }
-    int rBucket = 0;
-    int gBucket = 0;
-    int bBucket = 0;
-    int passes = 0;
+    TreeMap<Integer, Integer> counts = new TreeMap<>();
 
     for (int f = 0; f < frameCount; f++) {
       for (int v = 0; v < iconWidth; v++) {
         for (int u = 0; u < iconHeight; u++) {
-          int j = sprite.getPixelRGBA(f, v, u);
-          Color color = new Color(j, true);
+          int rgba = sprite.getPixelRGBA(f, v, u);
+          int alpha = rgba >> 24 & 0xFF;
 
-          if (color.getAlpha() > 0) {
-            color.brighter();
-            // No idea why the r and b values are reversed, but they are
-            rBucket += color.getBlue();
-            gBucket += color.getGreen();
-            bBucket += color.getRed();
-            passes++;
+          if (alpha > 0) {
+            counts.merge(rgba, 1, (color, count) -> count + 1);
           }
         }
       }
     }
-    rBucket /= passes;
-    gBucket /= passes;
-    bBucket /= passes;
-    return new Color(rBucket, gBucket, bBucket).getRGB();
+    int dominantColor = 0;
+    int dominantSum = 0;
+
+    for (Entry<Integer, Integer> entry : counts.entrySet()) {
+      if (entry.getValue() > dominantSum) {
+        dominantSum = entry.getValue();
+        dominantColor = entry.getKey();
+      }
+    }
+    Color color = new Color(dominantColor, true);
+    // No idea why the r and b values are reversed, but they are
+    return new Color(color.getBlue(), color.getGreen(), color.getRed()).brighter().getRGB();
   }
 
   public static final class BakedSandwichOverrideHandler extends ItemOverrideList {
