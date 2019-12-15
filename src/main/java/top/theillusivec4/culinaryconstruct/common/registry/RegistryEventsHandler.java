@@ -32,6 +32,7 @@ import net.minecraftforge.fml.common.Mod;
 import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
 import top.theillusivec4.culinaryconstruct.common.block.CulinaryStationBlock;
 import top.theillusivec4.culinaryconstruct.common.inventory.CulinaryStationContainer;
+import top.theillusivec4.culinaryconstruct.common.item.SandwichItem;
 import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -47,7 +48,7 @@ public class RegistryEventsHandler {
     BlockItem culinaryStation = new BlockItem(CulinaryConstructRegistry.CULINARY_STATION,
         (new Item.Properties()).group(ItemGroup.DECORATIONS));
     culinaryStation.setRegistryName(RegistryReference.CULINARY_STATION);
-    evt.getRegistry().register(culinaryStation);
+    evt.getRegistry().registerAll(culinaryStation, new SandwichItem());
   }
 
   @SubscribeEvent

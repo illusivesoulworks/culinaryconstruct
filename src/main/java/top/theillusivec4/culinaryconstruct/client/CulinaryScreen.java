@@ -69,7 +69,7 @@ public class CulinaryScreen extends ContainerScreen<CulinaryStationContainer> {
       this.blit(i + 59, j + 16, 0, this.ySize + (this.container.getSlot(0).getHasStack() ? 0 : 16),
           110, 16);
 
-      if ((this.container.getSlot(0).getHasStack() || this.container.getSlot(1).getHasStack()) && !this.container.getSlot(2).getHasStack()) {
+      if ((this.container.getSlot(0).getHasStack() || this.container.getSlot(1).getHasStack()) && !this.container.getSlot(6).getHasStack()) {
         this.blit(i + 115, j + 54, this.xSize, 0, 28, 21);
       }
     }

@@ -21,6 +21,7 @@ package top.theillusivec4.culinaryconstruct.common.registry;
 
 import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
@@ -39,9 +40,13 @@ public class CulinaryConstructRegistry {
   @ObjectHolder(RegistryReference.CULINARY_STATION)
   public static final TileEntityType<CulinaryStationTileEntity> CULINARY_STATION_TE;
 
+  @ObjectHolder(RegistryReference.SANDWICH)
+  public static final Item SANDWICH;
+
   static {
     CULINARY_STATION = null;
     CULINARY_STATION_CONTAINER = null;
     CULINARY_STATION_TE = null;
+    SANDWICH = null;
   }
 }

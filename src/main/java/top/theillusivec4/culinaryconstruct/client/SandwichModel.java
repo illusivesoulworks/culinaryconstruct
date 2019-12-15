@@ -19,14 +19,19 @@
 //
 //package top.theillusivec4.culinaryconstruct.client;
 //
+//import com.google.common.cache.Cache;
+//import com.google.common.cache.CacheBuilder;
 //import com.google.common.collect.ImmutableList;
 //import com.google.common.collect.ImmutableMap;
 //import com.google.common.collect.ImmutableSet;
 //import java.util.Collection;
 //import java.util.List;
 //import java.util.Map;
+//import java.util.Objects;
 //import java.util.Random;
 //import java.util.Set;
+//import java.util.concurrent.ExecutionException;
+//import java.util.concurrent.TimeUnit;
 //import java.util.function.Function;
 //import javax.annotation.Nonnull;
 //import javax.annotation.Nullable;
@@ -42,22 +47,24 @@
 //import net.minecraft.client.renderer.vertex.VertexFormat;
 //import net.minecraft.client.renderer.vertex.VertexFormatElement;
 //import net.minecraft.entity.LivingEntity;
-//import net.minecraft.fluid.Fluid;
 //import net.minecraft.item.ItemStack;
+//import net.minecraft.nbt.CompoundNBT;
+//import net.minecraft.resources.IResourceManager;
 //import net.minecraft.util.ResourceLocation;
 //import net.minecraft.world.World;
 //import net.minecraftforge.client.model.BakedItemModel;
+//import net.minecraftforge.client.model.ICustomModelLoader;
 //import net.minecraftforge.client.model.ItemLayerModel;
-//import net.minecraftforge.client.model.ModelDynBucket;
-//import net.minecraftforge.client.model.ModelDynBucket.BakedDynBucket;
 //import net.minecraftforge.client.model.SimpleModelState;
 //import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 //import net.minecraftforge.client.model.pipeline.VertexTransformer;
 //import net.minecraftforge.common.model.TRSRTransformation;
-//import net.minecraftforge.fluids.FluidUtil;
 //import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
+//import top.theillusivec4.culinaryconstruct.common.registry.RegistryReference;
 //
 //public class SandwichModel implements IUnbakedModel {
+//
+//  public static final IUnbakedModel MODEL = new SandwichModel();
 //
 //  @Nullable
 //  private final List<TextureAtlasSprite> ingredients;
@@ -132,49 +139,102 @@
 //    return new BakedSandwichModel(builder.build(), particleSprite, format);
 //  }
 //
-//  private static final class BakedSandwichOverrideHandler extends ItemOverrideList {
+//  public enum Loader implements ICustomModelLoader {
+//    INSTANCE;
 //
-//    private final ModelBakery bakery;
-//
-//    private BakedSandwichOverrideHandler(ModelBakery bakery) {
-//      this.bakery = bakery;
+//    @Override
+//    public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {
+//      //NO-OP
 //    }
 //
 //    @Override
-//    public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel,
-//        @Nonnull ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
-//      return FluidUtil.getFluidContained(stack).map(fluidStack -> {
-//        BakedSandwichModel model = (BakedSandwichModel) originalModel;
+//    public boolean accepts(ResourceLocation modelLocation) {
+//      return modelLocation.toString().equals(RegistryReference.SANDWICH);
+//    }
 //
-//        Fluid fluid = fluidStack.getFluid();
-//        String name = fluid.getRegistryName().toString();
+//    @Nonnull
+//    @Override
+//    public IUnbakedModel loadModel(@Nonnull ResourceLocation modelLocation) {
+//      return MODEL;
+//    }
+//  }
 //
-//        if (!model.cache.containsKey(name)) {
-//          IUnbakedModel parent = model.parent.process(ImmutableMap.of("fluid", name));
-//          Function<ResourceLocation, TextureAtlasSprite> textureGetter;
-//          textureGetter = location -> Minecraft.getInstance().getTextureMap()
-//              .getAtlasSprite(location.toString());
+//  private static final class BakedSandwichOverrideHandler extends ItemOverrideList {
 //
-//          IBakedModel bakedModel = parent
-//              .bake(bakery, textureGetter, new SimpleModelState(model.transforms), model.format);
-//          model.cache.put(name, bakedModel);
-//          return bakedModel;
+//    private Cache<CacheKey, IBakedModel> bakedModelCache = CacheBuilder.newBuilder()
+//        .maximumSize(1000).expireAfterWrite(5, TimeUnit.MINUTES).build();
+//
+//    public static final BakedSandwichOverrideHandler INSTANCE = new BakedSandwichOverrideHandler();
+//
+//    private BakedSandwichOverrideHandler() {
+//      super(ImmutableList.of());
+//    }
+//
+//    @Nonnull
+//    @Override
+//    public IBakedModel getModelWithOverrides(@Nonnull IBakedModel model, @Nonnull ItemStack stack, @Nullable World worldIn, @Nullable LivingEntity entityIn) {
+//      CompoundNBT data = NBTHelper.getCompoundSafe(stack);
+//      IBakedModel output = model;
+//
+//      if (!data.isEmpty()) {
+//        BakedSandwichModel original = (BakedSandwichModel) model;
+//        CacheKey key = getCacheKey(stack, original);
+//        try {
+//          output = bakedModelCache.get(key, () -> getBakedModel(stack, original));
+//        } catch (ExecutionException e) {
+//          CulinaryConstruct.LOGGER.error("Error baking sandwich model!");
 //        }
+//      }
+//      return output;
+//    }
 //
-//        return model.cache.get(name);
-//      })
-//          // not a fluid item apparently
-//          .orElse(originalModel); // empty bucket
+//    protected IBakedModel getBakedModel(ItemStack stack, BakedSandwichModel original) {
+//
+//      ImmutableList.Builder<TextureAtlasSprite> builder = ImmutableList.builder();
+//      NonNullList<ItemStack> ingredients = NBTHelper.getIngredientsList(stack, false);
+//      for (ItemStack ing : ingredients) {
+//        builder.add(Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(ing)
+//            .getParticleTexture());
+//      }
+//      int size = NBTHelper.getSize(stack);
+//      List<Integer> list = new ArrayList<>();
+//      switch (size) {
+//        case 1:
+//          list.add(2);
+//          break;
+//        case 2:
+//          list.addAll(Arrays.asList(1, 2));
+//          break;
+//        case 3:
+//          list.addAll(Arrays.asList(1, 2, 3));
+//          break;
+//        case 4:
+//          list.addAll(Arrays.asList(0, 1, 2, 3));
+//          break;
+//        case 5:
+//          list.addAll(Arrays.asList(0, 1, 2, 3, 4));
+//          break;
+//      }
+//      IModel parent = new ModelSandwich(builder.build(), list);
+//      Function<ResourceLocation, TextureAtlasSprite> textureGetter;
+//      textureGetter = location -> Minecraft.getMinecraft().getTextureMapBlocks()
+//          .getAtlasSprite(location.toString());
+//
+//      return parent.bake(new SimpleModelState(original.transforms), original.format, textureGetter);
+//    }
+//
+//    CacheKey getCacheKey(ItemStack stack, BakedSandwichModel original) {
+//      return new CacheKey(original, stack);
 //    }
 //  }
 //
 //  private static final class BakedSandwichModel extends BakedItemModel {
 //
-//    private final ModelDynBucket parent;
+//    private final SandwichModel parent;
 //    private final Map<String, IBakedModel> cache; // contains all the baked models since they'll never change
 //    private final VertexFormat format;
 //
-//    BakedSandwichModel(ModelBakery bakery, ModelDynBucket parent, ImmutableList<BakedQuad> quads,
+//    BakedSandwichModel(ModelBakery bakery, SandwichModel parent, ImmutableList<BakedQuad> quads,
 //        TextureAtlasSprite particle, VertexFormat format,
 //        ImmutableMap<TransformType, TRSRTransformation> transforms, Map<String, IBakedModel> cache,
 //        boolean untransformed) {
@@ -182,6 +242,43 @@
 //      this.format = format;
 //      this.parent = parent;
 //      this.cache = cache;
+//    }
+//  }
+//
+//  //Cache Key from Tinkers' Construct
+//  protected static class CacheKey {
+//
+//    final IBakedModel parent;
+//    final CompoundNBT data;
+//
+//    CacheKey(IBakedModel parent, ItemStack stack) {
+//      this.parent = parent;
+//      this.data = NBTHelper.getCompoundSafe(stack);
+//    }
+//
+//    @Override
+//    public boolean equals(Object o) {
+//
+//      if (this == o) {
+//        return true;
+//      }
+//
+//      if (o == null || getClass() != o.getClass()) {
+//        return false;
+//      }
+//      CacheKey cacheKey = (CacheKey) o;
+//
+//      if (parent != null ? parent != cacheKey.parent : cacheKey.parent != null) {
+//        return false;
+//      }
+//      return Objects.equals(data, cacheKey.data);
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//      int result = parent != null ? parent.hashCode() : 0;
+//      result = 31 * result + (data != null ? data.hashCode() : 0);
+//      return result;
 //    }
 //  }
 //

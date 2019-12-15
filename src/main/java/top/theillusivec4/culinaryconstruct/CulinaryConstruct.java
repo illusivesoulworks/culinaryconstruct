@@ -20,7 +20,10 @@
 package top.theillusivec4.culinaryconstruct;
 
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -49,5 +52,14 @@ public class CulinaryConstruct {
   private void clientSetup(final FMLClientSetupEvent evt) {
     ScreenManager
         .registerFactory(CulinaryConstructRegistry.CULINARY_STATION_CONTAINER, CulinaryScreen::new);
+  }
+
+  @Mod.EventBusSubscriber(modid = MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+  public static class ClientProxy {
+
+    @SubscribeEvent
+    public static void registerModels(final ModelRegistryEvent evt) {
+//      ModelLoaderRegistry.registerLoader(Loader.INSTANCE);
+    }
   }
 }
