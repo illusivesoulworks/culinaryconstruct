@@ -19,14 +19,38 @@
 
 package top.theillusivec4.culinaryconstruct.common.item;
 
+import javax.annotation.Nonnull;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.util.NonNullList;
 import top.theillusivec4.culinaryconstruct.common.registry.RegistryReference;
+import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
 public class SandwichItem extends Item {
 
   public SandwichItem() {
     super(new Item.Properties().group(ItemGroup.FOOD));
     this.setRegistryName(RegistryReference.SANDWICH);
+  }
+
+  public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
+    if (this.isInGroup(group)) {
+      ItemStack sub = new ItemStack(this);
+      CulinaryNBTHelper.setTagSize(sub, 5);
+      CulinaryNBTHelper.setTagIngredientsList(sub, NonNullList.from(ItemStack.EMPTY,
+          new ItemStack(Items.NETHER_STAR),
+          new ItemStack(Items.NETHER_STAR),
+          new ItemStack(Items.NETHER_STAR),
+          new ItemStack(Items.NETHER_STAR),
+          new ItemStack(Items.NETHER_STAR),
+          new ItemStack(Items.BREAD)));
+      CulinaryNBTHelper.setTagFood(sub, 20);
+      CulinaryNBTHelper.setTagDepth(sub, 0);
+      CulinaryNBTHelper.setTagSaturation(sub, 1.0F);
+      CulinaryNBTHelper.setTagBonus(sub, 2);
+      items.add(sub);
+    }
   }
 }

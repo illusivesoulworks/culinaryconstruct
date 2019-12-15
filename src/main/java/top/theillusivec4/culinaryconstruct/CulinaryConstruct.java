@@ -20,8 +20,18 @@
 package top.theillusivec4.culinaryconstruct;
 
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.renderer.model.BlockModel;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.IUnbakedModel;
+import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.client.renderer.model.SimpleBakedModel;
+import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -31,7 +41,11 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import top.theillusivec4.culinaryconstruct.client.CulinaryScreen;
+import top.theillusivec4.culinaryconstruct.client.SandwichModel;
+import top.theillusivec4.culinaryconstruct.client.SandwichModel.BakedSandwichModel;
+import top.theillusivec4.culinaryconstruct.client.SandwichModel.BakedSandwichOverrideHandler;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
+import top.theillusivec4.culinaryconstruct.common.registry.RegistryReference;
 
 @Mod(CulinaryConstruct.MODID)
 public class CulinaryConstruct {
@@ -58,8 +72,24 @@ public class CulinaryConstruct {
   public static class ClientProxy {
 
     @SubscribeEvent
-    public static void registerModels(final ModelRegistryEvent evt) {
-//      ModelLoaderRegistry.registerLoader(Loader.INSTANCE);
+    public static void bakeModels(final ModelBakeEvent evt) {
+      ModelResourceLocation rl = new ModelResourceLocation(RegistryReference.SANDWICH, "inventory");
+      SimpleBakedModel original = (SimpleBakedModel) evt.getModelRegistry().get(rl);
+      BlockModel unbaked = (BlockModel) evt.getModelLoader().getUnbakedModel(rl);
+      IBakedModel model = new BakedSandwichModel(original, new BakedSandwichOverrideHandler(evt.getModelLoader(), unbaked));
+      evt.getModelRegistry().put(rl, model);
+    }
+
+    @SubscribeEvent
+    public static void registerTextures(final TextureStitchEvent.Pre evt) {
+      AtlasTexture map = evt.getMap();
+
+      if (map.getBasePath().equals("textures")) {
+        for (int i = 0; i < 5; i++) {
+          evt.addSprite(new ResourceLocation(CulinaryConstruct.MODID, "item/bread" + i));
+          evt.addSprite(new ResourceLocation(CulinaryConstruct.MODID, "item/layer" + i));
+        }
+      }
     }
   }
 }
