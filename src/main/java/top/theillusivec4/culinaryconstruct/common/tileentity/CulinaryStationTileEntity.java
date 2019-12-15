@@ -19,11 +19,9 @@
 
 package top.theillusivec4.culinaryconstruct.common.tileentity;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
@@ -35,14 +33,46 @@ import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegi
 
 public class CulinaryStationTileEntity extends TileEntity {
 
-  public static final String REGISTRY_NAME = "culinary_station_te";
+  protected final LazyOptional<IItemHandler> holderOpt;
+  protected final LazyOptional<IItemHandler> ingredientsOpt;
+  protected final LazyOptional<IItemHandler> outputOpt;
 
-  public final List<LazyOptional<IItemHandler>> handlers = new ArrayList<>(Arrays
-      .asList(LazyOptional.of(ItemStackHandler::new),
-          LazyOptional.of(() -> new ItemStackHandler(5)), LazyOptional.of(ItemStackHandler::new)));
+  public final ItemStackHandler holder;
+  public final ItemStackHandler ingredients;
+  public final ItemStackHandler output;
 
   public CulinaryStationTileEntity() {
     super(CulinaryConstructRegistry.CULINARY_STATION_TE);
+    this.holder = new CulinaryStackHandler();
+    this.ingredients = new CulinaryStackHandler(5);
+    this.output = new CulinaryStackHandler();
+    this.holderOpt = LazyOptional.of(() -> holder);
+    this.ingredientsOpt = LazyOptional.of(() -> ingredients);
+    this.outputOpt = LazyOptional.of(() -> output);
+  }
+
+  @Override
+  public void read(@Nonnull CompoundNBT compound) {
+    super.read(compound);
+    if (compound.contains("Holder", 10)) {
+      this.holder.deserializeNBT(compound.getCompound("Holder"));
+    }
+    if (compound.contains("Ingredients", 10)) {
+      this.ingredients.deserializeNBT(compound.getCompound("Ingredients"));
+    }
+    if (compound.contains("Output", 10)) {
+      this.output.deserializeNBT(compound.getCompound("Output"));
+    }
+  }
+
+  @Nonnull
+  @Override
+  public CompoundNBT write(@Nonnull CompoundNBT compound) {
+    super.write(compound);
+    compound.put("Holder", this.holder.serializeNBT());
+    compound.put("Ingredients", this.ingredients.serializeNBT());
+    compound.put("Output", this.output.serializeNBT());
+    return compound;
   }
 
   @Nonnull
@@ -52,11 +82,12 @@ public class CulinaryStationTileEntity extends TileEntity {
     if (!this.removed && facing != null
         && capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
       if (facing == Direction.UP) {
-        return handlers.get(0).cast();
+        return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(capability, this.holderOpt);
       } else if (facing == Direction.DOWN) {
-        return handlers.get(2).cast();
+        return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(capability, this.outputOpt);
       } else {
-        return handlers.get(1).cast();
+        return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
+            .orEmpty(capability, this.ingredientsOpt);
       }
     }
     return super.getCapability(capability, facing);
@@ -65,9 +96,25 @@ public class CulinaryStationTileEntity extends TileEntity {
   @Override
   public void remove() {
     super.remove();
+    holderOpt.invalidate();
+    ingredientsOpt.invalidate();
+    outputOpt.invalidate();
+  }
 
-    for (LazyOptional<IItemHandler> handler : handlers) {
-      handler.invalidate();
+  private class CulinaryStackHandler extends ItemStackHandler {
+
+    public CulinaryStackHandler() {
+      super();
+    }
+
+    public CulinaryStackHandler(int size) {
+      super(size);
+    }
+
+    @Override
+    protected void onContentsChanged(int slot) {
+      super.onContentsChanged(slot);
+      CulinaryStationTileEntity.this.markDirty();
     }
   }
 }

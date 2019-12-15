@@ -21,24 +21,22 @@ package top.theillusivec4.culinaryconstruct.common.registry;
 
 import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
-import top.theillusivec4.culinaryconstruct.common.block.CulinaryStationBlock;
 import top.theillusivec4.culinaryconstruct.common.inventory.CulinaryStationContainer;
 import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
 
 @ObjectHolder(CulinaryConstruct.MODID)
 public class CulinaryConstructRegistry {
 
-  @ObjectHolder(CulinaryStationBlock.REGISTRY_NAME)
+  @ObjectHolder(RegistryReference.CULINARY_STATION)
   public static final Block CULINARY_STATION;
 
-  @ObjectHolder(CulinaryStationContainer.REGISTRY_NAME)
+  @ObjectHolder(RegistryReference.CULINARY_STATION)
   public static final ContainerType<CulinaryStationContainer> CULINARY_STATION_CONTAINER;
 
-  @ObjectHolder(CulinaryStationTileEntity.REGISTRY_NAME)
+  @ObjectHolder(RegistryReference.CULINARY_STATION)
   public static final TileEntityType<CulinaryStationTileEntity> CULINARY_STATION_TE;
 
   static {

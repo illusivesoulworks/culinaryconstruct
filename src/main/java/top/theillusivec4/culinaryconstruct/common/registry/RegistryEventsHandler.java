@@ -29,6 +29,7 @@ import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
 import top.theillusivec4.culinaryconstruct.common.block.CulinaryStationBlock;
 import top.theillusivec4.culinaryconstruct.common.inventory.CulinaryStationContainer;
 import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
@@ -45,14 +46,14 @@ public class RegistryEventsHandler {
   public static void onItemsRegistry(final RegistryEvent.Register<Item> evt) {
     BlockItem culinaryStation = new BlockItem(CulinaryConstructRegistry.CULINARY_STATION,
         (new Item.Properties()).group(ItemGroup.DECORATIONS));
-    culinaryStation.setRegistryName(CulinaryStationBlock.REGISTRY_NAME);
+    culinaryStation.setRegistryName(RegistryReference.CULINARY_STATION);
     evt.getRegistry().register(culinaryStation);
   }
 
   @SubscribeEvent
   public static void onContainerRegistry(final RegistryEvent.Register<ContainerType<?>> evt) {
     evt.getRegistry().register(IForgeContainerType.create(CulinaryStationContainer::new)
-        .setRegistryName(CulinaryStationContainer.REGISTRY_NAME));
+        .setRegistryName(RegistryReference.CULINARY_STATION));
   }
 
   @SuppressWarnings("ConstantConditions")
@@ -60,6 +61,6 @@ public class RegistryEventsHandler {
   public static void onTileEntityRegistry(final RegistryEvent.Register<TileEntityType<?>> evt) {
     evt.getRegistry().register(TileEntityType.Builder
         .create(CulinaryStationTileEntity::new, CulinaryConstructRegistry.CULINARY_STATION)
-        .build(null).setRegistryName(CulinaryStationTileEntity.REGISTRY_NAME));
+        .build(null).setRegistryName(RegistryReference.CULINARY_STATION));
   }
 }

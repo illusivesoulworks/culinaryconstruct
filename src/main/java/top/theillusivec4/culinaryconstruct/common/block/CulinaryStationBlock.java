@@ -37,18 +37,17 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import top.theillusivec4.culinaryconstruct.common.inventory.CulinaryStationContainer;
+import top.theillusivec4.culinaryconstruct.common.registry.RegistryReference;
 import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
 
 public class CulinaryStationBlock extends Block {
-
-  public static final String REGISTRY_NAME = "culinary_station";
 
   private static final ITextComponent CONTAINER_NAME = new TranslationTextComponent(
       "culinaryconstruct.culinary_container");
 
   public CulinaryStationBlock() {
     super(Block.Properties.create(Material.WOOD).hardnessAndResistance(2.5F).sound(SoundType.WOOD));
-    this.setRegistryName(REGISTRY_NAME);
+    this.setRegistryName(RegistryReference.CULINARY_STATION);
   }
 
   @SuppressWarnings("deprecation")

@@ -19,33 +19,30 @@
 
 package top.theillusivec4.culinaryconstruct.common.inventory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IWorldPosCallable;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
+import top.theillusivec4.culinaryconstruct.common.tag.CulinaryTags;
 import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
 
 public class CulinaryStationContainer extends Container {
 
-  public static final String REGISTRY_NAME = "culinary_station_container";
-
   private final IWorldPosCallable worldPosCallable;
 
-  private List<LazyOptional<IItemHandler>> handlers = new ArrayList<>(
-      Arrays.asList(LazyOptional.empty(), LazyOptional.empty(), LazyOptional.empty()));
+  private IItemHandler holder = new ItemStackHandler();
+  private IItemHandler ingredients = new ItemStackHandler(5);
+  private IItemHandler output = new ItemStackHandler();
 
   public CulinaryStationContainer(int windowId, PlayerInventory playerInventory,
       PacketBuffer unused) {
@@ -57,41 +54,41 @@ public class CulinaryStationContainer extends Container {
     super(CulinaryConstructRegistry.CULINARY_STATION_CONTAINER, windowId);
     this.worldPosCallable = worldPosCallable;
     this.init(tileEntity);
-    addPlayerSlots(playerInventory);
     addFoodSlots();
+    addPlayerSlots(playerInventory);
   }
 
   private void init(@Nullable TileEntity tileEntity) {
     if (tileEntity instanceof CulinaryStationTileEntity) {
-      handlers = ((CulinaryStationTileEntity) tileEntity).handlers;
+      CulinaryStationTileEntity te = (CulinaryStationTileEntity) tileEntity;
+      this.holder = te.holder;
+      this.ingredients = te.ingredients;
+      this.output = te.output;
     }
   }
 
   private void addFoodSlots() {
-    IItemHandler inputHandler = handlers.get(0).map(itemHandler -> itemHandler).orElse(new ItemStackHandler());
-    IItemHandler ingredientsHandler = handlers.get(1).map(itemHandler -> itemHandler).orElse(new ItemStackHandler(5));
-    IItemHandler outputHandler = handlers.get(2).map(itemHandler -> itemHandler).orElse(new ItemStackHandler());
-    this.addSlot(new SlotItemHandler(inputHandler, 0, 17, 56));
+    this.addSlot(new HolderSlot(this.holder, 0, 17, 56));
 
-    this.addSlot(new SlotItemHandler(ingredientsHandler, 0, 71, 38));
-    this.addSlot(new SlotItemHandler(ingredientsHandler, 1, 89, 38));
+    this.addSlot(new IngredientSlot(this.ingredients, 0, 71, 38));
+    this.addSlot(new IngredientSlot(this.ingredients, 1, 89, 38));
 
-    for (int i = 2; i < ingredientsHandler.getSlots(); i++) {
-      this.addSlot(new SlotItemHandler(ingredientsHandler, i, 62 + (i - 2) * 18, 56));
+    for (int i = 2; i < this.ingredients.getSlots(); i++) {
+      this.addSlot(new IngredientSlot(this.ingredients, i, 62 + (i - 2) * 18, 56));
     }
-    this.addSlot(new SlotItemHandler(outputHandler, 0, 144, 56));
+    this.addSlot(new SlotItemHandler(this.output, 0, 144, 56));
   }
 
   private void addPlayerSlots(PlayerInventory playerInventory) {
 
-    //Main inventory
+    // Main inventory
     for (int row = 0; row < 3; row++) {
       for (int col = 0; col < 9; col++) {
         this.addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 79 + row * 18));
       }
     }
 
-    //Hotbar
+    // Hotbar
     for (int hotbar = 0; hotbar < 9; hotbar++) {
       this.addSlot(new Slot(playerInventory, hotbar, 8 + hotbar * 18, 137));
     }
@@ -101,5 +98,69 @@ public class CulinaryStationContainer extends Container {
   public boolean canInteractWith(@Nonnull PlayerEntity playerIn) {
     return isWithinUsableDistance(this.worldPosCallable, playerIn,
         CulinaryConstructRegistry.CULINARY_STATION);
+  }
+
+  @Nonnull
+  @Override
+  public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+    ItemStack itemstack = ItemStack.EMPTY;
+    Slot slot = this.inventorySlots.get(index);
+
+    if (slot != null && slot.getHasStack()) {
+      ItemStack itemstack1 = slot.getStack();
+      itemstack = itemstack1.copy();
+
+      if (index == 6) {
+
+        if (!this.mergeItemStack(itemstack1, 7, 43, true)) {
+          return ItemStack.EMPTY;
+        }
+        slot.onSlotChange(itemstack1, itemstack);
+      } else if (index >= 7 && index < 43) {
+
+        if (!this.mergeItemStack(itemstack1, 0, 1, false) && !this
+            .mergeItemStack(itemstack1, 1, 6, false)) {
+          return ItemStack.EMPTY;
+        }
+      } else if (!this.mergeItemStack(itemstack1, 7, 43, false)) {
+        return ItemStack.EMPTY;
+      }
+
+      if (itemstack1.isEmpty()) {
+        slot.putStack(ItemStack.EMPTY);
+      } else {
+        slot.onSlotChanged();
+      }
+
+      if (itemstack1.getCount() == itemstack.getCount()) {
+        return ItemStack.EMPTY;
+      }
+      slot.onTake(playerIn, itemstack1);
+    }
+    return itemstack;
+  }
+
+  private static class HolderSlot extends SlotItemHandler {
+
+    public HolderSlot(IItemHandler handler, int index, int xPos, int yPos) {
+      super(handler, index, xPos, yPos);
+    }
+
+    @Override
+    public boolean isItemValid(@Nonnull ItemStack stack) {
+      return stack.getItem().isIn(CulinaryTags.BREAD) || stack.getItem().isIn(CulinaryTags.BOWL);
+    }
+  }
+
+  private static class IngredientSlot extends SlotItemHandler {
+
+    public IngredientSlot(IItemHandler handler, int index, int xPos, int yPos) {
+      super(handler, index, xPos, yPos);
+    }
+
+    @Override
+    public boolean isItemValid(@Nonnull ItemStack stack) {
+      return stack.getItem().isFood();
+    }
   }
 }
