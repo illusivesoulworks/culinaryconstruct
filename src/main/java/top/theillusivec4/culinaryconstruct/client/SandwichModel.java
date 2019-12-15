@@ -74,17 +74,11 @@ import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
 public class SandwichModel implements IUnbakedModel {
 
-  public static final IUnbakedModel MODEL = new SandwichModel();
-
   @Nullable
   private final List<TextureAtlasSprite> ingredients;
   @Nullable
   private final List<Integer> layers;
   private final int size;
-
-  public SandwichModel() {
-    this(null, null);
-  }
 
   public SandwichModel(@Nullable List<TextureAtlasSprite> ingredients,
       @Nullable List<Integer> layers) {
@@ -178,12 +172,14 @@ public class SandwichModel implements IUnbakedModel {
       for (int v = 0; v < iconWidth; v++) {
         for (int u = 0; u < iconHeight; u++) {
           int j = sprite.getPixelRGBA(f, v, u);
-          if (j != 0) {
-            Color color = new Color(j);
+          Color color = new Color(j, true);
+
+          if (color.getAlpha() > 0) {
             color.brighter();
-            rBucket += color.getRed();
+            // No idea why the r and b values are reversed, but they are
+            rBucket += color.getBlue();
             gBucket += color.getGreen();
-            bBucket += color.getBlue();
+            bBucket += color.getRed();
             passes++;
           }
         }
