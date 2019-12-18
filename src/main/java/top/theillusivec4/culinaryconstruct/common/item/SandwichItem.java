@@ -28,6 +28,9 @@ import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.util.InputMappings;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Food;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -46,8 +49,21 @@ import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 public class SandwichItem extends Item {
 
   public SandwichItem() {
-    super(new Item.Properties().group(ItemGroup.FOOD));
+    super(new Item.Properties().group(ItemGroup.FOOD).food(new Food.Builder().build()));
     this.setRegistryName(RegistryReference.SANDWICH);
+  }
+
+  @Nonnull
+  @Override
+  public ItemStack onItemUseFinish(@Nonnull ItemStack stack, @Nonnull World worldIn,
+      @Nonnull LivingEntity entityLiving) {
+
+    if (entityLiving instanceof PlayerEntity) {
+      int food = CulinaryNBTHelper.getFoodAmount(stack);
+      float saturation = CulinaryNBTHelper.getSaturationModifier(stack);
+      ((PlayerEntity) entityLiving).getFoodStats().addStats(food, saturation);
+    }
+    return entityLiving.onFoodEaten(worldIn, stack);
   }
 
   @Nonnull
