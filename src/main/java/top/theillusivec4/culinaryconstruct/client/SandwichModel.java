@@ -97,14 +97,14 @@ public class SandwichModel implements IUnbakedModel {
     ImmutableSet.Builder<ResourceLocation> builder = ImmutableSet.builder();
 
     if (ingredients != null && layers != null) {
-      builder.add(new ResourceLocation(CulinaryConstruct.MODID, "item/bread" + size));
+      builder.add(new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/bread" + size));
 
       for (TextureAtlasSprite sprite : ingredients) {
         builder.add(sprite.getName());
       }
 
       for (int layer : layers) {
-        builder.add(new ResourceLocation(CulinaryConstruct.MODID, "item/layer" + layer));
+        builder.add(new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/layer" + layer));
       }
     }
     return builder.build();
@@ -131,7 +131,7 @@ public class SandwichModel implements IUnbakedModel {
     random.setSeed(42);
     ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
     IBakedModel model = (new ItemLayerModel(
-        ImmutableList.of(new ResourceLocation(CulinaryConstruct.MODID, "item/bread" + size)))
+        ImmutableList.of(new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/bread" + size)))
         .bake(bakery, spriteGetter, sprite, format));
     builder.addAll(model.getQuads(null, null, random, EmptyModelData.INSTANCE));
     particleSprite = model.getParticleTexture(EmptyModelData.INSTANCE);
@@ -140,7 +140,7 @@ public class SandwichModel implements IUnbakedModel {
 
       for (int i = 0; i < ingredients.size(); i++) {
         IBakedModel model1 = (new ItemLayerModel(ImmutableList
-            .of(new ResourceLocation(CulinaryConstruct.MODID, "item/layer" + layers.get(i))))
+            .of(new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/layer" + layers.get(i))))
             .bake(bakery, spriteGetter, sprite, format));
         List<BakedQuad> quads = model1.getQuads(null, null, random, EmptyModelData.INSTANCE);
 

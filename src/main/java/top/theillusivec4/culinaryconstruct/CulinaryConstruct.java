@@ -44,6 +44,7 @@ import top.theillusivec4.culinaryconstruct.client.CulinaryScreen;
 import top.theillusivec4.culinaryconstruct.client.SandwichModel;
 import top.theillusivec4.culinaryconstruct.client.SandwichModel.BakedSandwichModel;
 import top.theillusivec4.culinaryconstruct.client.SandwichModel.BakedSandwichOverrideHandler;
+import top.theillusivec4.culinaryconstruct.common.network.CulinaryConstructNetwork;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 import top.theillusivec4.culinaryconstruct.common.registry.RegistryReference;
 
@@ -60,7 +61,7 @@ public class CulinaryConstruct {
   }
 
   private void setup(final FMLCommonSetupEvent evt) {
-
+    CulinaryConstructNetwork.register();
   }
 
   private void clientSetup(final FMLClientSetupEvent evt) {
@@ -86,8 +87,8 @@ public class CulinaryConstruct {
 
       if (map.getBasePath().equals("textures")) {
         for (int i = 0; i < 5; i++) {
-          evt.addSprite(new ResourceLocation(CulinaryConstruct.MODID, "item/bread" + i));
-          evt.addSprite(new ResourceLocation(CulinaryConstruct.MODID, "item/layer" + i));
+          evt.addSprite(new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/bread" + i));
+          evt.addSprite(new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/layer" + i));
         }
       }
     }

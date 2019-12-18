@@ -35,9 +35,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
+import org.apache.commons.lang3.StringUtils;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 import top.theillusivec4.culinaryconstruct.common.tag.CulinaryTags;
 import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
@@ -50,6 +52,7 @@ public class CulinaryStationContainer extends Container {
   private ItemStackHandler holder = new ItemStackHandler();
   private ItemStackHandler ingredients = new ItemStackHandler(5);
   private ItemStackHandler output = new ItemStackHandler();
+  private String outputItemName;
 
   public CulinaryStationContainer(int windowId, PlayerInventory playerInventory,
       PacketBuffer unused) {
@@ -216,6 +219,11 @@ public class CulinaryStationContainer extends Container {
     CulinaryNBTHelper.setTagSaturation(outputStack, totalSaturation);
     CulinaryNBTHelper.setTagBonus(outputStack, bonus);
     outputStack.setCount((int) count);
+
+    if (!StringUtils.isBlank(this.outputItemName) && !this.outputItemName
+        .equals(outputStack.getDisplayName().getString())) {
+      outputStack.setDisplayName(new StringTextComponent(this.outputItemName));
+    }
     setOutput(outputStack);
   }
 
@@ -271,6 +279,15 @@ public class CulinaryStationContainer extends Container {
       slot.onTake(playerIn, itemstack1);
     }
     return itemstack;
+  }
+
+  public void updateItemName(String newName) {
+
+    if (!newName.isEmpty() && (this.outputItemName == null || !this.outputItemName
+        .equals(newName))) {
+      this.outputItemName = newName;
+      this.updateOutput();
+    }
   }
 
   private class HolderSlot extends SlotItemHandler {
@@ -346,6 +363,7 @@ public class CulinaryStationContainer extends Container {
         holder.getStackInSlot(0).shrink(1);
       }
       CulinaryStationContainer.this.updateOutput();
+      CulinaryStationContainer.this.detectAndSendChanges();
       return stack;
     }
   }
