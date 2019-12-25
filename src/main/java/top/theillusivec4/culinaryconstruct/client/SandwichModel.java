@@ -130,8 +130,8 @@ public class SandwichModel implements IUnbakedModel {
     Random random = new Random();
     random.setSeed(42);
     ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
-    IBakedModel model = (new ItemLayerModel(
-        ImmutableList.of(new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/bread" + size)))
+    IBakedModel model = (new ItemLayerModel(ImmutableList
+        .of(new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/bread" + size)))
         .bake(bakery, spriteGetter, sprite, format));
     builder.addAll(model.getQuads(null, null, random, EmptyModelData.INSTANCE));
     particleSprite = model.getParticleTexture(EmptyModelData.INSTANCE);
@@ -140,7 +140,8 @@ public class SandwichModel implements IUnbakedModel {
 
       for (int i = 0; i < ingredients.size(); i++) {
         IBakedModel model1 = (new ItemLayerModel(ImmutableList
-            .of(new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/layer" + layers.get(i))))
+            .of(new ResourceLocation(CulinaryConstruct.MODID,
+                "item/sandwich/layer" + layers.get(i))))
             .bake(bakery, spriteGetter, sprite, format));
         List<BakedQuad> quads = model1.getQuads(null, null, random, EmptyModelData.INSTANCE);
 
@@ -152,7 +153,6 @@ public class SandwichModel implements IUnbakedModel {
         }
       }
     }
-
     return new BakedItemModel(builder.build(), particleSprite, transformMap, ItemOverrideList.EMPTY,
         transform.isIdentity());
   }
@@ -202,6 +202,7 @@ public class SandwichModel implements IUnbakedModel {
     private final BlockModel unbaked;
 
     public BakedSandwichOverrideHandler(ModelBakery bakery, BlockModel unbaked) {
+      super();
       this.bakery = bakery;
       this.unbaked = unbaked;
     }
