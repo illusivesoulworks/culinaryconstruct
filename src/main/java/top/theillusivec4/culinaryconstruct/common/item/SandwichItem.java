@@ -56,14 +56,14 @@ public class SandwichItem extends Item {
   @Nonnull
   @Override
   public ItemStack onItemUseFinish(@Nonnull ItemStack stack, @Nonnull World worldIn,
-      @Nonnull LivingEntity entityLiving) {
+      @Nonnull LivingEntity livingEntity) {
 
-    if (entityLiving instanceof PlayerEntity) {
+    if (livingEntity instanceof PlayerEntity) {
       int food = CulinaryNBTHelper.getFoodAmount(stack);
       float saturation = CulinaryNBTHelper.getSaturationModifier(stack);
-      ((PlayerEntity) entityLiving).getFoodStats().addStats(food, saturation);
+      ((PlayerEntity) livingEntity).getFoodStats().addStats(food, saturation);
     }
-    return entityLiving.onFoodEaten(worldIn, stack);
+    return livingEntity.onFoodEaten(worldIn, stack);
   }
 
   @Nonnull

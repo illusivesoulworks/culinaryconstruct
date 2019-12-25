@@ -22,16 +22,13 @@ package top.theillusivec4.culinaryconstruct;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.model.BlockModel;
 import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.IUnbakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.renderer.model.SimpleBakedModel;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -41,9 +38,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import top.theillusivec4.culinaryconstruct.client.CulinaryScreen;
-import top.theillusivec4.culinaryconstruct.client.SandwichModel;
 import top.theillusivec4.culinaryconstruct.client.SandwichModel.BakedSandwichModel;
 import top.theillusivec4.culinaryconstruct.client.SandwichModel.BakedSandwichOverrideHandler;
+import top.theillusivec4.culinaryconstruct.common.capability.CapabilityCulinaryFood;
 import top.theillusivec4.culinaryconstruct.common.network.CulinaryConstructNetwork;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 import top.theillusivec4.culinaryconstruct.common.registry.RegistryReference;
@@ -62,6 +59,7 @@ public class CulinaryConstruct {
 
   private void setup(final FMLCommonSetupEvent evt) {
     CulinaryConstructNetwork.register();
+    CapabilityCulinaryFood.register();
   }
 
   private void clientSetup(final FMLClientSetupEvent evt) {

@@ -21,12 +21,10 @@ package top.theillusivec4.culinaryconstruct.common.inventory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.block.CakeBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Food;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -36,10 +34,13 @@ import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import org.apache.commons.lang3.StringUtils;
+import top.theillusivec4.culinaryconstruct.api.CulinaryConstructAPI;
+import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 import top.theillusivec4.culinaryconstruct.common.tag.CulinaryTags;
 import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
@@ -129,12 +130,13 @@ public class CulinaryStationContainer extends Container {
       if (!stack.isEmpty()) {
         Item item = stack.getItem();
         Food food = item.getFood();
+        LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructAPI
+            .getCulinaryIngredient(stack);
 
-        if (food != null) {
+        if (culinary.isPresent()) {
+          totalFood += culinary.map(ICulinaryIngredient::getFoodAmount).orElse(0);
+        } else if (food != null) {
           totalFood += food.getHealing();
-        } else if (item instanceof BlockItem && ((BlockItem) item)
-            .getBlock() instanceof CakeBlock) {
-          totalFood += 14;
         } else {
           resetOutput();
           return;
@@ -181,14 +183,15 @@ public class CulinaryStationContainer extends Container {
       if (!stack.isEmpty()) {
         Item item = stack.getItem();
         Food food = item.getFood();
+        LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructAPI
+            .getCulinaryIngredient(stack);
 
-        if (food != null) {
+        if (culinary.isPresent()) {
+          foodAmount = culinary.map(ICulinaryIngredient::getFoodAmount).orElse(0);
+          saturationModifier = culinary.map(ICulinaryIngredient::getSaturation).orElse(0.0F);
+        } else if (food != null) {
           foodAmount = food.getHealing();
           saturationModifier = food.getSaturation();
-        } else if (item instanceof BlockItem && ((BlockItem) item)
-            .getBlock() instanceof CakeBlock) {
-          foodAmount = 14.0D;
-          saturationModifier = 2.0D;
         } else {
           resetOutput();
           return;
@@ -320,7 +323,9 @@ public class CulinaryStationContainer extends Container {
 
     @Override
     public boolean isItemValid(@Nonnull ItemStack stack) {
-      return stack.getItem().isFood();
+      LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructAPI
+          .getCulinaryIngredient(stack);
+      return stack.getItem().isFood() || culinary.isPresent();
     }
   }
 
