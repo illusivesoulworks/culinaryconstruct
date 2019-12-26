@@ -25,14 +25,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.Food;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
@@ -44,13 +41,12 @@ import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 import top.theillusivec4.culinaryconstruct.common.tag.CulinaryTags;
 import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
-import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
 public class CulinaryStationContainer extends Container {
 
   private final IWorldPosCallable worldPosCallable;
 
-  private ItemStackHandler holder = new ItemStackHandler();
+  private ItemStackHandler base = new ItemStackHandler();
   private ItemStackHandler ingredients = new ItemStackHandler(5);
   private ItemStackHandler output = new ItemStackHandler();
   private String outputItemName;
@@ -72,14 +68,14 @@ public class CulinaryStationContainer extends Container {
   private void init(@Nullable TileEntity tileEntity) {
     if (tileEntity instanceof CulinaryStationTileEntity) {
       CulinaryStationTileEntity te = (CulinaryStationTileEntity) tileEntity;
-      this.holder = te.holder;
+      this.base = te.base;
       this.ingredients = te.ingredients;
       this.output = te.output;
     }
   }
 
   private void addFoodSlots() {
-    this.addSlot(new HolderSlot(this.holder, 0, 17, 56));
+    this.addSlot(new BaseSlot(this.base, 0, 17, 56));
 
     this.addSlot(new IngredientSlot(this.ingredients, 0, 71, 38));
     this.addSlot(new IngredientSlot(this.ingredients, 1, 89, 38));
@@ -112,122 +108,43 @@ public class CulinaryStationContainer extends Container {
   }
 
   public void updateOutput() {
-    ItemStack holderStack = this.holder.getStackInSlot(0);
+    ItemStack baseStack = this.base.getStackInSlot(0);
 
-    if (holderStack.isEmpty()) {
+    if (baseStack.isEmpty()) {
       resetOutput();
       return;
     }
     NonNullList<ItemStack> ingredientsList = NonNullList.create();
-    int totalFood = 0;
-    float totalSaturation = 0;
-    int complexity = 0;
-    int depth = 0;
 
     for (int i = 0; i < this.ingredients.getSlots(); i++) {
       ItemStack stack = this.ingredients.getStackInSlot(i);
 
       if (!stack.isEmpty()) {
-        Item item = stack.getItem();
-        Food food = item.getFood();
-        LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructAPI
-            .getCulinaryIngredient(stack);
-
-        if (culinary.isPresent()) {
-          totalFood += culinary.map(ICulinaryIngredient::getFoodAmount).orElse(0);
-        } else if (food != null) {
-          totalFood += food.getHealing();
-        } else {
-          resetOutput();
-          return;
-        }
-        boolean unique = true;
-
-        for (ItemStack existing : ingredientsList) {
-          if (!existing.isEmpty() && ItemStack.areItemsEqual(existing, stack)) {
-            unique = false;
-            break;
-          }
-        }
-
-        if (unique && !CulinaryTags.BREAD.contains(stack.getItem())) {
-          complexity++;
-        }
         ItemStack copy = stack.copy();
-
-        if (copy.getCount() > 1) {
-          copy.setCount(1);
-        }
+        copy.setCount(1);
         ingredientsList.add(copy);
       }
     }
-    Food holderFood = holderStack.getItem().getFood();
 
-    if (holderFood != null) {
-      totalFood += holderFood.getHealing();
-    } else {
+    if (ingredientsList.isEmpty()) {
       resetOutput();
       return;
     }
-    ItemStack copy = holderStack.copy();
+    ItemStack baseCopy = baseStack.copy();
+    baseCopy.setCount(1);
+    CulinaryCalculator calculator = new CulinaryCalculator(baseCopy, ingredientsList);
+    ItemStack result = calculator.getResult();
 
-    if (copy.getCount() > 1) {
-      copy.setCount(1);
-    }
-    ingredientsList.add(copy);
-
-    for (ItemStack stack : ingredientsList) {
-      double foodAmount;
-      double saturationModifier;
-
-      if (!stack.isEmpty()) {
-        Item item = stack.getItem();
-        Food food = item.getFood();
-        LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructAPI
-            .getCulinaryIngredient(stack);
-
-        if (culinary.isPresent()) {
-          foodAmount = culinary.map(ICulinaryIngredient::getFoodAmount).orElse(0);
-          saturationModifier = culinary.map(ICulinaryIngredient::getSaturation).orElse(0.0F);
-        } else if (food != null) {
-          foodAmount = food.getHealing();
-          saturationModifier = food.getSaturation();
-        } else {
-          resetOutput();
-          return;
-        }
-        totalSaturation += (foodAmount / (double) totalFood) * saturationModifier;
-      }
-    }
-
-    if (ingredientsList.size() <= 1 || totalFood <= 0 || totalSaturation < 0) {
+    if (result.isEmpty()) {
       resetOutput();
       return;
     }
-    double count = 1.0D;
-    int averageFood = MathHelper.ceil((double) totalFood / count);
 
-    while (averageFood > 10) {
-      count++;
-      averageFood = MathHelper.ceil((double) totalFood / count);
-    }
-    int size = ingredientsList.size() - 1;
-    int bonus = MathHelper.clamp(complexity - (size / 2) + 1, -2, 2);
-    totalSaturation *= 1.0F + (bonus * 0.2F);
-    ItemStack outputStack = new ItemStack(CulinaryConstructRegistry.SANDWICH);
-    CulinaryNBTHelper.setTagSize(outputStack, size);
-    CulinaryNBTHelper.setTagDepth(outputStack, depth);
-    CulinaryNBTHelper.setTagIngredientsList(outputStack, ingredientsList);
-    CulinaryNBTHelper.setTagFood(outputStack, averageFood);
-    CulinaryNBTHelper.setTagSaturation(outputStack, totalSaturation);
-    CulinaryNBTHelper.setTagBonus(outputStack, bonus);
-    outputStack.setCount((int) count);
-
-    if (!StringUtils.isBlank(this.outputItemName) && !this.outputItemName
-        .equals(outputStack.getDisplayName().getString())) {
-      outputStack.setDisplayName(new StringTextComponent(this.outputItemName));
-    }
-    setOutput(outputStack);
+//    if (!StringUtils.isBlank(this.outputItemName) && !this.outputItemName
+//        .equals(result.getDisplayName().getString())) {
+//      result.setDisplayName(new StringTextComponent(this.outputItemName));
+//    }
+    setOutput(result);
   }
 
   private void setOutput(ItemStack stack) {
@@ -289,13 +206,13 @@ public class CulinaryStationContainer extends Container {
     if (!newName.isEmpty() && (this.outputItemName == null || !this.outputItemName
         .equals(newName))) {
       this.outputItemName = newName;
-      this.updateOutput();
+//      this.updateOutput();
     }
   }
 
-  private class HolderSlot extends SlotItemHandler {
+  private class BaseSlot extends SlotItemHandler {
 
-    public HolderSlot(IItemHandler handler, int index, int xPos, int yPos) {
+    public BaseSlot(IItemHandler handler, int index, int xPos, int yPos) {
       super(handler, index, xPos, yPos);
     }
 
@@ -362,10 +279,10 @@ public class CulinaryStationContainer extends Container {
           }
         }
       }
-      IItemHandler holder = CulinaryStationContainer.this.holder;
+      IItemHandler base = CulinaryStationContainer.this.base;
 
-      if (holder != null) {
-        holder.getStackInSlot(0).shrink(1);
+      if (base != null) {
+        base.getStackInSlot(0).shrink(1);
       }
       CulinaryStationContainer.this.updateOutput();
       CulinaryStationContainer.this.detectAndSendChanges();

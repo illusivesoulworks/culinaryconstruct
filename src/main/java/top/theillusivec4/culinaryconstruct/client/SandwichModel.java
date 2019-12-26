@@ -80,13 +80,13 @@ public class SandwichModel implements IUnbakedModel {
   private final List<TextureAtlasSprite> ingredients;
   @Nullable
   private final List<Integer> layers;
-  private final int size;
+  private final int baseIndex;
 
   public SandwichModel(@Nullable List<TextureAtlasSprite> ingredients,
       @Nullable List<Integer> layers) {
     this.ingredients = ingredients;
     this.layers = layers;
-    this.size = ingredients == null ? 0 : ingredients.size() - 1;
+    this.baseIndex = ingredients == null ? 0 : ingredients.size() - 1;
   }
 
   @Nonnull
@@ -97,7 +97,7 @@ public class SandwichModel implements IUnbakedModel {
     ImmutableSet.Builder<ResourceLocation> builder = ImmutableSet.builder();
 
     if (ingredients != null && layers != null) {
-      builder.add(new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/bread" + size));
+      builder.add(new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/bread" + baseIndex));
 
       for (TextureAtlasSprite sprite : ingredients) {
         builder.add(sprite.getName());
@@ -131,7 +131,7 @@ public class SandwichModel implements IUnbakedModel {
     random.setSeed(42);
     ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
     IBakedModel model = (new ItemLayerModel(ImmutableList
-        .of(new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/bread" + size)))
+        .of(new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/bread" + baseIndex)))
         .bake(bakery, spriteGetter, sprite, format));
     builder.addAll(model.getQuads(null, null, random, EmptyModelData.INSTANCE));
     particleSprite = model.getParticleTexture(EmptyModelData.INSTANCE);
@@ -211,7 +211,7 @@ public class SandwichModel implements IUnbakedModel {
     @Override
     public IBakedModel getModelWithOverrides(@Nonnull IBakedModel model, @Nonnull ItemStack stack,
         @Nullable World worldIn, @Nullable LivingEntity entityIn) {
-      CompoundNBT data = CulinaryNBTHelper.getCompoundSafe(stack);
+      CompoundNBT data = CulinaryNBTHelper.getTagSafe(stack);
       IBakedModel output = model;
 
       if (!data.isEmpty()) {
@@ -228,7 +228,7 @@ public class SandwichModel implements IUnbakedModel {
 
     protected IBakedModel getBakedModel(ItemStack stack) {
       ImmutableList.Builder<TextureAtlasSprite> builder = ImmutableList.builder();
-      NonNullList<ItemStack> ingredients = CulinaryNBTHelper.getIngredientsList(stack, false);
+      NonNullList<ItemStack> ingredients = CulinaryNBTHelper.getIngredientsList(stack);
 
       for (ItemStack ing : ingredients) {
         builder.add(Minecraft.getInstance().getItemRenderer().getItemModelMesher().getItemModel(ing)
@@ -292,7 +292,7 @@ public class SandwichModel implements IUnbakedModel {
 
     CacheKey(IBakedModel parent, ItemStack stack) {
       this.parent = parent;
-      this.data = CulinaryNBTHelper.getCompoundSafe(stack);
+      this.data = CulinaryNBTHelper.getTagSafe(stack);
     }
 
     @Override

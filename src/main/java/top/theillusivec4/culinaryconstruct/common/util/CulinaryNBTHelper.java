@@ -26,89 +26,74 @@ import net.minecraft.util.NonNullList;
 
 public class CulinaryNBTHelper {
 
+  public static final String TAG_BASE = "Base";
   public static final String TAG_INGREDIENTS = "Ingredients";
-  public static final String TAG_DEPTH = "Depth";
   public static final String TAG_FOOD = "Food";
   public static final String TAG_SATURATION = "Saturation";
   public static final String TAG_SIZE = "Size";
-  public static final String TAG_BONUS = "Bonus";
+  public static final String TAG_COMPLEXITY = "Complexity";
 
-  public static CompoundNBT getCompoundSafe(ItemStack stack) {
-    if (!stack.isEmpty() && stack.hasTag()) {
-      return stack.getTag();
-    }
-    return new CompoundNBT();
+  public static CompoundNBT getTagSafe(ItemStack stack) {
+    return stack.getOrCreateTag();
   }
 
-  public static int getBonus(ItemStack stack) {
-    CompoundNBT compound = getCompoundSafe(stack);
-    return compound.getInt(TAG_BONUS);
+  public static ItemStack getBase(ItemStack stack) {
+    CompoundNBT compound = getTagSafe(stack);
+    return ItemStack.read(compound.getCompound(TAG_BASE));
+  }
+
+  public static int getComplexity(ItemStack stack) {
+    CompoundNBT compound = getTagSafe(stack);
+    return compound.getInt(TAG_COMPLEXITY);
   }
 
   public static int getSize(ItemStack stack) {
-    CompoundNBT compound = getCompoundSafe(stack);
+    CompoundNBT compound = getTagSafe(stack);
     return compound.getInt(TAG_SIZE);
   }
 
-  public static int getDepth(ItemStack stack) {
-    CompoundNBT compound = getCompoundSafe(stack);
-    return compound.getInt(TAG_DEPTH);
-  }
-
   public static int getFoodAmount(ItemStack stack) {
-    CompoundNBT compound = getCompoundSafe(stack);
+    CompoundNBT compound = getTagSafe(stack);
     return compound.getInt(TAG_FOOD);
   }
 
-  public static float getSaturationModifier(ItemStack stack) {
-    CompoundNBT compound = getCompoundSafe(stack);
+  public static float getSaturation(ItemStack stack) {
+    CompoundNBT compound = getTagSafe(stack);
     return compound.getFloat(TAG_SATURATION);
   }
 
-  public static NonNullList<ItemStack> getIngredientsList(ItemStack stack, boolean includeHolder) {
-    CompoundNBT compound = getCompoundSafe(stack);
+  public static NonNullList<ItemStack> getIngredientsList(ItemStack stack) {
+    CompoundNBT compound = getTagSafe(stack);
     CompoundNBT tag = compound.getCompound(TAG_INGREDIENTS);
-    NonNullList<ItemStack> list = NonNullList
-        .withSize(getSize(stack) + (includeHolder ? 1 : 0), ItemStack.EMPTY);
+    NonNullList<ItemStack> list = NonNullList.withSize(getSize(stack), ItemStack.EMPTY);
     ItemStackHelper.loadAllItems(tag, list);
     return list;
   }
 
-  public static void setTagBonus(ItemStack stack, int bonus) {
-    CompoundNBT compound = getCompoundSafe(stack);
-    compound.putInt(TAG_BONUS, bonus);
-    stack.setTag(compound);
+  public static void setBase(ItemStack stack, ItemStack base) {
+    getTagSafe(stack).put(TAG_BASE, base.write(new CompoundNBT()));
   }
 
-  public static void setTagSize(ItemStack stack, int size) {
-    CompoundNBT compound = getCompoundSafe(stack);
-    compound.putInt(TAG_SIZE, size);
-    stack.setTag(compound);
+  public static void setComplexity(ItemStack stack, int complexity) {
+    getTagSafe(stack).putInt(TAG_COMPLEXITY, complexity);
   }
 
-  public static void setTagDepth(ItemStack stack, int depth) {
-    CompoundNBT compound = getCompoundSafe(stack);
-    compound.putInt(TAG_DEPTH, depth);
-    stack.setTag(compound);
+  public static void setSize(ItemStack stack, int size) {
+    getTagSafe(stack).putInt(TAG_SIZE, size);
   }
 
-  public static void setTagFood(ItemStack stack, int food) {
-    CompoundNBT compound = getCompoundSafe(stack);
-    compound.putInt(TAG_FOOD, food);
-    stack.setTag(compound);
+  public static void setFoodAmount(ItemStack stack, int food) {
+    getTagSafe(stack).putInt(TAG_FOOD, food);
   }
 
-  public static void setTagSaturation(ItemStack stack, float saturation) {
-    CompoundNBT compound = getCompoundSafe(stack);
-    compound.putFloat(TAG_SATURATION, saturation);
-    stack.setTag(compound);
+  public static void setSaturation(ItemStack stack, float saturation) {
+    getTagSafe(stack).putFloat(TAG_SATURATION, saturation);
   }
 
-  public static void setTagIngredientsList(ItemStack stack, NonNullList<ItemStack> ingredients) {
-    CompoundNBT compound = getCompoundSafe(stack);
+  public static void setIngredientsList(ItemStack stack, NonNullList<ItemStack> ingredients) {
+    CompoundNBT compound = getTagSafe(stack);
     CompoundNBT tag = new CompoundNBT();
     ItemStackHelper.saveAllItems(tag, ingredients);
     compound.put(TAG_INGREDIENTS, tag);
-    stack.setTag(compound);
   }
 }

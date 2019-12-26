@@ -38,11 +38,12 @@ import net.minecraft.item.Items;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import top.theillusivec4.culinaryconstruct.api.CulinaryConstructAPI;
 import top.theillusivec4.culinaryconstruct.common.registry.RegistryReference;
 import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
@@ -59,9 +60,18 @@ public class SandwichItem extends Item {
       @Nonnull LivingEntity livingEntity) {
 
     if (livingEntity instanceof PlayerEntity) {
+      PlayerEntity player = (PlayerEntity) livingEntity;
       int food = CulinaryNBTHelper.getFoodAmount(stack);
-      float saturation = CulinaryNBTHelper.getSaturationModifier(stack);
-      ((PlayerEntity) livingEntity).getFoodStats().addStats(food, saturation);
+      float saturation = CulinaryNBTHelper.getSaturation(stack);
+      player.getFoodStats().addStats(food, saturation);
+      List<ItemStack> consumed = new ArrayList<>(CulinaryNBTHelper.getIngredientsList(stack));
+      consumed.add(CulinaryNBTHelper.getBase(stack));
+      consumed.forEach(itemstack -> {
+        if (!itemstack.isEmpty()) {
+          CulinaryConstructAPI.getCulinaryIngredient(itemstack)
+              .ifPresent(culinary -> culinary.onEaten(player));
+        }
+      });
     }
     return livingEntity.onFoodEaten(worldIn, stack);
   }
@@ -70,44 +80,27 @@ public class SandwichItem extends Item {
   @Override
   public ITextComponent getDisplayName(@Nonnull ItemStack stack) {
     StringBuilder fullName = new StringBuilder();
-    NonNullList<ItemStack> ingredients = CulinaryNBTHelper.getIngredientsList(stack, false);
+    NonNullList<ItemStack> ingredients = CulinaryNBTHelper.getIngredientsList(stack);
 
     if (!ingredients.isEmpty()) {
-      Map<String, Long> countMap = ingredients.stream()
-          .filter(itemstack -> !(itemstack.getItem() instanceof SandwichItem)).collect(Collectors
-              .groupingBy(itemstack -> itemstack.getDisplayName().getUnformattedComponentText(),
-                  Collectors.counting()));
+      Map<Item, Long> countMap = ingredients.stream()
+          .collect(Collectors.groupingBy(ItemStack::getItem, Collectors.counting()));
       List<String> names = new ArrayList<>();
+      countMap.forEach((item, count) -> {
+        StringBuilder builder = new StringBuilder();
 
-      if (!countMap.isEmpty()) {
-
-        for (String name : countMap.keySet()) {
-          long size = countMap.get(name);
-          StringBuilder builder = new StringBuilder();
-
-          if (size > 1L) {
-            builder.append(new TranslationTextComponent("tooltip.culinaryconstruct.count." + size)
-                .getUnformattedComponentText());
-            builder.append(" ");
-          }
-          builder.append(name);
-          names.add(builder.toString());
+        if (count > 1) {
+          builder.append(new TranslationTextComponent("tooltip.culinaryconstruct.count." + count)
+              .getUnformattedComponentText());
+          builder.append(" ");
         }
-        fullName.append(
-            new TranslationTextComponent("tooltip.culinaryconstruct.list." + names.size(),
-                names.toArray()).getUnformattedComponentText());
-        fullName.append(" ");
-      }
+        builder.append(item.getName().getUnformattedComponentText());
+        names.add(builder.toString());
+      });
+      fullName.append(new TranslationTextComponent("tooltip.culinaryconstruct.list." + names.size(),
+          names.toArray()).getUnformattedComponentText());
     }
-    int depth = CulinaryNBTHelper.getDepth(stack);
-
-    if (depth > 0) {
-      fullName.append(
-          depth > 1 ? new TranslationTextComponent("tooltip.culinaryconstruct.metaplus", depth)
-              .getUnformattedComponentText()
-              : new TranslationTextComponent("tooltip.culinaryconstruct.meta")
-                  .getUnformattedComponentText());
-    }
+    fullName.append(" ");
     fullName.append(
         new TranslationTextComponent(this.getTranslationKey(stack)).getUnformattedComponentText());
     return new StringTextComponent(fullName.toString());
@@ -116,29 +109,30 @@ public class SandwichItem extends Item {
   @OnlyIn(Dist.CLIENT)
   public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip,
       ITooltipFlag flagIn) {
-    NonNullList<ItemStack> ingredients = CulinaryNBTHelper.getIngredientsList(stack, true);
-    int bonus = CulinaryNBTHelper.getBonus(stack);
-    tooltip.add(new StringTextComponent(String.format("%s: %s",
-        new TranslationTextComponent("tooltip.culinaryconstruct.quality.name")
-            .getUnformattedComponentText(),
-        new TranslationTextComponent("tooltip.culinaryconstruct.quality." + (bonus + 2))
-            .getUnformattedComponentText())));
+    ItemStack base = CulinaryNBTHelper.getBase(stack);
+    int complexity = CulinaryNBTHelper.getComplexity(stack);
+    tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.quality." + complexity)
+        .applyTextStyle(TextFormatting.GREEN));
+    tooltip.add(
+        new TranslationTextComponent(base.getTranslationKey()).applyTextStyle(TextFormatting.GRAY));
     tooltip.add(new StringTextComponent(""));
 
     if (InputMappings.isKeyDown(Minecraft.getInstance().mainWindow.getHandle(), 340)
         || InputMappings.isKeyDown(Minecraft.getInstance().mainWindow.getHandle(), 344)) {
+      NonNullList<ItemStack> ingredients = CulinaryNBTHelper.getIngredientsList(stack);
       tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.ingredients.name")
-          .setStyle(new Style().setUnderlined(true)));
+          .applyTextStyle(TextFormatting.GRAY).applyTextStyle(TextFormatting.UNDERLINE));
 
       for (ItemStack ing : ingredients) {
 
         if (!ing.isEmpty()) {
-          tooltip.add(
-              new StringTextComponent("- " + ing.getDisplayName().getUnformattedComponentText()));
+          tooltip.add(new TranslationTextComponent(ing.getTranslationKey())
+              .applyTextStyle(TextFormatting.GRAY));
         }
       }
     } else {
-      tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.ingredients"));
+      tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.ingredients")
+          .applyTextStyle(TextFormatting.GRAY));
     }
   }
 
@@ -146,15 +140,14 @@ public class SandwichItem extends Item {
   public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
     if (this.isInGroup(group)) {
       ItemStack sub = new ItemStack(this);
-      CulinaryNBTHelper.setTagSize(sub, 5);
-      CulinaryNBTHelper.setTagIngredientsList(sub, NonNullList
+      CulinaryNBTHelper.setSize(sub, 5);
+      CulinaryNBTHelper.setIngredientsList(sub, NonNullList
           .from(ItemStack.EMPTY, new ItemStack(Items.NETHER_STAR), new ItemStack(Items.NETHER_STAR),
               new ItemStack(Items.NETHER_STAR), new ItemStack(Items.NETHER_STAR),
               new ItemStack(Items.NETHER_STAR), new ItemStack(Items.BREAD)));
-      CulinaryNBTHelper.setTagFood(sub, 20);
-      CulinaryNBTHelper.setTagDepth(sub, 0);
-      CulinaryNBTHelper.setTagSaturation(sub, 1.0F);
-      CulinaryNBTHelper.setTagBonus(sub, 2);
+      CulinaryNBTHelper.setFoodAmount(sub, 20);
+      CulinaryNBTHelper.setSaturation(sub, 1.0F);
+      CulinaryNBTHelper.setComplexity(sub, 4);
       items.add(sub);
     }
   }

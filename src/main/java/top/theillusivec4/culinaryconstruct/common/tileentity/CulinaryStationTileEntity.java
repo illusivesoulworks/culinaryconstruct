@@ -33,20 +33,20 @@ import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegi
 
 public class CulinaryStationTileEntity extends TileEntity {
 
-  protected final LazyOptional<IItemHandler> holderOpt;
+  protected final LazyOptional<IItemHandler> baseOpt;
   protected final LazyOptional<IItemHandler> ingredientsOpt;
   protected final LazyOptional<IItemHandler> outputOpt;
 
-  public final ItemStackHandler holder;
+  public final ItemStackHandler base;
   public final ItemStackHandler ingredients;
   public final ItemStackHandler output;
 
   public CulinaryStationTileEntity() {
     super(CulinaryConstructRegistry.CULINARY_STATION_TE);
-    this.holder = new CulinaryStackHandler();
+    this.base = new CulinaryStackHandler();
     this.ingredients = new CulinaryStackHandler(5);
     this.output = new CulinaryStackHandler();
-    this.holderOpt = LazyOptional.of(() -> holder);
+    this.baseOpt = LazyOptional.of(() -> base);
     this.ingredientsOpt = LazyOptional.of(() -> ingredients);
     this.outputOpt = LazyOptional.of(() -> output);
   }
@@ -55,7 +55,7 @@ public class CulinaryStationTileEntity extends TileEntity {
   public void read(@Nonnull CompoundNBT compound) {
     super.read(compound);
     if (compound.contains("Holder", 10)) {
-      this.holder.deserializeNBT(compound.getCompound("Holder"));
+      this.base.deserializeNBT(compound.getCompound("Holder"));
     }
     if (compound.contains("Ingredients", 10)) {
       this.ingredients.deserializeNBT(compound.getCompound("Ingredients"));
@@ -69,7 +69,7 @@ public class CulinaryStationTileEntity extends TileEntity {
   @Override
   public CompoundNBT write(@Nonnull CompoundNBT compound) {
     super.write(compound);
-    compound.put("Holder", this.holder.serializeNBT());
+    compound.put("Holder", this.base.serializeNBT());
     compound.put("Ingredients", this.ingredients.serializeNBT());
     compound.put("Output", this.output.serializeNBT());
     return compound;
@@ -82,7 +82,7 @@ public class CulinaryStationTileEntity extends TileEntity {
     if (!this.removed && facing != null
         && capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
       if (facing == Direction.UP) {
-        return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(capability, this.holderOpt);
+        return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(capability, this.baseOpt);
       } else if (facing == Direction.DOWN) {
         return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(capability, this.outputOpt);
       } else {
@@ -96,7 +96,7 @@ public class CulinaryStationTileEntity extends TileEntity {
   @Override
   public void remove() {
     super.remove();
-    holderOpt.invalidate();
+    baseOpt.invalidate();
     ingredientsOpt.invalidate();
     outputOpt.invalidate();
   }
