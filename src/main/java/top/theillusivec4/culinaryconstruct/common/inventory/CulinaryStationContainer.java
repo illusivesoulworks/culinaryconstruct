@@ -140,10 +140,11 @@ public class CulinaryStationContainer extends Container {
       return;
     }
 
-//    if (!StringUtils.isBlank(this.outputItemName) && !this.outputItemName
-//        .equals(result.getDisplayName().getString())) {
-//      result.setDisplayName(new StringTextComponent(this.outputItemName));
-//    }
+    if (StringUtils.isBlank(this.outputItemName)) {
+      result.clearCustomName();
+    } else if (!this.outputItemName.equals(result.getDisplayName().getString())) {
+      result.setDisplayName(new StringTextComponent(this.outputItemName));
+    }
     setOutput(result);
   }
 
@@ -202,12 +203,8 @@ public class CulinaryStationContainer extends Container {
   }
 
   public void updateItemName(String newName) {
-
-    if (!newName.isEmpty() && (this.outputItemName == null || !this.outputItemName
-        .equals(newName))) {
-      this.outputItemName = newName;
-//      this.updateOutput();
-    }
+    this.outputItemName = newName;
+    this.updateOutput();
   }
 
   private class BaseSlot extends SlotItemHandler {

@@ -162,13 +162,13 @@ public class CulinaryScreen extends ContainerScreen<CulinaryStationContainer> im
       @Nonnull ItemStack stack) {
 
     if (slotInd == 6) {
-      this.nameField.setText(stack.isEmpty() ? "" : stack.getDisplayName().getString());
+      this.nameField.setText(stack.isEmpty() ? "" : this.nameField.getText());
       this.nameField.setEnabled(!stack.isEmpty());
     }
   }
 
   @Override
   public void sendWindowProperty(@Nonnull Container containerIn, int varToUpdate, int newValue) {
-
+    //NO-OP
   }
 }
