@@ -31,7 +31,7 @@ public class CulinaryNBTHelper {
   public static final String TAG_FOOD = "Food";
   public static final String TAG_SATURATION = "Saturation";
   public static final String TAG_SIZE = "Size";
-  public static final String TAG_COMPLEXITY = "Complexity";
+  public static final String TAG_QUALITY = "Quality";
 
   public static CompoundNBT getTagSafe(ItemStack stack) {
     return stack.getOrCreateTag();
@@ -42,9 +42,9 @@ public class CulinaryNBTHelper {
     return ItemStack.read(compound.getCompound(TAG_BASE));
   }
 
-  public static int getComplexity(ItemStack stack) {
+  public static int getQuality(ItemStack stack) {
     CompoundNBT compound = getTagSafe(stack);
-    return compound.getInt(TAG_COMPLEXITY);
+    return compound.getInt(TAG_QUALITY);
   }
 
   public static int getSize(ItemStack stack) {
@@ -74,8 +74,8 @@ public class CulinaryNBTHelper {
     getTagSafe(stack).put(TAG_BASE, base.write(new CompoundNBT()));
   }
 
-  public static void setComplexity(ItemStack stack, int complexity) {
-    getTagSafe(stack).putInt(TAG_COMPLEXITY, complexity);
+  public static void setQuality(ItemStack stack, int quality) {
+    getTagSafe(stack).putInt(TAG_QUALITY, quality);
   }
 
   public static void setSize(ItemStack stack, int size) {

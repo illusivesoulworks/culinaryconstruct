@@ -110,8 +110,8 @@ public class SandwichItem extends Item {
   public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip,
       ITooltipFlag flagIn) {
     ItemStack base = CulinaryNBTHelper.getBase(stack);
-    int complexity = CulinaryNBTHelper.getComplexity(stack);
-    tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.quality." + complexity)
+    int quality = CulinaryNBTHelper.getQuality(stack);
+    tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.quality." + quality)
         .applyTextStyle(TextFormatting.GREEN));
     tooltip.add(
         new TranslationTextComponent(base.getTranslationKey()).applyTextStyle(TextFormatting.GRAY));
@@ -147,7 +147,7 @@ public class SandwichItem extends Item {
               new ItemStack(Items.NETHER_STAR), new ItemStack(Items.BREAD)));
       CulinaryNBTHelper.setFoodAmount(sub, 20);
       CulinaryNBTHelper.setSaturation(sub, 1.0F);
-      CulinaryNBTHelper.setComplexity(sub, 4);
+      CulinaryNBTHelper.setQuality(sub, 4);
       items.add(sub);
     }
   }

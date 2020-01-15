@@ -45,7 +45,6 @@ public class CulinaryCalculator {
   private int food;
   private float saturation;
   private int complexity;
-  private int count = 1;
 
   public CulinaryCalculator(ItemStack baseIn, NonNullList<ItemStack> ingredientsIn) {
     this.base = baseIn;
@@ -71,18 +70,18 @@ public class CulinaryCalculator {
       return ItemStack.EMPTY;
     }
     this.saturation /= this.food;
-    this.count = (int) Math.ceil(this.food / (double) MAX_FOOD);
-    this.food = (int) Math.ceil(this.food / (double) this.count);
-    this.complexity = MathHelper.clamp(this.complexity - (this.getSize() / 2) + 1, 0, 4);
-    this.saturation *= 1.0F + ((this.complexity - 2) * 0.3F);
+    int count = (int) Math.ceil(this.food / (double) MAX_FOOD);
+    this.food = (int) Math.ceil(this.food / (double) count);
+    int quality = MathHelper.clamp(this.complexity - (this.getSize() / 2) + 1, 0, 4);
+    this.saturation *= 1.0F + ((quality - 2) * 0.3F);
     ItemStack result = new ItemStack(CulinaryConstructRegistry.SANDWICH);
     CulinaryNBTHelper.setSize(result, this.getSize());
     CulinaryNBTHelper.setIngredientsList(result, this.ingredients);
     CulinaryNBTHelper.setFoodAmount(result, this.food);
     CulinaryNBTHelper.setSaturation(result, this.saturation);
-    CulinaryNBTHelper.setComplexity(result, this.complexity);
+    CulinaryNBTHelper.setQuality(result, quality);
     CulinaryNBTHelper.setBase(result, this.base);
-    result.setCount(this.count);
+    result.setCount(count);
     return result;
   }
 
