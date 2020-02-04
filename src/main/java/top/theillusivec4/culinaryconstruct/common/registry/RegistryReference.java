@@ -25,4 +25,5 @@ public class RegistryReference {
 
   public static final String CULINARY_STATION = CulinaryConstruct.MODID + ":culinary_station";
   public static final String SANDWICH = CulinaryConstruct.MODID + ":sandwich";
+  public static final String FOOD_BOWL = CulinaryConstruct.MODID + ":food_bowl";
 }

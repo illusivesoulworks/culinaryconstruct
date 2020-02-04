@@ -43,10 +43,14 @@ public class CulinaryConstructRegistry {
   @ObjectHolder(RegistryReference.SANDWICH)
   public static final Item SANDWICH;
 
+  @ObjectHolder(RegistryReference.FOOD_BOWL)
+  public static final Item FOOD_BOWL;
+
   static {
     CULINARY_STATION = null;
     CULINARY_STATION_CONTAINER = null;
     CULINARY_STATION_TE = null;
     SANDWICH = null;
+    FOOD_BOWL = null;
   }
 }

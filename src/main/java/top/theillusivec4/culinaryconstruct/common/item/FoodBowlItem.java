@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019 C4
+ * Copyright (c) 2018-2020 C4
  *
  * This file is part of Culinary Construct, a mod made for Minecraft.
  *
@@ -27,18 +27,18 @@ import net.minecraft.util.NonNullList;
 import top.theillusivec4.culinaryconstruct.common.registry.RegistryReference;
 import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
-public class SandwichItem extends CulinaryItemBase {
+public class FoodBowlItem extends CulinaryItemBase {
 
-  public SandwichItem() {
+  public FoodBowlItem() {
     super();
-    this.setRegistryName(RegistryReference.SANDWICH);
+    this.setRegistryName(RegistryReference.FOOD_BOWL);
   }
 
   @Override
   public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
     if (this.isInGroup(group)) {
       ItemStack sub = new ItemStack(this);
-      CulinaryNBTHelper.setBase(sub, new ItemStack(Items.BREAD));
+      CulinaryNBTHelper.setBase(sub, new ItemStack(Items.BOWL));
       generateCreativeNBT(sub);
       items.add(sub);
     }

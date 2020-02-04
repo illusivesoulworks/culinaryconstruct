@@ -38,6 +38,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import top.theillusivec4.culinaryconstruct.client.CulinaryScreen;
+import top.theillusivec4.culinaryconstruct.client.FoodBowlModel.BakedFoodBowlModel;
+import top.theillusivec4.culinaryconstruct.client.FoodBowlModel.BakedFoodBowlOverrideHandler;
 import top.theillusivec4.culinaryconstruct.client.SandwichModel.BakedSandwichModel;
 import top.theillusivec4.culinaryconstruct.client.SandwichModel.BakedSandwichOverrideHandler;
 import top.theillusivec4.culinaryconstruct.common.capability.CapabilityCulinaryFood;
@@ -75,7 +77,14 @@ public class CulinaryConstruct {
       ModelResourceLocation rl = new ModelResourceLocation(RegistryReference.SANDWICH, "inventory");
       SimpleBakedModel original = (SimpleBakedModel) evt.getModelRegistry().get(rl);
       BlockModel unbaked = (BlockModel) evt.getModelLoader().getUnbakedModel(rl);
-      IBakedModel model = new BakedSandwichModel(original, new BakedSandwichOverrideHandler(evt.getModelLoader(), unbaked));
+      IBakedModel model = new BakedSandwichModel(original,
+          new BakedSandwichOverrideHandler(evt.getModelLoader(), unbaked));
+      evt.getModelRegistry().put(rl, model);
+      rl = new ModelResourceLocation(RegistryReference.FOOD_BOWL, "inventory");
+      original = (SimpleBakedModel) evt.getModelRegistry().get(rl);
+      unbaked = (BlockModel) evt.getModelLoader().getUnbakedModel(rl);
+      model = new BakedFoodBowlModel(original,
+          new BakedFoodBowlOverrideHandler(evt.getModelLoader(), unbaked));
       evt.getModelRegistry().put(rl, model);
     }
 
@@ -87,7 +96,10 @@ public class CulinaryConstruct {
         for (int i = 0; i < 5; i++) {
           evt.addSprite(new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/bread" + i));
           evt.addSprite(new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/layer" + i));
+          evt.addSprite(new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/layer" + i));
         }
+        evt.addSprite(new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/liquid_base"));
+        evt.addSprite(new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/liquid_overflow"));
       }
     }
   }

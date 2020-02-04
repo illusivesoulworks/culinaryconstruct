@@ -2,7 +2,7 @@
   "block.culinaryconstruct.culinary_station": "Culinary Station",
   "culinaryconstruct.culinary_container": "Craft & Name",
   "item.culinaryconstruct.sandwich": "Sandwich",
-  "item.culinaryconstruct.soup": "Soup",
+  "item.culinaryconstruct.food_bowl": "Bowl of Food",
   "tooltip.culinaryconstruct.ingredients.name": "Ingredients",
   "tooltip.culinaryconstruct.ingredients": "Hold [Shift] for Ingredients",
   "tooltip.culinaryconstruct.quality.0": "Disgusting",
