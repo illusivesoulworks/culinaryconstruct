@@ -41,6 +41,7 @@ import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 import top.theillusivec4.culinaryconstruct.common.tag.CulinaryTags;
 import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
+import top.theillusivec4.culinaryconstruct.common.inventory.crafting.CulinaryCalculator;
 
 public class CulinaryStationContainer extends Container {
 

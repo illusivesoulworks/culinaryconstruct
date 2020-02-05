@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019 C4
+ * Copyright (c) 2018-2020 C4
  *
  * This file is part of Culinary Construct, a mod made for Minecraft.
  *
@@ -17,7 +17,7 @@
  * License along with Culinary Construct.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package top.theillusivec4.culinaryconstruct.common.inventory;
+package top.theillusivec4.culinaryconstruct.common.inventory.crafting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,13 +35,11 @@ import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
 public class CulinaryCalculator {
 
-  private static final int MAX_FOOD = 10;
-
   private final NonNullList<ItemStack> ingredients;
   private final List<ItemStack> processed = new ArrayList<>();
   private final ItemStack base;
-  private final OutputType type;
 
+  private OutputType type;
   private int food;
   private float saturation;
   private int complexity;
@@ -49,13 +47,21 @@ public class CulinaryCalculator {
   public CulinaryCalculator(ItemStack baseIn, NonNullList<ItemStack> ingredientsIn) {
     this.base = baseIn;
     this.ingredients = ingredientsIn;
-    this.type =
-        CulinaryTags.BREAD.contains(baseIn.getItem()) ? OutputType.SANDWICH : OutputType.SOUP;
   }
 
   public ItemStack getResult() {
     List<ItemStack> process = new ArrayList<>(this.ingredients);
     this.processed.clear();
+    int maxFood = 10;
+
+    if (CulinaryTags.BREAD.contains(base.getItem())) {
+      this.type = OutputType.SANDWICH;
+    } else if (CulinaryTags.BOWL.contains(base.getItem())) {
+      this.type = OutputType.BOWL;
+      maxFood = 100;
+    } else {
+      return ItemStack.EMPTY;
+    }
 
     if (this.type == OutputType.SANDWICH) {
       process.add(this.base);
@@ -70,11 +76,17 @@ public class CulinaryCalculator {
       return ItemStack.EMPTY;
     }
     this.saturation /= this.food;
-    int count = (int) Math.ceil(this.food / (double) MAX_FOOD);
+    int count = 1;
+
+    if (this.type == OutputType.SANDWICH) {
+      count = (int) Math.ceil(this.food / (double) maxFood);
+    }
     this.food = (int) Math.ceil(this.food / (double) count);
     int quality = MathHelper.clamp(this.complexity - (this.getSize() / 2) + 1, 0, 4);
     this.saturation *= 1.0F + ((quality - 2) * 0.3F);
-    ItemStack result = new ItemStack(CulinaryConstructRegistry.SANDWICH);
+    ItemStack result =
+        this.type == OutputType.SANDWICH ? new ItemStack(CulinaryConstructRegistry.SANDWICH)
+            : new ItemStack(CulinaryConstructRegistry.FOOD_BOWL);
     CulinaryNBTHelper.setSize(result, this.getSize());
     CulinaryNBTHelper.setIngredientsList(result, this.ingredients);
     CulinaryNBTHelper.setFoodAmount(result, this.food);
@@ -121,6 +133,6 @@ public class CulinaryCalculator {
   }
 
   enum OutputType {
-    SANDWICH, SOUP
+    SANDWICH, BOWL
   }
 }

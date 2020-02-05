@@ -20,10 +20,12 @@
 package top.theillusivec4.culinaryconstruct.common.item;
 
 import javax.annotation.Nonnull;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.NonNullList;
+import net.minecraft.world.World;
 import top.theillusivec4.culinaryconstruct.common.registry.RegistryReference;
 import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
@@ -32,6 +34,24 @@ public class FoodBowlItem extends CulinaryItemBase {
   public FoodBowlItem() {
     super();
     this.setRegistryName(RegistryReference.FOOD_BOWL);
+  }
+
+  @Override
+  public ItemStack getContainerItem(ItemStack itemStack) {
+    return CulinaryNBTHelper.getBase(itemStack);
+  }
+
+  @Override
+  public boolean hasContainerItem(ItemStack stack) {
+    return true;
+  }
+
+  @Nonnull
+  @Override
+  public ItemStack onItemUseFinish(@Nonnull ItemStack stack, @Nonnull World worldIn,
+      @Nonnull LivingEntity livingEntity) {
+    super.onItemUseFinish(stack, worldIn, livingEntity);
+    return getContainerItem(stack);
   }
 
   @Override

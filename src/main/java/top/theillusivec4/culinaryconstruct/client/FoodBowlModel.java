@@ -235,22 +235,8 @@ public class FoodBowlModel implements IUnbakedModel {
       int size = CulinaryNBTHelper.getSize(stack);
       List<Integer> list = new ArrayList<>();
 
-      switch (size) {
-        case 1:
-          list.add(2);
-          break;
-        case 2:
-          list.addAll(Arrays.asList(1, 2));
-          break;
-        case 3:
-          list.addAll(Arrays.asList(1, 2, 3));
-          break;
-        case 4:
-          list.addAll(Arrays.asList(0, 1, 2, 3));
-          break;
-        case 5:
-          list.addAll(Arrays.asList(0, 1, 2, 3, 4));
-          break;
+      for (int i = 0; i < size; i++) {
+        list.add(i);
       }
       IUnbakedModel parent = new FoodBowlModel(builder.build(), list);
       Function<ResourceLocation, TextureAtlasSprite> textureGetter;
