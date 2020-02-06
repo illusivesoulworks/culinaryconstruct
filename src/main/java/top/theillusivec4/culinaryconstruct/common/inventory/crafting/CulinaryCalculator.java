@@ -76,6 +76,10 @@ public class CulinaryCalculator {
       }
     });
 
+    if (this.type == OutputType.SANDWICH && !this.liquidColors.isEmpty()) {
+      return ItemStack.EMPTY;
+    }
+
     if (this.saturation <= 0 || this.food <= 0) {
       return ItemStack.EMPTY;
     }
