@@ -26,6 +26,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.PotionItem;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IWorldPosCallable;
@@ -269,11 +271,15 @@ public class CulinaryStationContainer extends Container {
 
         for (int i = 0; i < ingredients.getSlots(); i++) {
           ItemStack slot = ingredients.getStackInSlot(i);
+          boolean isPotion = slot.getItem() instanceof PotionItem;
+
           ItemStack container = slot.getItem().getContainerItem(slot);
           slot.shrink(1);
 
           if (!container.isEmpty()) {
             ingredients.insertItem(i, container, false);
+          } else if (isPotion) {
+            ingredients.insertItem(i, new ItemStack(Items.GLASS_BOTTLE), false);
           }
         }
       }
