@@ -42,4 +42,12 @@ public interface ICulinaryIngredient {
   default void onEaten(PlayerEntity player) {
 
   }
+
+  default boolean isLiquid() {
+    return false;
+  }
+
+  default int getLiquidColor() {
+    return -1;
+  }
 }

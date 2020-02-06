@@ -19,9 +19,14 @@
 
 package top.theillusivec4.culinaryconstruct.common.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.IntNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.NonNullList;
 
 public class CulinaryNBTHelper {
@@ -32,6 +37,9 @@ public class CulinaryNBTHelper {
   public static final String TAG_SATURATION = "Saturation";
   public static final String TAG_SIZE = "Size";
   public static final String TAG_QUALITY = "Quality";
+  public static final String TAG_LIQUIDS = "Liquids";
+  public static final String TAG_SOLIDS = "Solids";
+  public static final String TAG_SOLIDS_SIZE = "SolidsSize";
 
   public static CompoundNBT getTagSafe(ItemStack stack) {
     return stack.getOrCreateTag();
@@ -70,6 +78,27 @@ public class CulinaryNBTHelper {
     return list;
   }
 
+  public static List<Integer> getLiquids(ItemStack stack) {
+    CompoundNBT compound = getTagSafe(stack);
+    ListNBT tag = compound.getList(TAG_LIQUIDS, 3);
+    List<Integer> liquids = new ArrayList<>();
+    tag.forEach(nbt -> liquids.add(((IntNBT) nbt).getInt()));
+    return liquids;
+  }
+
+  public static int getSolidsSize(ItemStack stack) {
+    CompoundNBT compound = getTagSafe(stack);
+    return compound.getInt(TAG_SOLIDS_SIZE);
+  }
+
+  public static NonNullList<ItemStack> getSolids(ItemStack stack) {
+    CompoundNBT compound = getTagSafe(stack);
+    CompoundNBT tag = compound.getCompound(TAG_SOLIDS);
+    NonNullList<ItemStack> list = NonNullList.withSize(getSolidsSize(stack), ItemStack.EMPTY);
+    ItemStackHelper.loadAllItems(tag, list);
+    return list;
+  }
+
   public static void setBase(ItemStack stack, ItemStack base) {
     getTagSafe(stack).put(TAG_BASE, base.write(new CompoundNBT()));
   }
@@ -95,5 +124,23 @@ public class CulinaryNBTHelper {
     CompoundNBT tag = new CompoundNBT();
     ItemStackHelper.saveAllItems(tag, ingredients);
     compound.put(TAG_INGREDIENTS, tag);
+  }
+
+  public static void setLiquids(ItemStack stack, List<Integer> liquids) {
+    CompoundNBT compound = getTagSafe(stack);
+    ListNBT tag = new ListNBT();
+    liquids.forEach(liquid -> tag.add(new IntNBT(liquid)));
+    compound.put(TAG_LIQUIDS, tag);
+  }
+
+  public static void setSolidsSize(ItemStack stack, int size) {
+    getTagSafe(stack).putInt(TAG_SOLIDS_SIZE, size);
+  }
+
+  public static void setSolids(ItemStack stack, NonNullList<ItemStack> solids) {
+    CompoundNBT compound = getTagSafe(stack);
+    CompoundNBT tag = new CompoundNBT();
+    ItemStackHelper.saveAllItems(tag, solids);
+    compound.put(TAG_SOLIDS, tag);
   }
 }

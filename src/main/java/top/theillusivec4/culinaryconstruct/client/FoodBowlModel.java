@@ -26,7 +26,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -71,7 +70,10 @@ import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import net.minecraftforge.client.model.pipeline.VertexTransformer;
 import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.common.model.TRSRTransformation;
+import net.minecraftforge.common.util.LazyOptional;
 import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
+import top.theillusivec4.culinaryconstruct.api.CulinaryConstructAPI;
+import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
 import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
 public class FoodBowlModel implements IUnbakedModel {
@@ -80,11 +82,14 @@ public class FoodBowlModel implements IUnbakedModel {
   private final List<TextureAtlasSprite> ingredients;
   @Nullable
   private final List<Integer> layers;
+  @Nullable
+  private final List<Integer> liquids;
 
   public FoodBowlModel(@Nullable List<TextureAtlasSprite> ingredients,
-      @Nullable List<Integer> layers) {
+      @Nullable List<Integer> layers, @Nullable List<Integer> liquids) {
     this.ingredients = ingredients;
     this.layers = layers;
+    this.liquids = liquids;
   }
 
   @Nonnull
@@ -94,8 +99,10 @@ public class FoodBowlModel implements IUnbakedModel {
       @Nonnull Set<String> missingTextureErrors) {
     ImmutableSet.Builder<ResourceLocation> builder = ImmutableSet.builder();
 
-    if (ingredients != null && layers != null) {
+    if (ingredients != null && layers != null && liquids != null) {
       builder.add(new ResourceLocation("minecraft:item/bowl"));
+      builder.add(new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/liquid_base"));
+      builder.add(new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/liquid_overflow"));
 
       for (TextureAtlasSprite sprite : ingredients) {
         builder.add(sprite.getName());
@@ -128,18 +135,44 @@ public class FoodBowlModel implements IUnbakedModel {
     Random random = new Random();
     random.setSeed(42);
     ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
-    IBakedModel model = (new ItemLayerModel(ImmutableList
-        .of(new ResourceLocation("minecraft:item/bowl")))
+    IBakedModel model = (new ItemLayerModel(
+        ImmutableList.of(new ResourceLocation("minecraft:item/bowl")))
         .bake(bakery, spriteGetter, sprite, format));
     builder.addAll(model.getQuads(null, null, random, EmptyModelData.INSTANCE));
     particleSprite = model.getParticleTexture(EmptyModelData.INSTANCE);
 
-    if (ingredients != null && layers != null) {
+    if (ingredients != null && layers != null && liquids != null) {
+
+      if (!liquids.isEmpty()) {
+        int liquidColor = getMixedColor(this.liquids);
+        IBakedModel model2 = (new ItemLayerModel(ImmutableList
+            .of(new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/liquid_base")))
+            .bake(bakery, spriteGetter, sprite, format));
+        List<BakedQuad> quads = model2.getQuads(null, null, random, EmptyModelData.INSTANCE);
+
+        for (BakedQuad quad : quads) {
+          ColorTransformer transformer = new ColorTransformer(liquidColor, quad.getFormat());
+          quad.pipe(transformer);
+          builder.add(transformer.build());
+        }
+
+        if (this.ingredients.size() > 3) {
+          IBakedModel model3 = (new ItemLayerModel(ImmutableList
+              .of(new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/liquid_overflow")))
+              .bake(bakery, spriteGetter, sprite, format));
+          List<BakedQuad> quads2 = model3.getQuads(null, null, random, EmptyModelData.INSTANCE);
+
+          for (BakedQuad quad : quads2) {
+            ColorTransformer transformer = new ColorTransformer(liquidColor, quad.getFormat());
+            quad.pipe(transformer);
+            builder.add(transformer.build());
+          }
+        }
+      }
 
       for (int i = 0; i < ingredients.size(); i++) {
         IBakedModel model1 = (new ItemLayerModel(ImmutableList
-            .of(new ResourceLocation(CulinaryConstruct.MODID,
-                "item/bowl/layer" + layers.get(i))))
+            .of(new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/layer" + layers.get(i))))
             .bake(bakery, spriteGetter, sprite, format));
         List<BakedQuad> quads = model1.getQuads(null, null, random, EmptyModelData.INSTANCE);
 
@@ -153,6 +186,39 @@ public class FoodBowlModel implements IUnbakedModel {
     }
     return new BakedItemModel(builder.build(), particleSprite, transformMap, ItemOverrideList.EMPTY,
         transform.isIdentity());
+  }
+
+  private int getMixedColor(List<Integer> colors) {
+    colors.removeIf(color -> color < 0);
+
+    if (colors.isEmpty()) {
+      return -1;
+    }
+    int[] aint = new int[3];
+    int i = 0;
+    int j = 0;
+
+    for (Integer color : colors) {
+      float f = (float) (color >> 16 & 255) / 255.0F;
+      float f1 = (float) (color >> 8 & 255) / 255.0F;
+      float f2 = (float) (color & 255) / 255.0F;
+      i = (int) ((float) i + Math.max(f, Math.max(f1, f2)) * 255.0F);
+      aint[0] = (int) ((float) aint[0] + f * 255.0F);
+      aint[1] = (int) ((float) aint[1] + f1 * 255.0F);
+      aint[2] = (int) ((float) aint[2] + f2 * 255.0F);
+      ++j;
+    }
+    int j1 = aint[0] / j;
+    int k1 = aint[1] / j;
+    int l1 = aint[2] / j;
+    float f3 = (float) i / (float) j;
+    float f4 = (float) Math.max(j1, Math.max(k1, l1));
+    j1 = (int) ((float) j1 * f3 / f4);
+    k1 = (int) ((float) k1 * f3 / f4);
+    l1 = (int) ((float) l1 * f3 / f4);
+    int j2 = (j1 << 8) + k1;
+    j2 = (j2 << 8) + l1;
+    return j2;
   }
 
   private int getDominantColor(TextureAtlasSprite sprite) {
@@ -226,19 +292,19 @@ public class FoodBowlModel implements IUnbakedModel {
 
     protected IBakedModel getBakedModel(ItemStack stack) {
       ImmutableList.Builder<TextureAtlasSprite> builder = ImmutableList.builder();
-      NonNullList<ItemStack> ingredients = CulinaryNBTHelper.getIngredientsList(stack);
+      List<ItemStack> solids = CulinaryNBTHelper.getSolids(stack);
 
-      for (ItemStack ing : ingredients) {
+      for (ItemStack ing : solids) {
         builder.add(Minecraft.getInstance().getItemRenderer().getItemModelMesher().getItemModel(ing)
             .getParticleTexture(EmptyModelData.INSTANCE));
       }
-      int size = CulinaryNBTHelper.getSize(stack);
       List<Integer> list = new ArrayList<>();
 
-      for (int i = 0; i < size; i++) {
+      for (int i = 0; i < solids.size(); i++) {
         list.add(i);
       }
-      IUnbakedModel parent = new FoodBowlModel(builder.build(), list);
+      List<Integer> liquids = CulinaryNBTHelper.getLiquids(stack);
+      IUnbakedModel parent = new FoodBowlModel(builder.build(), list, liquids);
       Function<ResourceLocation, TextureAtlasSprite> textureGetter;
       textureGetter = location -> Minecraft.getInstance().getTextureMap()
           .getAtlasSprite(location.toString());

@@ -22,6 +22,7 @@ package top.theillusivec4.culinaryconstruct.common.item;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,6 +49,8 @@ import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
 public class CulinaryItemBase extends Item {
 
+  public static final Random RANDOM = new Random();
+
   public CulinaryItemBase() {
     super(new Item.Properties().group(ItemGroup.FOOD).food(new Food.Builder().build()));
   }
@@ -66,8 +69,24 @@ public class CulinaryItemBase extends Item {
       consumed.add(CulinaryNBTHelper.getBase(stack));
       consumed.forEach(itemstack -> {
         if (!itemstack.isEmpty()) {
-          CulinaryConstructAPI.getCulinaryIngredient(itemstack)
-              .ifPresent(culinary -> culinary.onEaten(player));
+          CulinaryConstructAPI.getCulinaryIngredient(itemstack).ifPresent(culinary -> {
+            culinary.onEaten(player);
+            culinary.getEffects().forEach(effect -> {
+              if (RANDOM.nextFloat() < effect.getRight()) {
+                player.addPotionEffect(effect.getLeft());
+              }
+            });
+          });
+
+          Food foodie = itemstack.getItem().getFood();
+
+          if (foodie != null) {
+            foodie.getEffects().forEach(effect -> {
+              if (RANDOM.nextFloat() < effect.getRight()) {
+                player.addPotionEffect(effect.getLeft());
+              }
+            });
+          }
         }
       });
     }

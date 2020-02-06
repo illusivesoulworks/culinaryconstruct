@@ -36,6 +36,7 @@ import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 public class CulinaryCalculator {
 
   private final NonNullList<ItemStack> ingredients;
+  private final NonNullList<ItemStack> solids;
   private final List<ItemStack> processed = new ArrayList<>();
   private final ItemStack base;
 
@@ -43,10 +44,13 @@ public class CulinaryCalculator {
   private int food;
   private float saturation;
   private int complexity;
+  private List<Integer> liquidColors;
 
   public CulinaryCalculator(ItemStack baseIn, NonNullList<ItemStack> ingredientsIn) {
     this.base = baseIn;
     this.ingredients = ingredientsIn;
+    this.solids = NonNullList.create();
+    this.liquidColors = new ArrayList<>();
   }
 
   public ItemStack getResult() {
@@ -93,6 +97,12 @@ public class CulinaryCalculator {
     CulinaryNBTHelper.setSaturation(result, this.saturation);
     CulinaryNBTHelper.setQuality(result, quality);
     CulinaryNBTHelper.setBase(result, this.base);
+    CulinaryNBTHelper.setSolids(result, this.solids);
+    CulinaryNBTHelper.setSolidsSize(result, this.solids.size());
+
+    if (!this.liquidColors.isEmpty()) {
+      CulinaryNBTHelper.setLiquids(result, this.liquidColors);
+    }
     result.setCount(count);
     return result;
   }
@@ -107,9 +117,17 @@ public class CulinaryCalculator {
     if (culinary.isPresent()) {
       foodAmount = culinary.map(ICulinaryIngredient::getFoodAmount).orElse(0);
       saturationAmount = culinary.map(ICulinaryIngredient::getSaturation).orElse(0.0F);
+      culinary.ifPresent(ingredient -> {
+        if (ingredient.isLiquid()) {
+          this.liquidColors.add(ingredient.getLiquidColor());
+        } else {
+          this.solids.add(stack);
+        }
+      });
     } else if (food != null) {
       foodAmount = food.getHealing();
       saturationAmount = food.getSaturation();
+      this.solids.add(stack);
     }
     this.food += foodAmount;
     this.saturation += saturationAmount * foodAmount;

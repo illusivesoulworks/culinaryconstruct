@@ -19,12 +19,20 @@
 
 package top.theillusivec4.culinaryconstruct.common.capability;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.block.CakeBlock;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.MilkBucketItem;
+import net.minecraft.item.PotionItem;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.PotionUtils;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.apache.commons.lang3.tuple.Pair;
 import top.theillusivec4.culinaryconstruct.api.capability.CulinaryConstructCapability;
 import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
 
@@ -46,6 +54,47 @@ public class CapabilityEventHandler {
             @Override
             public float getSaturation() {
               return 0.2F;
+            }
+          }));
+    } else if (item instanceof MilkBucketItem) {
+      evt.addCapability(CulinaryConstructCapability.INGREDIENT_ID,
+          CapabilityCulinaryFood.createCulinaryIngredient(new ICulinaryIngredient() {
+            @Override
+            public void onEaten(PlayerEntity player) {
+              if (!player.world.isRemote) {
+                player.curePotionEffects(stack);
+              }
+            }
+
+            @Override
+            public boolean isLiquid() {
+              return true;
+            }
+
+            @Override
+            public int getLiquidColor() {
+              return 16777215;
+            }
+          }));
+    } else if (item instanceof PotionItem) {
+      evt.addCapability(CulinaryConstructCapability.INGREDIENT_ID,
+          CapabilityCulinaryFood.createCulinaryIngredient(new ICulinaryIngredient() {
+            @Override
+            public List<Pair<EffectInstance, Float>> getEffects() {
+              List<Pair<EffectInstance, Float>> list = new ArrayList<>();
+              PotionUtils.getEffectsFromStack(stack)
+                  .forEach(effectInstance -> list.add(Pair.of(effectInstance, 1.0F)));
+              return list;
+            }
+
+            @Override
+            public boolean isLiquid() {
+              return true;
+            }
+
+            @Override
+            public int getLiquidColor() {
+              return PotionUtils.getColor(stack);
             }
           }));
     }
