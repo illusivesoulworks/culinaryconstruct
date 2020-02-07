@@ -63,4 +63,11 @@ public class FoodBowlItem extends CulinaryItemBase {
       items.add(sub);
     }
   }
+
+  @Nonnull
+  @Override
+  public String getTranslationKey(ItemStack stack) {
+    return CulinaryNBTHelper.getLiquids(stack) != null ? "item.culinaryconstruct.stew"
+        : this.getTranslationKey();
+  }
 }
