@@ -74,7 +74,8 @@ public class CulinaryStationBlock extends Block {
   @Override
   public INamedContainerProvider getContainer(BlockState state, World worldIn, BlockPos pos) {
     return new SimpleNamedContainerProvider(
-        (windowId, playerInventory, playerEntity) -> new CulinaryStationContainer(windowId, playerInventory,
-            IWorldPosCallable.of(worldIn, pos), worldIn.getTileEntity(pos)), CONTAINER_NAME);
+        (windowId, playerInventory, playerEntity) -> new CulinaryStationContainer(windowId,
+            playerInventory, IWorldPosCallable.of(worldIn, pos), worldIn.getTileEntity(pos)),
+        CONTAINER_NAME);
   }
 }

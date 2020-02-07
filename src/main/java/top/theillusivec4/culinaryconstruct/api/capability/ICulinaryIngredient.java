@@ -53,5 +53,7 @@ public interface ICulinaryIngredient {
     return null;
   }
 
-  default boolean isValid() { return true; }
+  default boolean isValid() {
+    return true;
+  }
 }

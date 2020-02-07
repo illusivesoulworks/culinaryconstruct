@@ -33,13 +33,12 @@ import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegi
 
 public class CulinaryStationTileEntity extends TileEntity {
 
-  protected final LazyOptional<IItemHandler> baseOpt;
-  protected final LazyOptional<IItemHandler> ingredientsOpt;
-  protected final LazyOptional<IItemHandler> outputOpt;
-
   public final ItemStackHandler base;
   public final ItemStackHandler ingredients;
   public final ItemStackHandler output;
+  protected final LazyOptional<IItemHandler> baseOpt;
+  protected final LazyOptional<IItemHandler> ingredientsOpt;
+  protected final LazyOptional<IItemHandler> outputOpt;
 
   public CulinaryStationTileEntity() {
     super(CulinaryConstructRegistry.CULINARY_STATION_TE);

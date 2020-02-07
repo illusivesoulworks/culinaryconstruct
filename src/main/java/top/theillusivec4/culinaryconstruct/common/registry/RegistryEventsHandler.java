@@ -31,8 +31,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import top.theillusivec4.culinaryconstruct.common.block.CulinaryStationBlock;
 import top.theillusivec4.culinaryconstruct.common.inventory.CulinaryStationContainer;
-import top.theillusivec4.culinaryconstruct.common.item.SandwichItem;
 import top.theillusivec4.culinaryconstruct.common.item.FoodBowlItem;
+import top.theillusivec4.culinaryconstruct.common.item.SandwichItem;
 import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)

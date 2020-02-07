@@ -38,10 +38,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import top.theillusivec4.culinaryconstruct.client.CulinaryScreen;
-import top.theillusivec4.culinaryconstruct.client.FoodBowlModel.BakedFoodBowlModel;
-import top.theillusivec4.culinaryconstruct.client.FoodBowlModel.BakedFoodBowlOverrideHandler;
-import top.theillusivec4.culinaryconstruct.client.SandwichModel.BakedSandwichModel;
-import top.theillusivec4.culinaryconstruct.client.SandwichModel.BakedSandwichOverrideHandler;
+import top.theillusivec4.culinaryconstruct.client.model.FoodBowlModel.BakedFoodBowlOverrideHandler;
+import top.theillusivec4.culinaryconstruct.client.model.SandwichModel.BakedSandwichOverrideHandler;
+import top.theillusivec4.culinaryconstruct.client.model.base.CulinaryModelWrapper;
 import top.theillusivec4.culinaryconstruct.common.capability.CapabilityCulinaryFood;
 import top.theillusivec4.culinaryconstruct.common.network.CulinaryConstructNetwork;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
@@ -77,13 +76,13 @@ public class CulinaryConstruct {
       ModelResourceLocation rl = new ModelResourceLocation(RegistryReference.SANDWICH, "inventory");
       SimpleBakedModel original = (SimpleBakedModel) evt.getModelRegistry().get(rl);
       BlockModel unbaked = (BlockModel) evt.getModelLoader().getUnbakedModel(rl);
-      IBakedModel model = new BakedSandwichModel(original,
+      IBakedModel model = new CulinaryModelWrapper(original,
           new BakedSandwichOverrideHandler(evt.getModelLoader(), unbaked));
       evt.getModelRegistry().put(rl, model);
       rl = new ModelResourceLocation(RegistryReference.FOOD_BOWL, "inventory");
       original = (SimpleBakedModel) evt.getModelRegistry().get(rl);
       unbaked = (BlockModel) evt.getModelLoader().getUnbakedModel(rl);
-      model = new BakedFoodBowlModel(original,
+      model = new CulinaryModelWrapper(original,
           new BakedFoodBowlOverrideHandler(evt.getModelLoader(), unbaked));
       evt.getModelRegistry().put(rl, model);
     }

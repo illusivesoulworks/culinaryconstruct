@@ -55,6 +55,17 @@ public class CulinaryItemBase extends Item {
     super(new Item.Properties().group(ItemGroup.FOOD).food(new Food.Builder().build()));
   }
 
+  protected static void generateCreativeNBT(ItemStack sub) {
+    CulinaryNBTHelper.setSize(sub, 5);
+    CulinaryNBTHelper.setIngredientsList(sub, NonNullList
+        .from(ItemStack.EMPTY, new ItemStack(Items.NETHER_STAR), new ItemStack(Items.NETHER_STAR),
+            new ItemStack(Items.NETHER_STAR), new ItemStack(Items.NETHER_STAR),
+            new ItemStack(Items.NETHER_STAR)));
+    CulinaryNBTHelper.setFoodAmount(sub, 20);
+    CulinaryNBTHelper.setSaturation(sub, 1.0F);
+    CulinaryNBTHelper.setQuality(sub, 4);
+  }
+
   @Nonnull
   @Override
   public ItemStack onItemUseFinish(@Nonnull ItemStack stack, @Nonnull World worldIn,
@@ -151,16 +162,5 @@ public class CulinaryItemBase extends Item {
       tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.ingredients")
           .applyTextStyle(TextFormatting.GRAY));
     }
-  }
-
-  protected static void generateCreativeNBT(ItemStack sub) {
-    CulinaryNBTHelper.setSize(sub, 5);
-    CulinaryNBTHelper.setIngredientsList(sub, NonNullList
-        .from(ItemStack.EMPTY, new ItemStack(Items.NETHER_STAR), new ItemStack(Items.NETHER_STAR),
-            new ItemStack(Items.NETHER_STAR), new ItemStack(Items.NETHER_STAR),
-            new ItemStack(Items.NETHER_STAR)));
-    CulinaryNBTHelper.setFoodAmount(sub, 20);
-    CulinaryNBTHelper.setSaturation(sub, 1.0F);
-    CulinaryNBTHelper.setQuality(sub, 4);
   }
 }

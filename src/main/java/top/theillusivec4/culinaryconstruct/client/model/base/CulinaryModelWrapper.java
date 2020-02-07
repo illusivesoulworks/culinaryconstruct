@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019 C4
+ * Copyright (c) 2018-2020 C4
  *
  * This file is part of Culinary Construct, a mod made for Minecraft.
  *
@@ -17,21 +17,25 @@
  * License along with Culinary Construct.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package top.theillusivec4.culinaryconstruct.api.capability;
+package top.theillusivec4.culinaryconstruct.client.model.base;
 
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
+import javax.annotation.Nonnull;
+import net.minecraft.client.renderer.model.ItemOverrideList;
+import net.minecraft.client.renderer.model.SimpleBakedModel;
+import net.minecraftforge.client.model.BakedModelWrapper;
 
-public class CulinaryConstructCapability {
+public final class CulinaryModelWrapper extends BakedModelWrapper<SimpleBakedModel> {
 
-  @CapabilityInject(ICulinaryIngredient.class)
-  public static final Capability<ICulinaryIngredient> CULINARY_INGREDIENT;
-  public static final ResourceLocation INGREDIENT_ID = new ResourceLocation(CulinaryConstruct.MODID,
-      "ingredient");
+  private final ItemOverrideList overrides;
 
-  static {
-    CULINARY_INGREDIENT = null;
+  public CulinaryModelWrapper(SimpleBakedModel original, ItemOverrideList overrides) {
+    super(original);
+    this.overrides = overrides;
+  }
+
+  @Nonnull
+  @Override
+  public ItemOverrideList getOverrides() {
+    return this.overrides;
   }
 }
