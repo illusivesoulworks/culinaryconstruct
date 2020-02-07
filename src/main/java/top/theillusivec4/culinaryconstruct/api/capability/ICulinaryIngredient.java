@@ -21,6 +21,7 @@ package top.theillusivec4.culinaryconstruct.api.capability;
 
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.potion.EffectInstance;
 import org.apache.commons.lang3.tuple.Pair;
@@ -47,7 +48,10 @@ public interface ICulinaryIngredient {
     return false;
   }
 
-  default int getLiquidColor() {
-    return -1;
+  @Nullable
+  default Integer getLiquidColor() {
+    return null;
   }
+
+  default boolean isValid() { return true; }
 }

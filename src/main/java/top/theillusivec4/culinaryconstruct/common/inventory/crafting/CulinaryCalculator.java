@@ -21,6 +21,7 @@ package top.theillusivec4.culinaryconstruct.common.inventory.crafting;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import net.minecraft.item.Food;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -70,11 +71,14 @@ public class CulinaryCalculator {
     if (this.type == OutputType.SANDWICH) {
       process.add(this.base);
     }
-    process.forEach(stack -> {
+
+    for (ItemStack stack : process) {
       if (!stack.isEmpty()) {
-        this.processStack(stack);
+        if (!this.processStack(stack)) {
+          return ItemStack.EMPTY;
+        }
       }
-    });
+    }
 
     if (this.type == OutputType.SANDWICH && !this.liquidColors.isEmpty()) {
       return ItemStack.EMPTY;
@@ -105,22 +109,22 @@ public class CulinaryCalculator {
     CulinaryNBTHelper.setSolidsSize(result, this.solids.size());
 
     if (!this.liquidColors.isEmpty()) {
+      this.liquidColors.removeIf(Objects::isNull);
       CulinaryNBTHelper.setLiquids(result, this.liquidColors);
     }
     result.setCount(count);
     return result;
   }
 
-  public void processStack(ItemStack stack) {
+  public boolean processStack(ItemStack stack) {
     Item item = stack.getItem();
     Food food = item.getFood();
     LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructAPI.getCulinaryIngredient(stack);
     int foodAmount = 0;
     float saturationAmount = 0;
+    boolean valid = true;
 
     if (culinary.isPresent()) {
-      foodAmount = culinary.map(ICulinaryIngredient::getFoodAmount).orElse(0);
-      saturationAmount = culinary.map(ICulinaryIngredient::getSaturation).orElse(0.0F);
       culinary.ifPresent(ingredient -> {
         if (ingredient.isLiquid()) {
           this.liquidColors.add(ingredient.getLiquidColor());
@@ -128,10 +132,17 @@ public class CulinaryCalculator {
           this.solids.add(stack);
         }
       });
+      valid = culinary.map(ICulinaryIngredient::isValid).orElse(true);
+      foodAmount = culinary.map(ICulinaryIngredient::getFoodAmount).orElse(0);
+      saturationAmount = culinary.map(ICulinaryIngredient::getSaturation).orElse(0.0F);
     } else if (food != null) {
       foodAmount = food.getHealing();
       saturationAmount = food.getSaturation();
       this.solids.add(stack);
+    }
+
+    if (!valid) {
+      return false;
     }
     this.food += foodAmount;
     this.saturation += saturationAmount * foodAmount;
@@ -148,6 +159,7 @@ public class CulinaryCalculator {
       this.complexity++;
     }
     this.processed.add(stack);
+    return true;
   }
 
   public int getSize() {

@@ -78,8 +78,13 @@ public class CulinaryNBTHelper {
     return list;
   }
 
+  @Nullable
   public static List<Integer> getLiquids(ItemStack stack) {
     CompoundNBT compound = getTagSafe(stack);
+
+    if (!compound.contains(TAG_LIQUIDS)) {
+      return null;
+    }
     ListNBT tag = compound.getList(TAG_LIQUIDS, 3);
     List<Integer> liquids = new ArrayList<>();
     tag.forEach(nbt -> liquids.add(((IntNBT) nbt).getInt()));

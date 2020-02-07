@@ -23,7 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.CakeBlock;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.MilkBucketItem;
@@ -32,6 +35,7 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.PotionUtils;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fluids.FluidAttributes;
 import org.apache.commons.lang3.tuple.Pair;
 import top.theillusivec4.culinaryconstruct.api.capability.CulinaryConstructCapability;
 import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
@@ -56,6 +60,37 @@ public class CapabilityEventHandler {
               return 0.2F;
             }
           }));
+    } else if (item instanceof BucketItem) {
+      evt.addCapability(CulinaryConstructCapability.INGREDIENT_ID,
+          CapabilityCulinaryFood.createCulinaryIngredient(new ICulinaryIngredient() {
+            @Override
+            public boolean isValid() {
+              Fluid fluid = ((BucketItem) item).getFluid();
+
+              if (fluid == Fluids.EMPTY) {
+                return false;
+              }
+              FluidAttributes attributes = fluid.getAttributes();
+              return !attributes.isGaseous() && !attributes.isLighterThanAir()
+                  && attributes.getTemperature() <= 400;
+            }
+
+            @Override
+            public boolean isLiquid() {
+              return true;
+            }
+
+            @Override
+            public Integer getLiquidColor() {
+              Fluid fluid = ((BucketItem) item).getFluid();
+
+              if (fluid == Fluids.WATER) {
+                return null;
+              }
+              FluidAttributes attributes = fluid.getAttributes();
+              return attributes.getColor();
+            }
+          }));
     } else if (item instanceof MilkBucketItem) {
       evt.addCapability(CulinaryConstructCapability.INGREDIENT_ID,
           CapabilityCulinaryFood.createCulinaryIngredient(new ICulinaryIngredient() {
@@ -72,7 +107,7 @@ public class CapabilityEventHandler {
             }
 
             @Override
-            public int getLiquidColor() {
+            public Integer getLiquidColor() {
               return 16777215;
             }
           }));
@@ -93,7 +128,7 @@ public class CapabilityEventHandler {
             }
 
             @Override
-            public int getLiquidColor() {
+            public Integer getLiquidColor() {
               return PotionUtils.getColor(stack);
             }
           }));

@@ -99,7 +99,7 @@ public class FoodBowlModel implements IUnbakedModel {
       @Nonnull Set<String> missingTextureErrors) {
     ImmutableSet.Builder<ResourceLocation> builder = ImmutableSet.builder();
 
-    if (ingredients != null && layers != null && liquids != null) {
+    if (ingredients != null && layers != null) {
       builder.add(new ResourceLocation("minecraft:item/bowl"));
       builder.add(new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/liquid_base"));
       builder.add(new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/liquid_overflow"));
@@ -141,10 +141,22 @@ public class FoodBowlModel implements IUnbakedModel {
     builder.addAll(model.getQuads(null, null, random, EmptyModelData.INSTANCE));
     particleSprite = model.getParticleTexture(EmptyModelData.INSTANCE);
 
-    if (ingredients != null && layers != null && liquids != null) {
+    if (ingredients != null && layers != null) {
+      List<Integer> ingredientColors = new ArrayList<>();
 
-      if (!liquids.isEmpty()) {
-        int liquidColor = getMixedColor(this.liquids);
+      for (TextureAtlasSprite ing : this.ingredients) {
+        ingredientColors.add(getDominantColor(ing));
+      }
+
+      if (this.liquids != null) {
+        List<Integer> opaqueColors = new ArrayList<>();
+        this.liquids.forEach(color -> {
+          if (color != null) {
+            opaqueColors.add(color);
+          }
+        });
+        boolean isOpaque = !opaqueColors.isEmpty();
+        int liquidColor = isOpaque ? getMixedColor(this.liquids) : getMixedColor(ingredientColors);
         IBakedModel model2 = (new ItemLayerModel(ImmutableList
             .of(new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/liquid_base")))
             .bake(bakery, spriteGetter, sprite, format));
@@ -189,11 +201,6 @@ public class FoodBowlModel implements IUnbakedModel {
   }
 
   private int getMixedColor(List<Integer> colors) {
-    colors.removeIf(color -> color < 0);
-
-    if (colors.isEmpty()) {
-      return -1;
-    }
     int[] aint = new int[3];
     int i = 0;
     int j = 0;
