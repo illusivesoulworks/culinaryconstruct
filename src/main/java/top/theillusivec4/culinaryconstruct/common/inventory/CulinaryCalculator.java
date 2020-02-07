@@ -30,6 +30,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.LazyOptional;
 import top.theillusivec4.culinaryconstruct.api.CulinaryConstructAPI;
 import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
+import top.theillusivec4.culinaryconstruct.common.CulinaryConstructConfig;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 import top.theillusivec4.culinaryconstruct.common.tag.CulinaryTags;
 import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
@@ -56,14 +57,15 @@ public class CulinaryCalculator {
   public ItemStack getResult() {
     List<ItemStack> process = new ArrayList<>(this.ingredients);
     this.processed.clear();
-    int maxFood = 10;
+    int maxFood;
 
     OutputType type;
     if (CulinaryTags.BREAD.contains(base.getItem())) {
       type = OutputType.SANDWICH;
+      maxFood = CulinaryConstructConfig.SERVER.maxFoodPerSandwich.get();
     } else if (CulinaryTags.BOWL.contains(base.getItem())) {
       type = OutputType.BOWL;
-      maxFood = 100;
+      maxFood = Integer.MAX_VALUE;
     } else {
       return ItemStack.EMPTY;
     }

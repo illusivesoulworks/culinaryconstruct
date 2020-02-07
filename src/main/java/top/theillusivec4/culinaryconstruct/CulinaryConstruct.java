@@ -31,7 +31,9 @@ import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -41,6 +43,7 @@ import top.theillusivec4.culinaryconstruct.client.CulinaryScreen;
 import top.theillusivec4.culinaryconstruct.client.model.FoodBowlModel.BakedFoodBowlOverrideHandler;
 import top.theillusivec4.culinaryconstruct.client.model.SandwichModel.BakedSandwichOverrideHandler;
 import top.theillusivec4.culinaryconstruct.client.model.base.CulinaryModelWrapper;
+import top.theillusivec4.culinaryconstruct.common.CulinaryConstructConfig;
 import top.theillusivec4.culinaryconstruct.common.capability.CapabilityCulinaryFood;
 import top.theillusivec4.culinaryconstruct.common.network.CulinaryConstructNetwork;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
@@ -56,6 +59,8 @@ public class CulinaryConstruct {
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     eventBus.addListener(this::setup);
     eventBus.addListener(this::clientSetup);
+    ModLoadingContext.get()
+        .registerConfig(ModConfig.Type.SERVER, CulinaryConstructConfig.serverSpec);
   }
 
   private void setup(final FMLCommonSetupEvent evt) {
