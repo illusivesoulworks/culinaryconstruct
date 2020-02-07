@@ -40,7 +40,6 @@ import net.minecraftforge.items.SlotItemHandler;
 import org.apache.commons.lang3.StringUtils;
 import top.theillusivec4.culinaryconstruct.api.CulinaryConstructAPI;
 import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
-import top.theillusivec4.culinaryconstruct.common.inventory.crafting.CulinaryCalculator;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 import top.theillusivec4.culinaryconstruct.common.tag.CulinaryTags;
 import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
@@ -242,7 +241,7 @@ public class CulinaryStationContainer extends Container {
     public boolean isItemValid(@Nonnull ItemStack stack) {
       LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructAPI
           .getCulinaryIngredient(stack);
-      return stack.getItem().isFood() || culinary.isPresent();
+      return stack.getItem().isFood() || culinary.map(ICulinaryIngredient::isValid).orElse(false);
     }
   }
 

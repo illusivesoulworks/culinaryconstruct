@@ -17,7 +17,7 @@
  * License along with Culinary Construct.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package top.theillusivec4.culinaryconstruct.common.inventory.crafting;
+package top.theillusivec4.culinaryconstruct.common.inventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,6 @@ public class CulinaryCalculator {
   private final List<ItemStack> processed = new ArrayList<>();
   private final ItemStack base;
 
-  private OutputType type;
   private int food;
   private float saturation;
   private int complexity;
@@ -59,16 +58,17 @@ public class CulinaryCalculator {
     this.processed.clear();
     int maxFood = 10;
 
+    OutputType type;
     if (CulinaryTags.BREAD.contains(base.getItem())) {
-      this.type = OutputType.SANDWICH;
+      type = OutputType.SANDWICH;
     } else if (CulinaryTags.BOWL.contains(base.getItem())) {
-      this.type = OutputType.BOWL;
+      type = OutputType.BOWL;
       maxFood = 100;
     } else {
       return ItemStack.EMPTY;
     }
 
-    if (this.type == OutputType.SANDWICH) {
+    if (type == OutputType.SANDWICH) {
       process.add(this.base);
     }
 
@@ -80,7 +80,7 @@ public class CulinaryCalculator {
       }
     }
 
-    if (this.type == OutputType.SANDWICH && !this.liquidColors.isEmpty()) {
+    if (type == OutputType.SANDWICH && !this.liquidColors.isEmpty()) {
       return ItemStack.EMPTY;
     }
 
@@ -90,14 +90,14 @@ public class CulinaryCalculator {
     this.saturation /= this.food;
     int count = 1;
 
-    if (this.type == OutputType.SANDWICH) {
+    if (type == OutputType.SANDWICH) {
       count = (int) Math.ceil(this.food / (double) maxFood);
     }
     this.food = (int) Math.ceil(this.food / (double) count);
     int quality = MathHelper.clamp(this.complexity - (this.getSize() / 2) + 1, 0, 4);
     this.saturation *= 1.0F + ((quality - 2) * 0.3F);
     ItemStack result =
-        this.type == OutputType.SANDWICH ? new ItemStack(CulinaryConstructRegistry.SANDWICH)
+        type == OutputType.SANDWICH ? new ItemStack(CulinaryConstructRegistry.SANDWICH)
             : new ItemStack(CulinaryConstructRegistry.FOOD_BOWL);
     CulinaryNBTHelper.setSize(result, this.getSize());
     CulinaryNBTHelper.setIngredientsList(result, this.ingredients);
@@ -108,7 +108,7 @@ public class CulinaryCalculator {
     CulinaryNBTHelper.setSolids(result, this.solids);
     CulinaryNBTHelper.setSolidsSize(result, this.solids.size());
 
-    if (!this.liquidColors.isEmpty()) {
+    if (!this.liquidColors.isEmpty() && type != OutputType.SANDWICH) {
       this.liquidColors.removeIf(Objects::isNull);
       CulinaryNBTHelper.setLiquids(result, this.liquidColors);
     }
