@@ -1,30 +1,32 @@
-# Culinary Construct [![](http://cf.way2muchnoise.eu/versions/culinary-construct.svg)](https://minecraft.curseforge.com/projects/culinary-construct) [![](http://cf.way2muchnoise.eu/short_culinary-construct_downloads.svg)](https://minecraft.curseforge.com/projects/culinary-construct/files) [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+# Culinary Construct [![](http://cf.way2muchnoise.eu/versions/culinary-construct.svg)](https://www.curseforge.com/minecraft/mc-mods/culinary-construct) [![](http://cf.way2muchnoise.eu/short_culinary-construct_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/culinary-construct/files) [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg?&style=flat-square)](https://www.gnu.org/licenses/lgpl-3.0) [![](https://img.shields.io/discord/500852157503766538.svg?color=green&label=Discord&style=flat-square)](https://discord.gg/JWgrdwt)
 
-Culinary Construct is a mod that lets you make custom sandwiches out of any food items you have lying around. That's right, any of them! The idea and features for this mod are based on [this thread](https://www.reddit.com/r/feedthebeast/comments/8rinwu/dumb_mod_idea_modular_sandwiches/) started by /u/UniqueUserTheSecond on [r/feedthebeast](https://www.reddit.com/r/feedthebeast/). This mod adds one new block, called the Sandwich Station, that lets you craft your custom sandwiches, and one new item, the modular Sandwich!
+Culinary Construct is a mod that lets you make custom sandwiches or bowls/stews out of any food items you have lying around. That's right, any of them! The idea and features for this mod are based on [this thread](https://www.reddit.com/r/feedthebeast/comments/8rinwu/dumb_mod_idea_modular_sandwiches/) started by /u/UniqueUserTheSecond on [r/feedthebeast](https://www.reddit.com/r/feedthebeast/). This mod adds one new block, called the Culinary Station, that lets you craft your custom food, and two new items, the modular Sandwich and Bowl of Food!
 
-### Crafting a Sandwich
-The only thing you need to get started with sandwich crafting is the new block, the Sandwich Station. The recipe for this block is simply a wooden slab over a crafting table, like so:
+### Crafting Dynamic Food
+The only thing you need to get started with food crafting is the new block, the Culinary Station. The recipe for this block is simply a wooden slab over a crafting table, like so:
 
 ![](https://i.imgur.com/xybcmsu.png)
 
-Right-click this block and you'll be taken to the sandwich-making GUI:
+Right-click this block and you'll be taken to the crafting GUI:
 
-![](https://i.imgur.com/3c2c37q.png)
+![](https://i.ibb.co/kmfmKPv/culinary-gui.png)
 
-##### Sandwich Station GUI
-1. Bread Slot: Insert any valid bread item here.
-2. Ingredient Slots 1-5: Insert any valid food item here. There are no other restrictions. You could even just put more bread here if that's what you really want.
-3. Sandwich Name: Insert a custom name for your sandwich here. There's a maximum character limit of 35.
-4. Sandwich: Your crafted sandwich will appear here. The sandwich will always take only one item from each slot, but it can output multiple sandwiches at a time depending on its ingredients.
+##### Culinary Station GUI
+1. Base Slot: Insert any valid bread or bowl item here.
+2. Ingredient Slots 1-5: Insert any valid food item here. There are no other restrictions. If your base is a bowl, certain liquids like buckets of fluid and potions are also possible.
+3. Custom Name: Insert a custom name for your sandwich here. There's a maximum character limit of 35.
+4. Output: Your crafted sandwich or bowl will appear here. Crafting will always take only one item from each slot, but sandwiches can output multiple at a time depending on its ingredients.
 
-### Sandwich Stats
+### Culinary Stats
 
-A crafted sandwich will gain the total combined food value of all of its ingredients. In addition, the saturation modifier will be the average of all of its ingredients' saturation modifiers, proportional to their contribution to the food value. Essentially, it's the same as eating all of the ingredients packed into one item.
+A crafted sandwich or bowl will gain the total combined food value of all of its ingredients. In addition, the saturation modifier will be the average of all of its ingredients' saturation modifiers, proportional to their contribution to the food value. Essentially, it's the same as eating all of the ingredients packed into one item.
 
-### Sandwich Quality
+### Culinary Quality
 
-It's not just about putting whatever ingredients you can find in your sandwich. Sure there's nothing stopping you from doing so, but for a truly tasty sandwich you're going to want a variety of ingredients. Each sandwich, when crafted, will have a quality grade from Very Bland to Very Tasty. Depending on the quality grade, your sandwich will gain either a bonus or a penalty to its saturation. This is also dependent on the size of sandwich. A sandwich with just one ingredient layer will always be Average. However, a sandwich with the maximum of five ingredient layers can range from Very Bland to Very Tasty depending on the variety of ingredients present.
+It's not just about putting whatever ingredients you can find in your sandwich or bowl. Sure there's nothing stopping you from doing so, but for a truly tasty meal you're going to want a variety of ingredients. Each food, when crafted, will have a quality grade from Disgusting to Delicious. Depending on the quality grade, your food will gain either a bonus or a penalty to its saturation. This is also dependent on the size of the food. Food with more ingredients have a wider quality range.
 
 ### Sandwich Count
 
 You'll find that sometimes you can get more than just a single sandwich from a set of ingredients. This is, of course, because not all ingredients are made equal. Some of them will be more filling than others. However, your sandwich can only hold so much. If your ingredients would total more than 10 combined food value, you will split the ingredients among multiple sandwiches. How many sandwiches you get depends on how much food the combined ingredients would give you.
+
+Conversely, bowls/stews will always only output one.
