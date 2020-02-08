@@ -44,6 +44,7 @@ import top.theillusivec4.culinaryconstruct.client.model.FoodBowlModel.BakedFoodB
 import top.theillusivec4.culinaryconstruct.client.model.SandwichModel.BakedSandwichOverrideHandler;
 import top.theillusivec4.culinaryconstruct.client.model.base.CulinaryModelWrapper;
 import top.theillusivec4.culinaryconstruct.common.CulinaryConstructConfig;
+import top.theillusivec4.culinaryconstruct.common.advancement.CulinaryTriggers;
 import top.theillusivec4.culinaryconstruct.common.capability.CapabilityCulinaryFood;
 import top.theillusivec4.culinaryconstruct.common.network.CulinaryConstructNetwork;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
@@ -66,6 +67,7 @@ public class CulinaryConstruct {
   private void setup(final FMLCommonSetupEvent evt) {
     CulinaryConstructNetwork.register();
     CapabilityCulinaryFood.register();
+    CulinaryTriggers.register();
   }
 
   private void clientSetup(final FMLClientSetupEvent evt) {

@@ -24,6 +24,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.Food;
@@ -46,6 +47,7 @@ import org.apache.commons.lang3.StringUtils;
 import top.theillusivec4.culinaryconstruct.api.CulinaryConstructAPI;
 import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
 import top.theillusivec4.culinaryconstruct.common.CulinaryConstructConfig;
+import top.theillusivec4.culinaryconstruct.common.advancement.CulinaryTriggers;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 import top.theillusivec4.culinaryconstruct.common.tag.CulinaryTags;
 import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
@@ -302,6 +304,10 @@ public class CulinaryStationContainer extends Container {
     @Nonnull
     @Override
     public ItemStack onTake(PlayerEntity playerEntity, @Nonnull ItemStack stack) {
+
+      if (!playerEntity.world.isRemote) {
+        CulinaryTriggers.CRAFT_FOOD.trigger((ServerPlayerEntity)playerEntity);
+      }
       IItemHandler ingredients = CulinaryStationContainer.this.ingredients;
 
       if (ingredients != null) {

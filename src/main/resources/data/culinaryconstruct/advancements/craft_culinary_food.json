@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {
+      "item": "culinaryconstruct:culinary_station"
+    },
+    "title": {
+      "translate": "culinaryconstruct.advancements.culinary_station.title"
+    },
+    "description": {
+      "translate": "culinaryconstruct.advancements.culinary_station.description"
+    }
+  },
+  "parent": "husbandry/plant_seed",
+  "criteria": {
+    "craft": {
+      "trigger": "culinaryconstruct:craft_food"
+    }
+  }
+}
