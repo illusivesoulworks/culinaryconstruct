@@ -26,7 +26,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class CulinaryTags {
 
-  public static final Tag<Item> BREAD = tag("food/bread");
+  public static final Tag<Item> BREAD = tag("bread");
   public static final Tag<Item> BOWL = tag("bowl");
 
   private static Tag<Item> tag(String name) {
