@@ -1,0 +1,11 @@
+{
+  "culinaryconstruct.culinary_container": "Handwerk & Name",
+  "item.culinaryconstruct.sandwich": "Sandwich",
+  "tooltip.culinaryconstruct.ingredients.name": "Zutaten",
+  "tooltip.culinaryconstruct.ingredients": "Für Zutaten [Umschalt] gedrückt halten",
+  "tooltip.culinaryconstruct.quality.0": "Sehr fad",
+  "tooltip.culinaryconstruct.quality.1": "Fad",
+  "tooltip.culinaryconstruct.quality.2": "Durchschnittlich",
+  "tooltip.culinaryconstruct.quality.3": "Lecker",
+  "tooltip.culinaryconstruct.quality.4": "Sehr lecker"
+}

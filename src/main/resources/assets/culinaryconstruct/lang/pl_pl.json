@@ -1,0 +1,20 @@
+{
+  "culinaryconstruct.culinary_container": "Stwórz i Nazwij",
+  "item.culinaryconstruct.sandwich": "Kanapka",
+  "tooltip.culinaryconstruct.ingredients.name": "Składniki",
+  "tooltip.culinaryconstruct.ingredients": "Przytrzymaj [Shift] by zobaczyć składniki",
+  "tooltip.culinaryconstruct.quality.0": "Bardzo Mdła",
+  "tooltip.culinaryconstruct.quality.1": "Mdła",
+  "tooltip.culinaryconstruct.quality.2": "Przeciętna",
+  "tooltip.culinaryconstruct.quality.3": "Smaczna",
+  "tooltip.culinaryconstruct.quality.4": "Wykwintna",
+  "tooltip.culinaryconstruct.count.2": "Podwójna",
+  "tooltip.culinaryconstruct.count.3": "Potrójna",
+  "tooltip.culinaryconstruct.count.4": "Poczwórna",
+  "tooltip.culinaryconstruct.count.5": "Pięcio-składnikowa",
+  "tooltip.culinaryconstruct.list.1": "%s",
+  "tooltip.culinaryconstruct.list.2": "%s i %s",
+  "tooltip.culinaryconstruct.list.3": "%s, %s, i %s",
+  "tooltip.culinaryconstruct.list.4": "%s, %s, %s, i %s",
+  "tooltip.culinaryconstruct.list.5": "%s, %s, %s, %s, i %s"
+}

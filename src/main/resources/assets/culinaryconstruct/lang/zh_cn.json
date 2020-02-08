@@ -1,0 +1,11 @@
+{
+  "culinaryconstruct.culinary_container": "名称",
+  "item.culinaryconstruct.sandwich": "三明治",
+  "tooltip.culinaryconstruct.ingredients.name": "配方",
+  "tooltip.culinaryconstruct.ingredients": "按住 [Shift] 查看配方",
+  "tooltip.culinaryconstruct.quality.0": "乏味",
+  "tooltip.culinaryconstruct.quality.1": "清淡",
+  "tooltip.culinaryconstruct.quality.2": "适中",
+  "tooltip.culinaryconstruct.quality.3": "美味",
+  "tooltip.culinaryconstruct.quality.4": "饕餮盛宴"
+}

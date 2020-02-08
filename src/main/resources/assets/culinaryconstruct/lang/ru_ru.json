@@ -1,0 +1,20 @@
+{
+  "culinaryconstruct.culinary_container": "Создание и название",
+  "item.culinaryconstruct.sandwich": "Бутерброд",
+  "tooltip.culinaryconstruct.ingredients.name": "Ингридиенты",
+  "tooltip.culinaryconstruct.ingredients": "Зажмите [Shift] для ингридиентов",
+  "tooltip.culinaryconstruct.quality.0": "Очень невкусный",
+  "tooltip.culinaryconstruct.quality.1": "Невкусный",
+  "tooltip.culinaryconstruct.quality.2": "Средний",
+  "tooltip.culinaryconstruct.quality.3": "Вкусный",
+  "tooltip.culinaryconstruct.quality.4": "Очень вкусный",
+  "tooltip.culinaryconstruct.count.2": "Двойной",
+  "tooltip.culinaryconstruct.count.3": "Тройной",
+  "tooltip.culinaryconstruct.count.4": "Четверной",
+  "tooltip.culinaryconstruct.count.5": "Пятикратный",
+  "tooltip.culinaryconstruct.list.1": "%s",
+  "tooltip.culinaryconstruct.list.2": "%s и %s",
+  "tooltip.culinaryconstruct.list.3": "%s, %s, и %s",
+  "tooltip.culinaryconstruct.list.4": "%s, %s, %s, и %s",
+  "tooltip.culinaryconstruct.list.5": "%s, %s, %s, %s, и %s"
+}

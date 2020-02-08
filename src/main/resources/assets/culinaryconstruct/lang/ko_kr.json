@@ -1,0 +1,11 @@
+{
+  "culinaryconstruct.culinary_container": "제작 & 이름",
+  "item.culinaryconstruct.sandwich": "샌드위치",
+  "tooltip.culinaryconstruct.ingredients.name": "재료",
+  "tooltip.culinaryconstruct.ingredients": "재료를 위해 [Shift] 를 누르세요",
+  "tooltip.culinaryconstruct.quality.0": "무미건조함",
+  "tooltip.culinaryconstruct.quality.1": "그저그럼",
+  "tooltip.culinaryconstruct.quality.2": "먹을만 함",
+  "tooltip.culinaryconstruct.quality.3": "맛있음",
+  "tooltip.culinaryconstruct.quality.4": "매우 맛있음"
+}
