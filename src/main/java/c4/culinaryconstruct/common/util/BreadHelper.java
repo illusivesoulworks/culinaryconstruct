@@ -70,6 +70,10 @@ public class BreadHelper {
             addBreadItem("gb:glob_bread");
         }
 
+        if (Loader.isModLoaded("roots")) {
+            addBreadItem("roots:wildewheet_bread");
+        }
+
         for (String s : ConfigHandler.breadItems) {
             addBreadItem(s);
         }
