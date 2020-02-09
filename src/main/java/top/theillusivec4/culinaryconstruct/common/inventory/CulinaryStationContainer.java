@@ -42,12 +42,12 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.StringUtils;
 import top.theillusivec4.culinaryconstruct.api.CulinaryConstructAPI;
 import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
 import top.theillusivec4.culinaryconstruct.common.CulinaryConstructConfig;
 import top.theillusivec4.culinaryconstruct.common.advancement.CulinaryTriggers;
+import top.theillusivec4.culinaryconstruct.common.item.CulinaryItemBase;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 import top.theillusivec4.culinaryconstruct.common.tag.CulinaryTags;
 import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
@@ -249,8 +249,8 @@ public class CulinaryStationContainer extends Container {
     public boolean isItemValid(@Nonnull ItemStack stack) {
       LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructAPI
           .getCulinaryIngredient(stack);
-      return (stack.getItem().isFood() || culinary.map(ICulinaryIngredient::isValid).orElse(false))
-          && !isBlacklistedIngredient(stack);
+      return !(stack.getItem() instanceof CulinaryItemBase) && (stack.getItem().isFood() || culinary
+          .map(ICulinaryIngredient::isValid).orElse(false)) && !isBlacklistedIngredient(stack);
     }
 
     public boolean isBlacklistedIngredient(ItemStack stack) {
@@ -306,7 +306,7 @@ public class CulinaryStationContainer extends Container {
     public ItemStack onTake(PlayerEntity playerEntity, @Nonnull ItemStack stack) {
 
       if (!playerEntity.world.isRemote) {
-        CulinaryTriggers.CRAFT_FOOD.trigger((ServerPlayerEntity)playerEntity);
+        CulinaryTriggers.CRAFT_FOOD.trigger((ServerPlayerEntity) playerEntity);
       }
       IItemHandler ingredients = CulinaryStationContainer.this.ingredients;
 
