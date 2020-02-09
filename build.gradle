@@ -14,6 +14,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'com.matthewprenger.cursegradle'
 apply plugin: "com.wynprice.cursemaven"
+apply plugin: 'maven-publish'
 
 version = "${version_minecraft}-${mod_version}"
 group = "${mod_group}"
@@ -22,7 +23,7 @@ archivesBaseName = "${mod_id}"
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 minecraft {
-    mappings channel: 'snapshot', version: "${version_mcp}".toString()
+    mappings channel: 'stable', version: "${version_mcp}".toString()
 
     runs {
         client {
@@ -92,12 +93,30 @@ jar {
     }
 }
 
+def reobfFile = file("build/reobfJar/output.jar")
+def reobfArtifact = artifacts.add('default', reobfFile) {
+    type 'jar'
+    builtBy 'reobfJar'
+}
+
+task apiJar(type: Jar) {
+    classifier = 'api'
+    include 'top/theillusivec4/culinaryconstruct/api/**/*'
+    from sourceSets.main.allSource
+    from sourceSets.main.output
+}
+
 task sourcesJar(type: Jar) {
     classifier = 'sources'
     from sourceSets.main.allJava
 }
 
-tasks.build.dependsOn sourcesJar
+task deobfJar(type: Jar) {
+    classifier = 'deobf'
+    from sourceSets.main.output
+}
+
+tasks.build.dependsOn apiJar, sourcesJar, deobfJar
 
 processResources {
 
@@ -111,7 +130,6 @@ processResources {
     }
 }
 
-
 curseforge {
 
     project {
@@ -121,5 +139,37 @@ curseforge {
         changelogType = 'markdown'
         changelog = file('docs/CHANGELOG.md')
         addArtifact(sourcesJar)
+    }
+}
+
+publishing {
+    tasks.publish.dependsOn 'build'
+    publications {
+
+        mavenJava(MavenPublication) {
+            artifactId project.archivesBaseName
+
+            artifact reobfArtifact
+            artifact deobfJar
+            artifact sourcesJar
+            artifact apiJar
+        }
+    }
+
+    repositories {
+
+        if (project.hasProperty('urlMaven')) {
+
+            if (project.hasProperty('userMaven') && project.hasProperty('passMaven')) {
+
+                maven {
+                    url urlMaven
+                    credentials {
+                        username userMaven
+                        password passMaven
+                    }
+                }
+            }
+        }
     }
 }
