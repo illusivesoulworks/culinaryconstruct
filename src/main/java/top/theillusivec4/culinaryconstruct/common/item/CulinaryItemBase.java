@@ -122,7 +122,8 @@ public class CulinaryItemBase extends Item {
               .getUnformattedComponentText());
           builder.append(" ");
         }
-        builder.append(item.getName().getUnformattedComponentText());
+        builder.append(
+            new TranslationTextComponent(item.getTranslationKey()).getUnformattedComponentText());
         names.add(builder.toString());
       });
       fullName.append(new TranslationTextComponent("tooltip.culinaryconstruct.list." + names.size(),

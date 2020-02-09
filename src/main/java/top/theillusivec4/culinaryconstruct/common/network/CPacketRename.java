@@ -38,7 +38,7 @@ public class CPacketRename {
   }
 
   public static CPacketRename decode(PacketBuffer buf) {
-    return new CPacketRename(buf.readString());
+    return new CPacketRename(buf.readString(35));
   }
 
   public static void handle(CPacketRename msg, Supplier<Context> ctx) {

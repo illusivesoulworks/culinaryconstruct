@@ -213,8 +213,8 @@ public class CulinaryStationContainer extends Container {
   }
 
   public void updateItemName(String newName) {
-    this.outputItemName = newName;
-    this.updateOutput();
+      this.outputItemName = newName;
+      this.updateOutput();
   }
 
   private class BaseSlot extends SlotItemHandler {
@@ -299,6 +299,7 @@ public class CulinaryStationContainer extends Container {
     @Override
     public void onSlotChanged() {
       CulinaryStationContainer.this.updateOutput();
+      CulinaryStationContainer.this.detectAndSendChanges();
     }
 
     @Nonnull
@@ -331,8 +332,6 @@ public class CulinaryStationContainer extends Container {
       if (base != null) {
         base.getStackInSlot(0).shrink(1);
       }
-      CulinaryStationContainer.this.updateOutput();
-      CulinaryStationContainer.this.detectAndSendChanges();
       return stack;
     }
   }

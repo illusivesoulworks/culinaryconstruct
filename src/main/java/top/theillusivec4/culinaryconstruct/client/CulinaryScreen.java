@@ -123,10 +123,12 @@ public class CulinaryScreen extends ContainerScreen<CulinaryStationContainer> im
   }
 
   private void updateName(String name) {
-    this.container.updateItemName(name);
+    if (this.container.getSlot(6).getHasStack()) {
+      this.container.updateItemName(name);
 
-    if (this.minecraft != null) {
-      CulinaryConstructNetwork.INSTANCE.sendToServer(new CPacketRename(name));
+      if (this.minecraft != null) {
+        CulinaryConstructNetwork.INSTANCE.sendToServer(new CPacketRename(name));
+      }
     }
   }
 
