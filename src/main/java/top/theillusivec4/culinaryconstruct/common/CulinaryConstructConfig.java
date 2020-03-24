@@ -43,7 +43,7 @@ public class CulinaryConstructConfig {
     public final ForgeConfigSpec.IntValue maxFoodPerSandwich;
     public final ForgeConfigSpec.DoubleValue maxIngredientSaturation;
     public final ForgeConfigSpec.IntValue maxIngredientFood;
-    public final ForgeConfigSpec.ConfigValue<List<String>> ingredientBlacklist;
+    public final ForgeConfigSpec.ConfigValue<List<? extends String>> ingredientBlacklist;
 
     public Server(ForgeConfigSpec.Builder builder) {
       builder.push("server");
@@ -65,7 +65,7 @@ public class CulinaryConstructConfig {
 
       ingredientBlacklist = builder.comment("List of items to blacklist as ingredients")
           .translation(CONFIG_PREFIX + "ingredientBlacklist")
-          .define("ingredientBlacklist", new ArrayList<>());
+          .defineList("ingredientBlacklist", new ArrayList<>(), s -> s instanceof String);
     }
   }
 }

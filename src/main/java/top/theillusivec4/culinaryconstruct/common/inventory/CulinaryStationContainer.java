@@ -270,7 +270,7 @@ public class CulinaryStationContainer extends Container {
       }
       int maxFood = CulinaryConstructConfig.SERVER.maxIngredientFood.get();
       double maxSaturation = CulinaryConstructConfig.SERVER.maxIngredientSaturation.get();
-      List<String> blacklist = CulinaryConstructConfig.SERVER.ingredientBlacklist.get();
+      List<? extends String> blacklist = CulinaryConstructConfig.SERVER.ingredientBlacklist.get();
       boolean blacklisted = false;
 
       if (!blacklist.isEmpty()) {
