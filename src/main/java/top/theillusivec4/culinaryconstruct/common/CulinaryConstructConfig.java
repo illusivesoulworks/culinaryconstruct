@@ -21,9 +21,16 @@ package top.theillusivec4.culinaryconstruct.common;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.item.Food;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.util.LazyOptional;
 import org.apache.commons.lang3.tuple.Pair;
 import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
+import top.theillusivec4.culinaryconstruct.api.CulinaryConstructAPI;
+import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
 
 public class CulinaryConstructConfig {
 
@@ -67,5 +74,36 @@ public class CulinaryConstructConfig {
           .translation(CONFIG_PREFIX + "ingredientBlacklist")
           .defineList("ingredientBlacklist", new ArrayList<>(), s -> s instanceof String);
     }
+  }
+
+  public static boolean isBlacklistedIngredient(ItemStack stack) {
+    Item item = stack.getItem();
+    Food food = item.getFood();
+    LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructAPI
+        .getCulinaryIngredient(stack);
+    int foodAmount = 0;
+    float saturationAmount = 0;
+
+    if (culinary.isPresent()) {
+      foodAmount = culinary.map(ICulinaryIngredient::getFoodAmount).orElse(0);
+      saturationAmount = culinary.map(ICulinaryIngredient::getSaturation).orElse(0.0F);
+    } else if (food != null) {
+      foodAmount = food.getHealing();
+      saturationAmount = food.getSaturation();
+    }
+    int maxFood = CulinaryConstructConfig.SERVER.maxIngredientFood.get();
+    double maxSaturation = CulinaryConstructConfig.SERVER.maxIngredientSaturation.get();
+    List<? extends String> blacklist = CulinaryConstructConfig.SERVER.ingredientBlacklist.get();
+    boolean blacklisted = false;
+
+    if (!blacklist.isEmpty()) {
+      ResourceLocation location = item.getRegistryName();
+
+      if (location != null) {
+        blacklisted = blacklist.contains(location.toString());
+      }
+    }
+    return (maxFood >= 0 && foodAmount > maxFood) || (maxSaturation >= 0
+        && saturationAmount > maxSaturation) || blacklisted;
   }
 }

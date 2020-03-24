@@ -19,8 +19,10 @@
 
 package top.theillusivec4.culinaryconstruct.common.tileentity;
 
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -29,7 +31,12 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import top.theillusivec4.culinaryconstruct.api.CulinaryConstructAPI;
+import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
+import top.theillusivec4.culinaryconstruct.common.CulinaryConstructConfig;
+import top.theillusivec4.culinaryconstruct.common.item.CulinaryItemBase;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
+import top.theillusivec4.culinaryconstruct.common.tag.CulinaryTags;
 
 public class CulinaryStationTileEntity extends TileEntity {
 
@@ -42,9 +49,17 @@ public class CulinaryStationTileEntity extends TileEntity {
 
   public CulinaryStationTileEntity() {
     super(CulinaryConstructRegistry.CULINARY_STATION_TE);
-    this.base = new CulinaryStackHandler();
-    this.ingredients = new CulinaryStackHandler(5);
-    this.output = new CulinaryStackHandler();
+    this.base = new CulinaryStackHandler(
+        stack -> stack.getItem().isIn(CulinaryTags.BREAD) || stack.getItem()
+            .isIn(CulinaryTags.BOWL), 1);
+    this.ingredients = new CulinaryStackHandler(stack -> {
+      LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructAPI
+          .getCulinaryIngredient(stack);
+      return !(stack.getItem() instanceof CulinaryItemBase) && (stack.getItem().isFood() || culinary
+          .map(ICulinaryIngredient::isValid).orElse(false)) && !CulinaryConstructConfig
+          .isBlacklistedIngredient(stack);
+    }, 5);
+    this.output = new CulinaryStackHandler(stack -> false, 1);
     this.baseOpt = LazyOptional.of(() -> base);
     this.ingredientsOpt = LazyOptional.of(() -> ingredients);
     this.outputOpt = LazyOptional.of(() -> output);
@@ -102,12 +117,16 @@ public class CulinaryStationTileEntity extends TileEntity {
 
   private class CulinaryStackHandler extends ItemStackHandler {
 
-    public CulinaryStackHandler() {
-      super();
+    private final Function<ItemStack, Boolean> validity;
+
+    public CulinaryStackHandler(Function<ItemStack, Boolean> validity, int size) {
+      super(size);
+      this.validity = validity;
     }
 
-    public CulinaryStackHandler(int size) {
-      super(size);
+    @Override
+    public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+      return validity.apply(stack);
     }
 
     @Override
