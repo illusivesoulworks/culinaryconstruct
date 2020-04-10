@@ -97,11 +97,8 @@ public class CulinaryStationTileEntity extends TileEntity {
         && capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
       if (facing == Direction.UP) {
         return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(capability, this.baseOpt);
-      } else if (facing == Direction.DOWN) {
-        return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(capability, this.outputOpt);
-      } else {
-        return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
-            .orEmpty(capability, this.ingredientsOpt);
+      } else if (facing != Direction.DOWN) {
+        return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(capability, this.ingredientsOpt);
       }
     }
     return super.getCapability(capability, facing);
