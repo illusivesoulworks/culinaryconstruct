@@ -60,6 +60,11 @@ public class FoodBowlItem extends CulinaryItemBase {
       ItemStack sub = new ItemStack(this);
       CulinaryNBTHelper.setBase(sub, new ItemStack(Items.BOWL));
       generateCreativeNBT(sub);
+      CulinaryNBTHelper.setSolidsSize(sub, 5);
+      CulinaryNBTHelper.setSolids(sub, NonNullList
+          .from(ItemStack.EMPTY, new ItemStack(Items.NETHER_STAR), new ItemStack(Items.NETHER_STAR),
+              new ItemStack(Items.NETHER_STAR), new ItemStack(Items.NETHER_STAR),
+              new ItemStack(Items.NETHER_STAR)));
       items.add(sub);
     }
   }
