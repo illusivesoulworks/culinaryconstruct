@@ -8,6 +8,8 @@
 
 package c4.culinaryconstruct.common.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -21,6 +23,20 @@ import java.util.Set;
 public class BreadHelper {
 
     private static Set<String> breadOres = new HashSet<>();
+    private static List<Item> blacklist = new ArrayList<>();
+
+    public static void initBlacklist() {
+        String[] config = ConfigHandler.breadBlacklist;
+        blacklist.clear();
+
+        for (String s : config) {
+            Item item = Item.getByNameOrId(s);
+
+            if (item != null) {
+                blacklist.add(item);
+            }
+        }
+    }
 
     public static void initOreDict() {
         //Vanilla
@@ -114,6 +130,11 @@ public class BreadHelper {
     }
 
     public static boolean isValidBread(ItemStack stack) {
+
+        if (blacklist.contains(stack.getItem())) {
+            return false;
+        }
+
         for (String oreDictEntry : breadOres) {
             if (OreDictionary.containsMatch(true, OreDictionary.getOres(oreDictEntry), stack)) {
                 return true;

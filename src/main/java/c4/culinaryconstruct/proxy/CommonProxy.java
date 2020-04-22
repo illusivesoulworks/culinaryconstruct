@@ -49,6 +49,7 @@ public class CommonProxy {
 
     public void postInit(FMLPostInitializationEvent evt) {
         BreadHelper.initOreDict();
+        BreadHelper.initBlacklist();
         SandwichHelper.initBlacklist();
     }
 

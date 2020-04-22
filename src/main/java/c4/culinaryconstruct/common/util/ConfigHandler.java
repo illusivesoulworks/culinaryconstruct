@@ -47,6 +47,11 @@ public class ConfigHandler {
     @RequiresMcRestart
     public static String[] breadItems = new String[]{};
 
+    @Name("Bread Blacklist")
+    @Comment("List of items to blacklist as bread")
+    @RequiresMcRestart
+    public static String[] breadBlacklist = new String[]{};
+
     @Mod.EventBusSubscriber(modid = CulinaryConstruct.MODID)
     private static class ConfigEventHandler {
 
