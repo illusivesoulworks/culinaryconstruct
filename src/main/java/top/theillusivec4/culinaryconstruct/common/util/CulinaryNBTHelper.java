@@ -134,7 +134,7 @@ public class CulinaryNBTHelper {
   public static void setLiquids(ItemStack stack, List<Integer> liquids) {
     CompoundNBT compound = getTagSafe(stack);
     ListNBT tag = new ListNBT();
-    liquids.forEach(liquid -> tag.add(new IntNBT(liquid)));
+    liquids.forEach(liquid -> tag.add(IntNBT.valueOf(liquid)));
     compound.put(TAG_LIQUIDS, tag);
   }
 

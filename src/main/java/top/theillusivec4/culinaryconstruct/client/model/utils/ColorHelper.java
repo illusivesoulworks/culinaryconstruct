@@ -29,10 +29,9 @@ import javax.annotation.Nonnull;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraftforge.client.model.data.EmptyModelData;
-import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
+import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 import net.minecraftforge.client.model.pipeline.VertexTransformer;
 
 public class ColorHelper {
@@ -42,7 +41,7 @@ public class ColorHelper {
     List<BakedQuad> quads = bakedModel.getQuads(null, null, random, EmptyModelData.INSTANCE);
 
     for (BakedQuad quad : quads) {
-      ColorTransformer transformer = new ColorTransformer(color, quad.getFormat());
+      ColorTransformer transformer = new ColorTransformer(color, quad);
       quad.pipe(transformer);
       builder.add(transformer.build());
     }
@@ -117,8 +116,8 @@ public class ColorHelper {
 
     private final float r, g, b, a;
 
-    public ColorTransformer(int color, VertexFormat format) {
-      super(new UnpackedBakedQuad.Builder(format));
+    public ColorTransformer(int color, BakedQuad quad) {
+      super(new BakedQuadBuilder(quad.func_187508_a()));
 
       int a = (color >> 24);
 
@@ -137,7 +136,8 @@ public class ColorHelper {
 
     @Override
     public void put(int element, @Nonnull float... data) {
-      VertexFormatElement.Usage usage = parent.getVertexFormat().getElement(element).getUsage();
+      VertexFormatElement.Usage usage = parent.getVertexFormat().getElements().get(element)
+          .getUsage();
 
       // Transform normals and position
       if (usage == VertexFormatElement.Usage.COLOR && data.length >= 4) {
@@ -149,8 +149,8 @@ public class ColorHelper {
       super.put(element, data);
     }
 
-    public UnpackedBakedQuad build() {
-      return ((UnpackedBakedQuad.Builder) parent).build();
+    public BakedQuad build() {
+      return ((BakedQuadBuilder) parent).build();
     }
   }
 }

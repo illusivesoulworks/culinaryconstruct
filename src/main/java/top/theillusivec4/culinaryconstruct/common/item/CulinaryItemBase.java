@@ -146,8 +146,8 @@ public class CulinaryItemBase extends Item {
         new TranslationTextComponent(base.getTranslationKey()).applyTextStyle(TextFormatting.GRAY));
     tooltip.add(new StringTextComponent(""));
 
-    if (InputMappings.isKeyDown(Minecraft.getInstance().mainWindow.getHandle(), 340)
-        || InputMappings.isKeyDown(Minecraft.getInstance().mainWindow.getHandle(), 344)) {
+    if (InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 340)
+        || InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 344)) {
       NonNullList<ItemStack> ingredients = CulinaryNBTHelper.getIngredientsList(stack);
       tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.ingredients.name")
           .applyTextStyle(TextFormatting.GRAY).applyTextStyle(TextFormatting.UNDERLINE));

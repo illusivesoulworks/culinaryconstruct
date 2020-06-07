@@ -20,6 +20,7 @@
 package top.theillusivec4.culinaryconstruct.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nonnull;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -97,19 +98,17 @@ public class CulinaryScreen extends ContainerScreen<CulinaryStationContainer> im
   @Override
   public boolean keyPressed(int key1, int key2, int key3) {
 
-    if (key1 == 256 && this.minecraft != null) {
+    if (key1 == 256 && this.minecraft != null && this.minecraft.player != null) {
       this.minecraft.player.closeScreen();
     }
-    return this.nameField.keyPressed(key1, key2, key3) || this.nameField.func_212955_f() || super
+    return this.nameField.keyPressed(key1, key2, key3) || this.nameField.canWrite() || super
         .keyPressed(key1, key2, key3);
   }
 
   @Override
   protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-    GlStateManager.disableLighting();
-    GlStateManager.disableBlend();
+    RenderSystem.disableBlend();
     this.font.drawString(this.title.getFormattedText(), 58.0F, 6.0F, 4210752);
-    GlStateManager.enableLighting();
   }
 
   @Override
@@ -117,8 +116,7 @@ public class CulinaryScreen extends ContainerScreen<CulinaryStationContainer> im
     this.renderBackground();
     super.render(mouseX, mouseY, partialTicks);
     this.renderHoveredToolTip(mouseX, mouseY);
-    GlStateManager.disableLighting();
-    GlStateManager.disableBlend();
+    RenderSystem.disableBlend();
     this.nameField.render(mouseX, mouseY, partialTicks);
   }
 
@@ -136,7 +134,7 @@ public class CulinaryScreen extends ContainerScreen<CulinaryStationContainer> im
   protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 
     if (this.minecraft != null) {
-      GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+      RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
       this.minecraft.getTextureManager().bindTexture(GUI_BACKGROUND);
       int i = (this.width - this.xSize) / 2;
       int j = (this.height - this.ySize) / 2;

@@ -1,3 +1,4 @@
 {
-  "parent": "item/generated"
+  "parent": "item/generated",
+  "loader": "culinaryconstruct:food_bowl_loader"
 }

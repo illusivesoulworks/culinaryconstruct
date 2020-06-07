@@ -36,9 +36,10 @@ import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
 import top.theillusivec4.culinaryconstruct.common.advancement.CraftFoodTrigger.Instance;
 
 public class CraftFoodTrigger implements ICriterionTrigger<Instance> {
-  public static final ResourceLocation ID = new ResourceLocation(CulinaryConstruct.MODID, "craft_food");
-  private final Map<PlayerAdvancements, CraftFoodTrigger.Listeners> listeners = Maps
-      .newHashMap();
+
+  public static final ResourceLocation ID = new ResourceLocation(CulinaryConstruct.MODID,
+      "craft_food");
+  private final Map<PlayerAdvancements, CraftFoodTrigger.Listeners> listeners = Maps.newHashMap();
 
   @Nonnull
   @Override
@@ -47,8 +48,10 @@ public class CraftFoodTrigger implements ICriterionTrigger<Instance> {
   }
 
   @Override
-  public void addListener(@Nonnull PlayerAdvancements playerAdvancementsIn, @Nonnull ICriterionTrigger.Listener<CraftFoodTrigger.Instance> listener) {
+  public void addListener(@Nonnull PlayerAdvancements playerAdvancementsIn,
+      @Nonnull ICriterionTrigger.Listener<CraftFoodTrigger.Instance> listener) {
     CraftFoodTrigger.Listeners foodListeners = this.listeners.get(playerAdvancementsIn);
+
     if (foodListeners == null) {
       foodListeners = new CraftFoodTrigger.Listeners(playerAdvancementsIn);
       this.listeners.put(playerAdvancementsIn, foodListeners);
@@ -57,10 +60,13 @@ public class CraftFoodTrigger implements ICriterionTrigger<Instance> {
   }
 
   @Override
-  public void removeListener(@Nonnull PlayerAdvancements playerAdvancementsIn, @Nonnull ICriterionTrigger.Listener<CraftFoodTrigger.Instance> listener) {
+  public void removeListener(@Nonnull PlayerAdvancements playerAdvancementsIn,
+      @Nonnull ICriterionTrigger.Listener<CraftFoodTrigger.Instance> listener) {
     CraftFoodTrigger.Listeners foodListeners = this.listeners.get(playerAdvancementsIn);
+
     if (foodListeners != null) {
       foodListeners.remove(listener);
+
       if (foodListeners.isEmpty()) {
         this.listeners.remove(playerAdvancementsIn);
       }
@@ -74,28 +80,30 @@ public class CraftFoodTrigger implements ICriterionTrigger<Instance> {
 
   @Nonnull
   @Override
-  public CraftFoodTrigger.Instance deserializeInstance(
-      @Nonnull JsonObject json, @Nonnull JsonDeserializationContext context) {
+  public CraftFoodTrigger.Instance deserializeInstance(@Nonnull JsonObject json,
+      @Nonnull JsonDeserializationContext context) {
     return new CraftFoodTrigger.Instance();
   }
 
   public void trigger(ServerPlayerEntity player) {
     CraftFoodTrigger.Listeners foodListeners = this.listeners.get(player.getAdvancements());
+
     if (foodListeners != null) {
       foodListeners.trigger();
     }
   }
 
   public static class Instance extends CriterionInstance {
+
     public Instance() {
       super(CraftFoodTrigger.ID);
     }
   }
 
   static class Listeners {
+
     private final PlayerAdvancements playerAdvancements;
-    private final Set<Listener<CraftFoodTrigger.Instance>> listeners = Sets
-        .newHashSet();
+    private final Set<Listener<CraftFoodTrigger.Instance>> listeners = Sets.newHashSet();
 
     public Listeners(PlayerAdvancements playerAdvancementsIn) {
       this.playerAdvancements = playerAdvancementsIn;
@@ -114,7 +122,7 @@ public class CraftFoodTrigger implements ICriterionTrigger<Instance> {
     }
 
     public void trigger() {
-      for(ICriterionTrigger.Listener<CraftFoodTrigger.Instance> listener : Lists
+      for (ICriterionTrigger.Listener<CraftFoodTrigger.Instance> listener : Lists
           .newArrayList(this.listeners)) {
         listener.grantCriterion(this.playerAdvancements);
       }

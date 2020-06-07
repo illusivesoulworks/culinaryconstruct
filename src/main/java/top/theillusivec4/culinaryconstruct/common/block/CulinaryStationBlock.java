@@ -19,6 +19,7 @@
 
 package top.theillusivec4.culinaryconstruct.common.block;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -28,6 +29,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.BlockPos;
@@ -50,12 +52,13 @@ public class CulinaryStationBlock extends Block {
     this.setRegistryName(RegistryReference.CULINARY_STATION);
   }
 
+  @Nonnull
   @SuppressWarnings("deprecation")
   @Override
-  public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos,
+  public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos,
       PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
     player.openContainer(state.getContainer(worldIn, pos));
-    return true;
+    return ActionResultType.SUCCESS;
   }
 
 

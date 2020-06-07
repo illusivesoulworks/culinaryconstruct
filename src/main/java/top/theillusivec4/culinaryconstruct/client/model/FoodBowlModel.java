@@ -1,177 +1,124 @@
-/*
- * Copyright (c) 2018-2020 C4
- *
- * This file is part of Culinary Construct, a mod made for Minecraft.
- *
- * Culinary Construct is free software: you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published
- * by the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Culinary Construct is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with Culinary Construct.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package top.theillusivec4.culinaryconstruct.client.model;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
+import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.BlockModel;
 import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.IModelTransform;
 import net.minecraft.client.renderer.model.IUnbakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.model.ItemOverrideList;
+import net.minecraft.client.renderer.model.Material;
 import net.minecraft.client.renderer.model.ModelBakery;
-import net.minecraft.client.renderer.texture.ISprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.BakedItemModel;
+import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.PerspectiveMapWrapper;
-import net.minecraftforge.client.model.SimpleModelState;
 import net.minecraftforge.client.model.data.EmptyModelData;
-import net.minecraftforge.common.model.IModelState;
-import net.minecraftforge.common.model.TRSRTransformation;
+import net.minecraftforge.client.model.geometry.IModelGeometry;
 import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
 import top.theillusivec4.culinaryconstruct.client.model.base.CulinaryOverrideHandler;
 import top.theillusivec4.culinaryconstruct.client.model.utils.ColorHelper;
 import top.theillusivec4.culinaryconstruct.client.model.utils.ModelHelper;
 import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
-public class FoodBowlModel implements IUnbakedModel {
+public final class FoodBowlModel implements IModelGeometry<FoodBowlModel> {
 
-  @Nullable
-  private final List<TextureAtlasSprite> ingredients;
-  @Nullable
-  private final List<Integer> layers;
-  @Nullable
-  private final List<Integer> liquids;
-
-  public FoodBowlModel(@Nullable List<TextureAtlasSprite> ingredients,
-      @Nullable List<Integer> layers, @Nullable List<Integer> liquids) {
-    this.ingredients = ingredients;
-    this.layers = layers;
-    this.liquids = liquids;
+  @Override
+  public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery,
+      Function<Material, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform,
+      ItemOverrideList overrides, ResourceLocation modelLocation) {
+    IBakedModel model = ModelHelper
+        .getBakedLayerModel(owner, bakery, spriteGetter, modelTransform, overrides,
+            new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/bread0"));
+    TextureAtlasSprite particleSprite = model.getParticleTexture(EmptyModelData.INSTANCE);
+    return new BakedItemModel(ImmutableList.of(), particleSprite,
+        PerspectiveMapWrapper.getTransforms(modelTransform),
+        new BakedFoodBowlOverrideHandler(this, owner, bakery, spriteGetter, modelTransform,
+            modelLocation), modelTransform.getRotation().isIdentity(), owner.isSideLit());
   }
 
-  @Nonnull
-  @Override
-  public Collection<ResourceLocation> getTextures(
-      @Nonnull Function<ResourceLocation, IUnbakedModel> modelGetter,
-      @Nonnull Set<String> missingTextureErrors) {
-    ImmutableSet.Builder<ResourceLocation> builder = ImmutableSet.builder();
-
-    if (ingredients != null && layers != null) {
-      builder.add(new ResourceLocation("minecraft:item/bowl"));
-      builder.add(new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/liquid_base"));
-      builder.add(new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/liquid_overflow"));
-
-      for (TextureAtlasSprite sprite : ingredients) {
-        builder.add(sprite.getName());
-      }
-
-      for (int layer : layers) {
-        builder.add(new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/layer" + layer));
-      }
-    }
-    return builder.build();
-  }
-
-  @Nonnull
-  @Override
-  public Collection<ResourceLocation> getDependencies() {
-    return Collections.emptyList();
-  }
-
-  @Nonnull
-  @Override
-  public IBakedModel bake(@Nonnull ModelBakery bakery,
-      @Nonnull Function<ResourceLocation, TextureAtlasSprite> spriteGetter, @Nonnull ISprite sprite,
-      @Nonnull VertexFormat format) {
-    TextureAtlasSprite particleSprite;
-    IModelState state = sprite.getState();
-    ImmutableMap<TransformType, TRSRTransformation> transformMap = PerspectiveMapWrapper
-        .getTransforms(state);
-    TRSRTransformation transform = state.apply(Optional.empty())
-        .orElse(TRSRTransformation.identity());
+  public IBakedModel bake(List<TextureAtlasSprite> ingredients, List<Integer> layers,
+      @Nullable List<Integer> liquids, IModelConfiguration owner, ModelBakery bakery,
+      Function<Material, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform,
+      ItemOverrideList overrides) {
     Random random = new Random();
     random.setSeed(42);
     ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
     IBakedModel model = ModelHelper
-        .getBakedLayerModel(new ResourceLocation("minecraft:item/bowl"), bakery, spriteGetter,
-            sprite, format);
+        .getBakedLayerModel(owner, bakery, spriteGetter, modelTransform, overrides,
+            new ResourceLocation("minecraft:item/bowl"));
     builder.addAll(model.getQuads(null, null, random, EmptyModelData.INSTANCE));
-    particleSprite = model.getParticleTexture(EmptyModelData.INSTANCE);
+    TextureAtlasSprite particleSprite = model.getParticleTexture(EmptyModelData.INSTANCE);
+    List<Integer> ingredientColors = new ArrayList<>();
 
-    if (ingredients != null && layers != null) {
-      List<Integer> ingredientColors = new ArrayList<>();
+    ingredients.forEach(sprite -> ingredientColors.add(ColorHelper.getDominantColor(sprite)));
 
-      for (TextureAtlasSprite ing : this.ingredients) {
-        ingredientColors.add(ColorHelper.getDominantColor(ing));
-      }
-
-      if (this.liquids != null) {
-        List<Integer> opaqueColors = new ArrayList<>();
-        this.liquids.forEach(color -> {
-          if (color != null) {
-            opaqueColors.add(color);
-          }
-        });
-        boolean isOpaque = !opaqueColors.isEmpty();
-        int liquidColor = isOpaque ? ColorHelper.getMixedColor(this.liquids)
-            : ColorHelper.getMixedColor(ingredientColors);
-        IBakedModel liquidBase = ModelHelper.getBakedLayerModel(
-            new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/liquid_base"), bakery,
-            spriteGetter, sprite, format);
-        ColorHelper.colorQuads(liquidBase, liquidColor, random, builder);
-
-        if (this.ingredients.size() >= 3) {
-          IBakedModel liquidOverflow = ModelHelper.getBakedLayerModel(
-              new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/liquid_overflow"), bakery,
-              spriteGetter, sprite, format);
-          ColorHelper.colorQuads(liquidOverflow, liquidColor, random, builder);
+    if (liquids != null) {
+      List<Integer> opaqueColors = new ArrayList<>();
+      liquids.forEach(color -> {
+        if (color != null) {
+          opaqueColors.add(color);
         }
-      }
+      });
+      boolean isOpaque = !opaqueColors.isEmpty();
+      int liquidColor = isOpaque ? ColorHelper.getMixedColor(liquids)
+          : ColorHelper.getMixedColor(ingredientColors);
+      IBakedModel liquidBase = ModelHelper
+          .getBakedLayerModel(owner, bakery, spriteGetter, modelTransform, overrides,
+              new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/liquid_base"));
+      ColorHelper.colorQuads(liquidBase, liquidColor, random, builder);
 
-      for (int i = 0; i < ingredients.size(); i++) {
-        IBakedModel ingredient = ModelHelper.getBakedLayerModel(
-            new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/layer" + layers.get(i)),
-            bakery, spriteGetter, sprite, format);
-        ColorHelper.colorQuads(ingredient, ingredientColors.get(i), random, builder);
+      if (ingredients.size() >= 3) {
+        IBakedModel liquidOverflow = ModelHelper
+            .getBakedLayerModel(owner, bakery, spriteGetter, modelTransform, overrides,
+                new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/liquid_overflow"));
+        ColorHelper.colorQuads(liquidOverflow, liquidColor, random, builder);
       }
     }
-    return new BakedItemModel(builder.build(), particleSprite, transformMap, ItemOverrideList.EMPTY,
-        transform.isIdentity());
+
+    for (int i = 0; i < ingredients.size(); i++) {
+      IBakedModel ingredientModel = ModelHelper
+          .getBakedLayerModel(owner, bakery, spriteGetter, modelTransform, overrides,
+              new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/layer" + layers.get(i)));
+      ColorHelper.colorQuads(ingredientModel, ingredientColors.get(i), random, builder);
+    }
+    return new BakedItemModel(builder.build(), particleSprite,
+        PerspectiveMapWrapper.getTransforms(modelTransform), overrides,
+        modelTransform.getRotation().isIdentity(), owner.isSideLit());
   }
 
-  public static final class BakedFoodBowlOverrideHandler extends CulinaryOverrideHandler {
+  @Override
+  public Collection<Material> getTextures(IModelConfiguration owner,
+      Function<ResourceLocation, IUnbakedModel> modelGetter,
+      Set<Pair<String, String>> missingTextureErrors) {
+    return Collections.emptyList();
+  }
 
-    public BakedFoodBowlOverrideHandler(ModelBakery bakery, BlockModel unbaked) {
-      super(bakery, unbaked);
+  private static final class BakedFoodBowlOverrideHandler extends
+      CulinaryOverrideHandler<FoodBowlModel> {
+
+    public BakedFoodBowlOverrideHandler(FoodBowlModel model, IModelConfiguration owner,
+        ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter,
+        IModelTransform modelTransform, ResourceLocation modelLocation) {
+      super(model, owner, bakery, spriteGetter, modelTransform, modelLocation);
     }
 
     @Override
-    protected IBakedModel getBakedModel(ItemStack stack) {
+    protected IBakedModel getBakedModel(IBakedModel originalModel, ItemStack stack,
+        @Nullable World world, @Nullable LivingEntity entity) {
       ImmutableList.Builder<TextureAtlasSprite> builder = ImmutableList.builder();
       List<ItemStack> solids = CulinaryNBTHelper.getSolids(stack);
 
@@ -185,13 +132,10 @@ public class FoodBowlModel implements IUnbakedModel {
         list.add(i);
       }
       List<Integer> liquids = CulinaryNBTHelper.getLiquids(stack);
-      IUnbakedModel parent = new FoodBowlModel(builder.build(), list, liquids);
-      Function<ResourceLocation, TextureAtlasSprite> textureGetter;
-      textureGetter = location -> Minecraft.getInstance().getTextureMap()
-          .getAtlasSprite(location.toString());
-      return parent.bake(bakery, textureGetter, new SimpleModelState(
-              ImmutableMap.copyOf(PerspectiveMapWrapper.getTransforms(unbaked.getAllTransforms()))),
-          DefaultVertexFormats.ITEM);
+      return this.model
+          .bake(builder.build(), list, liquids, this.owner, this.bakery, this.spriteGetter,
+              this.modelTransform, ItemOverrideList.EMPTY);
     }
   }
 }
+

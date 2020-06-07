@@ -22,26 +22,28 @@ package top.theillusivec4.culinaryconstruct.client.model.utils;
 import com.google.common.collect.ImmutableList;
 import java.util.Objects;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
 import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.IModelTransform;
+import net.minecraft.client.renderer.model.ItemOverrideList;
+import net.minecraft.client.renderer.model.Material;
 import net.minecraft.client.renderer.model.ModelBakery;
-import net.minecraft.client.renderer.texture.ISprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.ItemLayerModel;
 import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
 public class ModelHelper {
 
-  public static IBakedModel getBakedLayerModel(ResourceLocation resourceLocation,
-      @Nonnull ModelBakery bakery,
-      @Nonnull Function<ResourceLocation, TextureAtlasSprite> spriteGetter, @Nonnull ISprite sprite,
-      @Nonnull VertexFormat format) {
-    return new ItemLayerModel(ImmutableList.of(resourceLocation))
-        .bake(bakery, spriteGetter, sprite, format);
+  public static IBakedModel getBakedLayerModel(IModelConfiguration owner, ModelBakery bakery,
+      Function<Material, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform,
+      ItemOverrideList overrides, ResourceLocation modelLocation) {
+    return new ItemLayerModel(
+        ImmutableList.of(new Material(PlayerContainer.LOCATION_BLOCKS_TEXTURE, modelLocation)))
+        .bake(owner, bakery, spriteGetter, modelTransform, overrides, modelLocation);
   }
 
   //Cache Key from Tinkers' Construct
