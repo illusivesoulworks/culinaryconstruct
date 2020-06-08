@@ -25,17 +25,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.BakedItemModel;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.PerspectiveMapWrapper;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
 import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
+import top.theillusivec4.culinaryconstruct.client.model.base.PerspectiveItemModel;
 import top.theillusivec4.culinaryconstruct.client.model.base.CulinaryOverrideHandler;
 import top.theillusivec4.culinaryconstruct.client.model.utils.ColorHelper;
 import top.theillusivec4.culinaryconstruct.client.model.utils.ModelHelper;
 import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
+@SuppressWarnings("deprecation")
 public final class SandwichModel implements IModelGeometry<SandwichModel> {
 
   @Override
@@ -46,10 +47,11 @@ public final class SandwichModel implements IModelGeometry<SandwichModel> {
         .getBakedLayerModel(owner, bakery, spriteGetter, modelTransform, overrides,
             new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/bread0"));
     TextureAtlasSprite particleSprite = model.getParticleTexture(EmptyModelData.INSTANCE);
-    return new BakedItemModel(ImmutableList.of(), particleSprite,
+    return new PerspectiveItemModel(ImmutableList.of(), particleSprite,
         PerspectiveMapWrapper.getTransforms(modelTransform),
         new BakedSandwichOverrideHandler(this, owner, bakery, spriteGetter, modelTransform,
-            modelLocation), modelTransform.getRotation().isIdentity(), owner.isSideLit());
+            modelLocation), modelTransform.getRotation().isIdentity(), owner.isSideLit(),
+        owner.getCameraTransforms());
   }
 
   public IBakedModel bake(List<TextureAtlasSprite> ingredients, List<Integer> layers,
@@ -75,9 +77,9 @@ public final class SandwichModel implements IModelGeometry<SandwichModel> {
               new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/layer" + layers.get(i)));
       ColorHelper.colorQuads(ingredientModel, ingredientColors.get(i), random, builder);
     }
-    return new BakedItemModel(builder.build(), particleSprite,
+    return new PerspectiveItemModel(builder.build(), particleSprite,
         PerspectiveMapWrapper.getTransforms(modelTransform), overrides,
-        modelTransform.getRotation().isIdentity(), owner.isSideLit());
+        modelTransform.getRotation().isIdentity(), owner.isSideLit(), owner.getCameraTransforms());
   }
 
   @Override

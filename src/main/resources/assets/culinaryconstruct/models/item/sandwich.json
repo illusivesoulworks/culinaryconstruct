@@ -1,4 +1,4 @@
 {
-  "parent": "item/generated",
+  "parent": "forge:item/default",
   "loader": "culinaryconstruct:sandwich_loader"
 }
