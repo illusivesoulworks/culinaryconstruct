@@ -139,6 +139,8 @@ curseforge {
         changelogType = 'markdown'
         changelog = file('docs/CHANGELOG.md')
         addArtifact(sourcesJar)
+        addArtifact(apiJar)
+        addArtifact(deobfJar)
     }
 }
 
