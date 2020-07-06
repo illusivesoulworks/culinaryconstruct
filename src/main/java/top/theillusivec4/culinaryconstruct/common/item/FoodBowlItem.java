@@ -21,11 +21,13 @@ package top.theillusivec4.culinaryconstruct.common.item;
 
 import javax.annotation.Nonnull;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
+import net.minecraftforge.items.ItemHandlerHelper;
 import top.theillusivec4.culinaryconstruct.common.registry.RegistryReference;
 import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
@@ -50,8 +52,13 @@ public class FoodBowlItem extends CulinaryItemBase {
   @Override
   public ItemStack onItemUseFinish(@Nonnull ItemStack stack, @Nonnull World worldIn,
       @Nonnull LivingEntity livingEntity) {
-    super.onItemUseFinish(stack, worldIn, livingEntity);
-    return getContainerItem(stack);
+    ItemStack output = super.onItemUseFinish(stack, worldIn, livingEntity);
+    ItemStack container = getContainerItem(stack);
+
+    if (!container.isEmpty() && livingEntity instanceof PlayerEntity) {
+      ItemHandlerHelper.giveItemToPlayer((PlayerEntity) livingEntity, container);
+    }
+    return output;
   }
 
   @Override
