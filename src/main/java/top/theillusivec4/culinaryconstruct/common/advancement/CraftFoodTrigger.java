@@ -29,17 +29,19 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import net.minecraft.advancements.ICriterionTrigger;
 import net.minecraft.advancements.PlayerAdvancements;
+import net.minecraft.advancements.criterion.AbstractCriterionTrigger;
 import net.minecraft.advancements.criterion.CriterionInstance;
+import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.loot.ConditionArrayParser;
 import net.minecraft.util.ResourceLocation;
 import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
 import top.theillusivec4.culinaryconstruct.common.advancement.CraftFoodTrigger.Instance;
 
-public class CraftFoodTrigger implements ICriterionTrigger<Instance> {
+public class CraftFoodTrigger extends AbstractCriterionTrigger<Instance> {
 
-  public static final ResourceLocation ID = new ResourceLocation(CulinaryConstruct.MODID,
-      "craft_food");
-  private final Map<PlayerAdvancements, CraftFoodTrigger.Listeners> listeners = Maps.newHashMap();
+  public static final CraftFoodTrigger INSTANCE = new CraftFoodTrigger();
+  public static final ResourceLocation ID = new ResourceLocation(CulinaryConstruct.MODID, "craft_food");
 
   @Nonnull
   @Override
@@ -47,85 +49,22 @@ public class CraftFoodTrigger implements ICriterionTrigger<Instance> {
     return ID;
   }
 
-  @Override
-  public void addListener(@Nonnull PlayerAdvancements playerAdvancementsIn,
-      @Nonnull ICriterionTrigger.Listener<CraftFoodTrigger.Instance> listener) {
-    CraftFoodTrigger.Listeners foodListeners = this.listeners.get(playerAdvancementsIn);
-
-    if (foodListeners == null) {
-      foodListeners = new CraftFoodTrigger.Listeners(playerAdvancementsIn);
-      this.listeners.put(playerAdvancementsIn, foodListeners);
-    }
-    foodListeners.add(listener);
-  }
-
-  @Override
-  public void removeListener(@Nonnull PlayerAdvancements playerAdvancementsIn,
-      @Nonnull ICriterionTrigger.Listener<CraftFoodTrigger.Instance> listener) {
-    CraftFoodTrigger.Listeners foodListeners = this.listeners.get(playerAdvancementsIn);
-
-    if (foodListeners != null) {
-      foodListeners.remove(listener);
-
-      if (foodListeners.isEmpty()) {
-        this.listeners.remove(playerAdvancementsIn);
-      }
-    }
-
-  }
-
-  public void removeAllListeners(@Nonnull PlayerAdvancements playerAdvancementsIn) {
-    this.listeners.remove(playerAdvancementsIn);
-  }
-
   @Nonnull
   @Override
-  public CraftFoodTrigger.Instance deserializeInstance(@Nonnull JsonObject json,
-      @Nonnull JsonDeserializationContext context) {
-    return new CraftFoodTrigger.Instance();
+  public Instance func_230241_b_(@Nonnull JsonObject p_230241_1_,
+      @Nonnull EntityPredicate.AndPredicate p_230241_2_,
+      @Nonnull ConditionArrayParser p_230241_3_) {
+    return new Instance(p_230241_2_);
   }
 
   public void trigger(ServerPlayerEntity player) {
-    CraftFoodTrigger.Listeners foodListeners = this.listeners.get(player.getAdvancements());
-
-    if (foodListeners != null) {
-      foodListeners.trigger();
-    }
+    this.func_235959_a_(player, (p_241523_0_) -> true);
   }
 
   public static class Instance extends CriterionInstance {
 
-    public Instance() {
-      super(CraftFoodTrigger.ID);
-    }
-  }
-
-  static class Listeners {
-
-    private final PlayerAdvancements playerAdvancements;
-    private final Set<Listener<CraftFoodTrigger.Instance>> listeners = Sets.newHashSet();
-
-    public Listeners(PlayerAdvancements playerAdvancementsIn) {
-      this.playerAdvancements = playerAdvancementsIn;
-    }
-
-    public boolean isEmpty() {
-      return this.listeners.isEmpty();
-    }
-
-    public void add(ICriterionTrigger.Listener<CraftFoodTrigger.Instance> listener) {
-      this.listeners.add(listener);
-    }
-
-    public void remove(ICriterionTrigger.Listener<CraftFoodTrigger.Instance> listener) {
-      this.listeners.remove(listener);
-    }
-
-    public void trigger() {
-      for (ICriterionTrigger.Listener<CraftFoodTrigger.Instance> listener : Lists
-          .newArrayList(this.listeners)) {
-        listener.grantCriterion(this.playerAdvancements);
-      }
+    public Instance(EntityPredicate.AndPredicate p_i232007_1_) {
+      super(ID, p_i232007_1_);
     }
   }
 }

@@ -37,6 +37,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -44,7 +45,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import top.theillusivec4.culinaryconstruct.api.CulinaryConstructAPI;
+import top.theillusivec4.culinaryconstruct.api.CulinaryConstructApi;
 import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
 public class CulinaryItemBase extends Item {
@@ -80,7 +81,7 @@ public class CulinaryItemBase extends Item {
       consumed.add(CulinaryNBTHelper.getBase(stack));
       consumed.forEach(itemstack -> {
         if (!itemstack.isEmpty()) {
-          CulinaryConstructAPI.getCulinaryIngredient(itemstack).ifPresent(culinary -> {
+          CulinaryConstructApi.getCulinaryIngredient(itemstack).ifPresent(culinary -> {
             culinary.onEaten(player);
             culinary.getEffects().forEach(effect -> {
               if (RANDOM.nextFloat() < effect.getRight()) {
@@ -93,8 +94,8 @@ public class CulinaryItemBase extends Item {
 
           if (foodie != null) {
             foodie.getEffects().forEach(effect -> {
-              if (RANDOM.nextFloat() < effect.getRight()) {
-                player.addPotionEffect(effect.getLeft());
+              if (RANDOM.nextFloat() < effect.getSecond()) {
+                player.addPotionEffect(effect.getFirst());
               }
             });
           }
@@ -118,20 +119,20 @@ public class CulinaryItemBase extends Item {
         StringBuilder builder = new StringBuilder();
 
         if (count > 1) {
-          builder.append(new TranslationTextComponent("tooltip.culinaryconstruct.count." + count)
-              .getUnformattedComponentText());
+          TranslationTextComponent trans = new TranslationTextComponent("tooltip.culinaryconstruct.count." + count);
+          builder.append(trans.getString());
           builder.append(" ");
         }
         builder.append(
-            new TranslationTextComponent(item.getTranslationKey()).getUnformattedComponentText());
+            new TranslationTextComponent(item.getTranslationKey()).getString());
         names.add(builder.toString());
       });
       fullName.append(new TranslationTextComponent("tooltip.culinaryconstruct.list." + names.size(),
-          names.toArray()).getUnformattedComponentText());
+          names.toArray()).getString());
     }
     fullName.append(" ");
     fullName.append(
-        new TranslationTextComponent(this.getTranslationKey(stack)).getUnformattedComponentText());
+        new TranslationTextComponent(this.getTranslationKey(stack)).getString());
     return new StringTextComponent(fullName.toString());
   }
 
@@ -141,27 +142,27 @@ public class CulinaryItemBase extends Item {
     ItemStack base = CulinaryNBTHelper.getBase(stack);
     int quality = CulinaryNBTHelper.getQuality(stack);
     tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.quality." + quality)
-        .applyTextStyle(TextFormatting.GREEN));
+        .func_240699_a_(TextFormatting.GREEN));
     tooltip.add(
-        new TranslationTextComponent(base.getTranslationKey()).applyTextStyle(TextFormatting.GRAY));
+        new TranslationTextComponent(base.getTranslationKey()).func_240699_a_(TextFormatting.GRAY));
     tooltip.add(new StringTextComponent(""));
 
     if (InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 340)
         || InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 344)) {
       NonNullList<ItemStack> ingredients = CulinaryNBTHelper.getIngredientsList(stack);
       tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.ingredients.name")
-          .applyTextStyle(TextFormatting.GRAY).applyTextStyle(TextFormatting.UNDERLINE));
+          .func_240699_a_(TextFormatting.GRAY).func_240699_a_(TextFormatting.UNDERLINE));
 
       for (ItemStack ing : ingredients) {
 
         if (!ing.isEmpty()) {
           tooltip.add(new TranslationTextComponent(ing.getTranslationKey())
-              .applyTextStyle(TextFormatting.GRAY));
+              .func_240699_a_(TextFormatting.GRAY));
         }
       }
     } else {
       tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.ingredients")
-          .applyTextStyle(TextFormatting.GRAY));
+          .func_240699_a_(TextFormatting.GRAY));
     }
   }
 }

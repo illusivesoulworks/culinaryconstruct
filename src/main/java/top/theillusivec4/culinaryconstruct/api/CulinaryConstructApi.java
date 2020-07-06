@@ -24,7 +24,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import top.theillusivec4.culinaryconstruct.api.capability.CulinaryConstructCapability;
 import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
 
-public class CulinaryConstructAPI {
+public class CulinaryConstructApi {
 
   public static LazyOptional<ICulinaryIngredient> getCulinaryIngredient(final ItemStack stack) {
     return stack.getCapability(CulinaryConstructCapability.CULINARY_INGREDIENT);

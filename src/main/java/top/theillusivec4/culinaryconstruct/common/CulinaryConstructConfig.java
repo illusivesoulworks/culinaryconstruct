@@ -29,7 +29,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.util.LazyOptional;
 import org.apache.commons.lang3.tuple.Pair;
 import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
-import top.theillusivec4.culinaryconstruct.api.CulinaryConstructAPI;
+import top.theillusivec4.culinaryconstruct.api.CulinaryConstructApi;
 import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
 
 public class CulinaryConstructConfig {
@@ -76,11 +76,10 @@ public class CulinaryConstructConfig {
     }
   }
 
-  public static boolean isBlacklistedIngredient(ItemStack stack) {
+  public static boolean isValidIngredient(ItemStack stack) {
     Item item = stack.getItem();
     Food food = item.getFood();
-    LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructAPI
-        .getCulinaryIngredient(stack);
+    LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructApi.getCulinaryIngredient(stack);
     int foodAmount = 0;
     float saturationAmount = 0;
 
@@ -103,7 +102,7 @@ public class CulinaryConstructConfig {
         blacklisted = blacklist.contains(location.toString());
       }
     }
-    return (maxFood >= 0 && foodAmount > maxFood) || (maxSaturation >= 0
-        && saturationAmount > maxSaturation) || blacklisted;
+    return (maxFood < 0 || foodAmount <= maxFood) && (maxSaturation < 0
+        || saturationAmount <= maxSaturation) && !blacklisted;
   }
 }

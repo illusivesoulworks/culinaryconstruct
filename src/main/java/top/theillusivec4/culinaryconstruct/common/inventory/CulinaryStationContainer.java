@@ -39,10 +39,10 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import org.apache.commons.lang3.StringUtils;
-import top.theillusivec4.culinaryconstruct.api.CulinaryConstructAPI;
+import top.theillusivec4.culinaryconstruct.api.CulinaryConstructApi;
 import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
 import top.theillusivec4.culinaryconstruct.common.CulinaryConstructConfig;
-import top.theillusivec4.culinaryconstruct.common.advancement.CulinaryTriggers;
+import top.theillusivec4.culinaryconstruct.common.advancement.CraftFoodTrigger;
 import top.theillusivec4.culinaryconstruct.common.item.CulinaryItemBase;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 import top.theillusivec4.culinaryconstruct.common.tag.CulinaryTags;
@@ -81,15 +81,12 @@ public class CulinaryStationContainer extends Container {
   }
 
   private void addFoodSlots() {
-    this.addSlot(new BaseSlot(this.base, 0, 17, 56));
+    this.addSlot(new BaseSlot(this.base, 0, 8, 44));
 
-    this.addSlot(new IngredientSlot(this.ingredients, 0, 71, 38));
-    this.addSlot(new IngredientSlot(this.ingredients, 1, 89, 38));
-
-    for (int i = 2; i < this.ingredients.getSlots(); i++) {
-      this.addSlot(new IngredientSlot(this.ingredients, i, 62 + (i - 2) * 18, 56));
+    for (int i = 0; i < this.ingredients.getSlots(); i++) {
+      this.addSlot(new IngredientSlot(this.ingredients, i, 44 + i * 18, 44));
     }
-    this.addSlot(new OutputSlot(this.output, 0, 144, 56));
+    this.addSlot(new OutputSlot(this.output, 0, 152, 44));
   }
 
   private void addPlayerSlots(PlayerInventory playerInventory) {
@@ -243,11 +240,11 @@ public class CulinaryStationContainer extends Container {
 
     @Override
     public boolean isItemValid(@Nonnull ItemStack stack) {
-      LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructAPI
+      LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructApi
           .getCulinaryIngredient(stack);
       return !(stack.getItem() instanceof CulinaryItemBase) && (stack.getItem().isFood() || culinary
-          .map(ICulinaryIngredient::isValid).orElse(false)) && !CulinaryConstructConfig
-          .isBlacklistedIngredient(stack);
+          .map(ICulinaryIngredient::isValid).orElse(false)) && CulinaryConstructConfig
+          .isValidIngredient(stack);
     }
   }
 
@@ -273,7 +270,7 @@ public class CulinaryStationContainer extends Container {
     public ItemStack onTake(PlayerEntity playerEntity, @Nonnull ItemStack stack) {
 
       if (!playerEntity.world.isRemote) {
-        CulinaryTriggers.CRAFT_FOOD.trigger((ServerPlayerEntity) playerEntity);
+        CraftFoodTrigger.INSTANCE.trigger((ServerPlayerEntity) playerEntity);
       }
       IItemHandler ingredients = CulinaryStationContainer.this.ingredients;
 

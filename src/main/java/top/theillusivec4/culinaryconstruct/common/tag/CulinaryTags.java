@@ -20,16 +20,15 @@
 package top.theillusivec4.culinaryconstruct.common.tag;
 
 import net.minecraft.item.Item;
+import net.minecraft.tags.ITag.INamedTag;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
-import net.minecraft.util.ResourceLocation;
 
 public class CulinaryTags {
 
-  public static final Tag<Item> BREAD = tag("bread");
-  public static final Tag<Item> BOWL = tag("bowls");
+  public static final INamedTag<Item> BREAD = tag("bread");
+  public static final INamedTag<Item> BOWL = tag("bowls");
 
-  private static Tag<Item> tag(String name) {
-    return new ItemTags.Wrapper(new ResourceLocation("forge", name));
+  private static INamedTag<Item> tag(String name) {
+    return ItemTags.makeWrapperTag("forge:" + name);
   }
 }

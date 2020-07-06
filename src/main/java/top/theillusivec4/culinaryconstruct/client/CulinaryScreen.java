@@ -19,13 +19,12 @@
 
 package top.theillusivec4.culinaryconstruct.client;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nonnull;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.IContainerListener;
@@ -33,6 +32,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
 import top.theillusivec4.culinaryconstruct.common.inventory.CulinaryStationContainer;
 import top.theillusivec4.culinaryconstruct.common.network.CPacketRename;
@@ -53,98 +53,97 @@ public class CulinaryScreen extends ContainerScreen<CulinaryStationContainer> im
     super(screenContainer, inv, titleIn);
     this.xSize = WIDTH;
     this.ySize = HEIGHT;
+    this.field_238742_p_ = 60;
+    this.field_238743_q_ = 6;
+    this.field_238744_r_ = 8;
+    this.field_238745_s_ = 67;
   }
 
   @Override
-  protected void init() {
-    super.init();
+  protected void func_231160_c_() {
+    super.func_231160_c_();
 
-    if (this.minecraft != null) {
-      this.minecraft.keyboardListener.enableRepeatEvents(true);
+    if (this.field_230706_i_ != null) {
+      this.field_230706_i_.keyboardListener.enableRepeatEvents(true);
     }
-    int i = (this.width - this.xSize) / 2;
-    int j = (this.height - this.ySize) / 2;
-    this.nameField = new TextFieldWidget(this.font, i + 62, j + 20, 103, 12,
-        I18n.format("culinaryconstruct.culinary_container"));
+    int i = (this.field_230708_k_ - this.xSize) / 2;
+    int j = (this.field_230709_l_ - this.ySize) / 2;
+    this.nameField = new TextFieldWidget(this.field_230712_o_, i + 62, j + 20, 103, 12,
+        new TranslationTextComponent("culinaryconstruct.culinary_container"));
     this.nameField.setCanLoseFocus(false);
-    this.nameField.changeFocus(true);
     this.nameField.setTextColor(-1);
     this.nameField.setDisabledTextColour(-1);
     this.nameField.setEnableBackgroundDrawing(false);
     this.nameField.setMaxStringLength(35);
     this.nameField.setResponder(this::updateName);
-    this.children.add(this.nameField);
+    this.field_230705_e_.add(this.nameField);
     this.container.addListener(this);
     this.setFocusedDefault(this.nameField);
   }
 
   @Override
-  public void resize(@Nonnull Minecraft minecraft, int mouse1, int mouse2) {
+  public void func_231152_a_(@Nonnull Minecraft minecraft, int mouse1, int mouse2) {
     String s = this.nameField.getText();
-    this.init(minecraft, mouse1, mouse2);
+    this.func_231158_b_(minecraft, mouse1, mouse2);
     this.nameField.setText(s);
   }
 
   @Override
-  public void removed() {
-    super.removed();
+  public void func_231164_f_() {
+    super.func_231164_f_();
 
-    if (this.minecraft != null) {
-      this.minecraft.keyboardListener.enableRepeatEvents(false);
+    if (this.field_230706_i_ != null) {
+      this.field_230706_i_.keyboardListener.enableRepeatEvents(false);
     }
     this.container.removeListener(this);
   }
 
   @Override
-  public boolean keyPressed(int key1, int key2, int key3) {
+  public boolean func_231046_a_(int key1, int key2, int key3) {
 
-    if (key1 == 256 && this.minecraft != null && this.minecraft.player != null) {
-      this.minecraft.player.closeScreen();
+    if (key1 == 256 && this.field_230706_i_ != null && this.field_230706_i_.player != null) {
+      this.field_230706_i_.player.closeScreen();
     }
-    return this.nameField.keyPressed(key1, key2, key3) || this.nameField.canWrite() || super
-        .keyPressed(key1, key2, key3);
+    return this.nameField.func_231046_a_(key1, key2, key3) || this.nameField.canWrite() || super
+        .func_231046_a_(key1, key2, key3);
   }
 
   @Override
-  protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+  public void func_230430_a_(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY,
+      float partialTicks) {
+    this.func_230446_a_(matrixStack);
+    super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
     RenderSystem.disableBlend();
-    this.font.drawString(this.title.getFormattedText(), 58.0F, 6.0F, 4210752);
-  }
-
-  @Override
-  public void render(int mouseX, int mouseY, float partialTicks) {
-    this.renderBackground();
-    super.render(mouseX, mouseY, partialTicks);
-    this.renderHoveredToolTip(mouseX, mouseY);
-    RenderSystem.disableBlend();
-    this.nameField.render(mouseX, mouseY, partialTicks);
+    this.func_230459_a_(matrixStack, mouseX, mouseY);
+    this.nameField.func_230431_b_(matrixStack, mouseX, mouseY, partialTicks);
   }
 
   private void updateName(String name) {
     if (this.container.getSlot(6).getHasStack()) {
       this.container.updateItemName(name);
 
-      if (this.minecraft != null) {
+      if (this.field_230706_i_ != null) {
         CulinaryConstructNetwork.INSTANCE.sendToServer(new CPacketRename(name));
       }
     }
   }
 
+  @SuppressWarnings("deprecation")
   @Override
-  protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+  protected void func_230450_a_(@Nonnull MatrixStack matrixStack, float partialTicks, int mouseX,
+      int mouseY) {
 
-    if (this.minecraft != null) {
+    if (this.field_230706_i_ != null) {
       RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-      this.minecraft.getTextureManager().bindTexture(GUI_BACKGROUND);
-      int i = (this.width - this.xSize) / 2;
-      int j = (this.height - this.ySize) / 2;
-      this.blit(i, j, 0, 0, this.xSize, this.ySize);
-      this.blit(i + 59, j + 16, 0, this.ySize + (this.container.getSlot(0).getHasStack() ? 0 : 16),
-          110, 16);
+      this.field_230706_i_.getTextureManager().bindTexture(GUI_BACKGROUND);
+      int i = (this.field_230708_k_ - this.xSize) / 2;
+      int j = (this.field_230709_l_ - this.ySize) / 2;
+      this.func_238474_b_(matrixStack, i, j, 0, 0, this.xSize, this.ySize);
+      this.func_238474_b_(matrixStack, i + 59, j + 16, 0,
+          this.ySize + (this.container.getSlot(0).getHasStack() ? 0 : 16), 110, 16);
 
-      if ((this.container.getSlot(0).getHasStack() || this.container.getSlot(1).getHasStack())
-          && !this.container.getSlot(6).getHasStack()) {
-        this.blit(i + 115, j + 54, this.xSize, 0, 28, 21);
+      if (this.container.getSlot(0).getHasStack() && !this.container.getSlot(6).getHasStack()) {
+        this.func_238474_b_(matrixStack, i + 133, j + 43, this.xSize, 0, 18, 18);
       }
     }
   }

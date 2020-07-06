@@ -17,8 +17,8 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.IModelTransform;
 import net.minecraft.client.renderer.model.IUnbakedModel;
 import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.model.Material;
 import net.minecraft.client.renderer.model.ModelBakery;
+import net.minecraft.client.renderer.model.RenderMaterial;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -30,8 +30,8 @@ import net.minecraftforge.client.model.PerspectiveMapWrapper;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
 import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
-import top.theillusivec4.culinaryconstruct.client.model.base.PerspectiveItemModel;
 import top.theillusivec4.culinaryconstruct.client.model.base.CulinaryOverrideHandler;
+import top.theillusivec4.culinaryconstruct.client.model.base.PerspectiveItemModel;
 import top.theillusivec4.culinaryconstruct.client.model.utils.ColorHelper;
 import top.theillusivec4.culinaryconstruct.client.model.utils.ModelHelper;
 import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
@@ -41,7 +41,7 @@ public final class SandwichModel implements IModelGeometry<SandwichModel> {
 
   @Override
   public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery,
-      Function<Material, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform,
+      Function<RenderMaterial, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform,
       ItemOverrideList overrides, ResourceLocation modelLocation) {
     IBakedModel model = ModelHelper
         .getBakedLayerModel(owner, bakery, spriteGetter, modelTransform, overrides,
@@ -56,7 +56,7 @@ public final class SandwichModel implements IModelGeometry<SandwichModel> {
 
   public IBakedModel bake(List<TextureAtlasSprite> ingredients, List<Integer> layers,
       IModelConfiguration owner, ModelBakery bakery,
-      Function<Material, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform,
+      Function<RenderMaterial, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform,
       ItemOverrideList overrides) {
     int index = Math.max(0, ingredients.size() - 1);
     Random random = new Random();
@@ -83,7 +83,7 @@ public final class SandwichModel implements IModelGeometry<SandwichModel> {
   }
 
   @Override
-  public Collection<Material> getTextures(IModelConfiguration owner,
+  public Collection<RenderMaterial> getTextures(IModelConfiguration owner,
       Function<ResourceLocation, IUnbakedModel> modelGetter,
       Set<Pair<String, String>> missingTextureErrors) {
     return Collections.emptyList();
@@ -93,7 +93,7 @@ public final class SandwichModel implements IModelGeometry<SandwichModel> {
       CulinaryOverrideHandler<SandwichModel> {
 
     public BakedSandwichOverrideHandler(SandwichModel model, IModelConfiguration owner,
-        ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter,
+        ModelBakery bakery, Function<RenderMaterial, TextureAtlasSprite> spriteGetter,
         IModelTransform modelTransform, ResourceLocation modelLocation) {
       super(model, owner, bakery, spriteGetter, modelTransform, modelLocation);
     }

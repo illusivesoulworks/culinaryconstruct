@@ -28,7 +28,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.LazyOptional;
-import top.theillusivec4.culinaryconstruct.api.CulinaryConstructAPI;
+import top.theillusivec4.culinaryconstruct.api.CulinaryConstructApi;
 import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
 import top.theillusivec4.culinaryconstruct.common.CulinaryConstructConfig;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
@@ -60,10 +60,10 @@ public class CulinaryCalculator {
     int maxFood;
 
     OutputType type;
-    if (CulinaryTags.BREAD.contains(base.getItem())) {
+    if (CulinaryTags.BREAD.func_230235_a_(base.getItem())) {
       type = OutputType.SANDWICH;
       maxFood = CulinaryConstructConfig.SERVER.maxFoodPerSandwich.get();
-    } else if (CulinaryTags.BOWL.contains(base.getItem())) {
+    } else if (CulinaryTags.BOWL.func_230235_a_(base.getItem())) {
       type = OutputType.BOWL;
       maxFood = Integer.MAX_VALUE;
     } else {
@@ -121,7 +121,7 @@ public class CulinaryCalculator {
   public boolean processStack(ItemStack stack) {
     Item item = stack.getItem();
     Food food = item.getFood();
-    LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructAPI.getCulinaryIngredient(stack);
+    LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructApi.getCulinaryIngredient(stack);
     int foodAmount = 0;
     float saturationAmount = 0;
     boolean valid = true;

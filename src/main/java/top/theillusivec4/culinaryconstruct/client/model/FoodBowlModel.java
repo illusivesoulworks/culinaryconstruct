@@ -16,8 +16,8 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.IModelTransform;
 import net.minecraft.client.renderer.model.IUnbakedModel;
 import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.model.Material;
 import net.minecraft.client.renderer.model.ModelBakery;
+import net.minecraft.client.renderer.model.RenderMaterial;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -39,7 +39,7 @@ public final class FoodBowlModel implements IModelGeometry<FoodBowlModel> {
 
   @Override
   public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery,
-      Function<Material, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform,
+      Function<RenderMaterial, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform,
       ItemOverrideList overrides, ResourceLocation modelLocation) {
     IBakedModel model = ModelHelper
         .getBakedLayerModel(owner, bakery, spriteGetter, modelTransform, overrides,
@@ -54,7 +54,7 @@ public final class FoodBowlModel implements IModelGeometry<FoodBowlModel> {
 
   public IBakedModel bake(List<TextureAtlasSprite> ingredients, List<Integer> layers,
       @Nullable List<Integer> liquids, IModelConfiguration owner, ModelBakery bakery,
-      Function<Material, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform,
+      Function<RenderMaterial, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform,
       ItemOverrideList overrides) {
     Random random = new Random();
     random.setSeed(42);
@@ -103,7 +103,7 @@ public final class FoodBowlModel implements IModelGeometry<FoodBowlModel> {
   }
 
   @Override
-  public Collection<Material> getTextures(IModelConfiguration owner,
+  public Collection<RenderMaterial> getTextures(IModelConfiguration owner,
       Function<ResourceLocation, IUnbakedModel> modelGetter,
       Set<Pair<String, String>> missingTextureErrors) {
     return Collections.emptyList();
@@ -113,7 +113,7 @@ public final class FoodBowlModel implements IModelGeometry<FoodBowlModel> {
       CulinaryOverrideHandler<FoodBowlModel> {
 
     public BakedFoodBowlOverrideHandler(FoodBowlModel model, IModelConfiguration owner,
-        ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter,
+        ModelBakery bakery, Function<RenderMaterial, TextureAtlasSprite> spriteGetter,
         IModelTransform modelTransform, ResourceLocation modelLocation) {
       super(model, owner, bakery, spriteGetter, modelTransform, modelLocation);
     }

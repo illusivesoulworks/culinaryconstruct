@@ -29,9 +29,10 @@ import javax.annotation.Nullable;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.IModelTransform;
 import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.model.Material;
 import net.minecraft.client.renderer.model.ModelBakery;
+import net.minecraft.client.renderer.model.RenderMaterial;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -49,14 +50,14 @@ public abstract class CulinaryOverrideHandler<T extends IModelGeometry<T>> exten
   protected final T model;
   protected final ModelBakery bakery;
   protected final IModelConfiguration owner;
-  protected final Function<Material, TextureAtlasSprite> spriteGetter;
+  protected final Function<RenderMaterial, TextureAtlasSprite> spriteGetter;
   protected final IModelTransform modelTransform;
   protected final ResourceLocation modelLocation;
   private Cache<CacheKey, IBakedModel> bakedModelCache = CacheBuilder.newBuilder().maximumSize(1000)
       .expireAfterWrite(5, TimeUnit.MINUTES).build();
 
   public CulinaryOverrideHandler(T model, IModelConfiguration owner, ModelBakery bakery,
-      Function<Material, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform,
+      Function<RenderMaterial, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform,
       ResourceLocation modelLocation) {
     super();
     this.model = model;
@@ -69,8 +70,8 @@ public abstract class CulinaryOverrideHandler<T extends IModelGeometry<T>> exten
 
   @Nonnull
   @Override
-  public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel,
-      @Nonnull ItemStack stack, @Nullable World worldIn, @Nullable LivingEntity entityIn) {
+  public IBakedModel func_239290_a_(@Nonnull IBakedModel originalModel, @Nonnull ItemStack stack,
+      @Nullable ClientWorld worldIn, @Nullable LivingEntity entityIn) {
     CompoundNBT data = CulinaryNBTHelper.getTagSafe(stack);
     IBakedModel output = originalModel;
 

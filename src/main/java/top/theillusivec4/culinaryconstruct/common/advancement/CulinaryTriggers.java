@@ -23,9 +23,7 @@ import net.minecraft.advancements.CriteriaTriggers;
 
 public class CulinaryTriggers {
 
-  public static final CraftFoodTrigger CRAFT_FOOD = new CraftFoodTrigger();
-
   public static void register() {
-    CriteriaTriggers.register(CRAFT_FOOD);
+    CriteriaTriggers.register(CraftFoodTrigger.INSTANCE);
   }
 }

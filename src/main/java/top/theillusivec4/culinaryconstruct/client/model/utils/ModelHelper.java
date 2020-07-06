@@ -25,8 +25,8 @@ import java.util.function.Function;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.IModelTransform;
 import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.model.Material;
 import net.minecraft.client.renderer.model.ModelBakery;
+import net.minecraft.client.renderer.model.RenderMaterial;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.item.ItemStack;
@@ -39,10 +39,10 @@ import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 public class ModelHelper {
 
   public static IBakedModel getBakedLayerModel(IModelConfiguration owner, ModelBakery bakery,
-      Function<Material, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform,
+      Function<RenderMaterial, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform,
       ItemOverrideList overrides, ResourceLocation modelLocation) {
-    return new ItemLayerModel(
-        ImmutableList.of(new Material(PlayerContainer.LOCATION_BLOCKS_TEXTURE, modelLocation)))
+    return new ItemLayerModel(ImmutableList
+        .of(new RenderMaterial(PlayerContainer.LOCATION_BLOCKS_TEXTURE, modelLocation)))
         .bake(owner, bakery, spriteGetter, modelTransform, overrides, modelLocation);
   }
 

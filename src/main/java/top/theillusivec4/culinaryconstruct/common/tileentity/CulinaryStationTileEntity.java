@@ -22,6 +22,7 @@ package top.theillusivec4.culinaryconstruct.common.tileentity;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -31,7 +32,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import top.theillusivec4.culinaryconstruct.api.CulinaryConstructAPI;
+import top.theillusivec4.culinaryconstruct.api.CulinaryConstructApi;
 import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
 import top.theillusivec4.culinaryconstruct.common.CulinaryConstructConfig;
 import top.theillusivec4.culinaryconstruct.common.item.CulinaryItemBase;
@@ -53,11 +54,11 @@ public class CulinaryStationTileEntity extends TileEntity {
         stack -> stack.getItem().isIn(CulinaryTags.BREAD) || stack.getItem()
             .isIn(CulinaryTags.BOWL), 1);
     this.ingredients = new CulinaryStackHandler(stack -> {
-      LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructAPI
+      LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructApi
           .getCulinaryIngredient(stack);
       return !(stack.getItem() instanceof CulinaryItemBase) && (stack.getItem().isFood() || culinary
-          .map(ICulinaryIngredient::isValid).orElse(false)) && !CulinaryConstructConfig
-          .isBlacklistedIngredient(stack);
+          .map(ICulinaryIngredient::isValid).orElse(false)) && CulinaryConstructConfig
+          .isValidIngredient(stack);
     }, 5);
     this.output = new CulinaryStackHandler(stack -> false, 1);
     this.baseOpt = LazyOptional.of(() -> base);
@@ -66,8 +67,9 @@ public class CulinaryStationTileEntity extends TileEntity {
   }
 
   @Override
-  public void read(@Nonnull CompoundNBT compound) {
-    super.read(compound);
+  public void func_230337_a_(BlockState state, @Nonnull CompoundNBT compound) {
+    super.func_230337_a_(state, compound);
+
     if (compound.contains("Holder", 10)) {
       this.base.deserializeNBT(compound.getCompound("Holder"));
     }
@@ -98,7 +100,8 @@ public class CulinaryStationTileEntity extends TileEntity {
       if (facing == Direction.UP) {
         return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(capability, this.baseOpt);
       } else if (facing != Direction.DOWN) {
-        return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(capability, this.ingredientsOpt);
+        return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
+            .orEmpty(capability, this.ingredientsOpt);
       }
     }
     return super.getCapability(capability, facing);
