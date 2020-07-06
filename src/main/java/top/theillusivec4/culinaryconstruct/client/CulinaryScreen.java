@@ -77,8 +77,8 @@ public class CulinaryScreen extends ContainerScreen<CulinaryStationContainer> im
     this.nameField.setMaxStringLength(35);
     this.nameField.setResponder(this::updateName);
     this.field_230705_e_.add(this.nameField);
-    this.container.addListener(this);
     this.setFocusedDefault(this.nameField);
+    this.container.addListener(this);
   }
 
   @Override
@@ -91,11 +91,11 @@ public class CulinaryScreen extends ContainerScreen<CulinaryStationContainer> im
   @Override
   public void func_231164_f_() {
     super.func_231164_f_();
+    this.container.removeListener(this);
 
     if (this.field_230706_i_ != null) {
       this.field_230706_i_.keyboardListener.enableRepeatEvents(false);
     }
-    this.container.removeListener(this);
   }
 
   @Override
@@ -114,8 +114,8 @@ public class CulinaryScreen extends ContainerScreen<CulinaryStationContainer> im
     this.func_230446_a_(matrixStack);
     super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
     RenderSystem.disableBlend();
+    this.nameField.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
     this.func_230459_a_(matrixStack, mouseX, mouseY);
-    this.nameField.func_230431_b_(matrixStack, mouseX, mouseY, partialTicks);
   }
 
   private void updateName(String name) {
@@ -161,7 +161,13 @@ public class CulinaryScreen extends ContainerScreen<CulinaryStationContainer> im
     if (slotInd == 6) {
       this.nameField.setText(stack.isEmpty() ? "" : this.nameField.getText());
       this.nameField.setEnabled(!stack.isEmpty());
+      this.func_231035_a_(this.nameField);
     }
+  }
+
+  public void func_230452_b_(MatrixStack p_230452_1_, int p_230452_2_, int p_230452_3_,
+      float p_230452_4_) {
+    this.nameField.func_230430_a_(p_230452_1_, p_230452_2_, p_230452_3_, p_230452_4_);
   }
 
   @Override
