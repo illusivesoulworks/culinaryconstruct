@@ -62,7 +62,7 @@ public class CulinaryCalculator {
     OutputType type;
     if (CulinaryTags.BREAD.func_230235_a_(base.getItem())) {
       type = OutputType.SANDWICH;
-      maxFood = CulinaryConstructConfig.SERVER.maxFoodPerSandwich.get();
+      maxFood = CulinaryConstructConfig.maxFoodPerSandwich;
     } else if (CulinaryTags.BOWL.func_230235_a_(base.getItem())) {
       type = OutputType.BOWL;
       maxFood = Integer.MAX_VALUE;

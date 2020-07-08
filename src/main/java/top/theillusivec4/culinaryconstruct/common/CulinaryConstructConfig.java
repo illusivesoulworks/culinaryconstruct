@@ -27,6 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
 import top.theillusivec4.culinaryconstruct.api.CulinaryConstructApi;
@@ -76,6 +77,26 @@ public class CulinaryConstructConfig {
     }
   }
 
+  public static int maxFoodPerSandwich;
+  public static double maxIngredientSaturation;
+  public static int maxIngredientFood;
+  public static List<Item> ingredientBlacklist;
+
+  public static void bake() {
+    maxFoodPerSandwich = SERVER.maxFoodPerSandwich.get();
+    maxIngredientFood = SERVER.maxIngredientFood.get();
+    maxIngredientSaturation = SERVER.maxIngredientSaturation.get();
+    ingredientBlacklist = new ArrayList<>();
+
+    SERVER.ingredientBlacklist.get().forEach(item -> {
+      Item type = ForgeRegistries.ITEMS.getValue(new ResourceLocation(item));
+
+      if (type != null) {
+        ingredientBlacklist.add(type);
+      }
+    });
+  }
+
   public static boolean isValidIngredient(ItemStack stack) {
     Item item = stack.getItem();
     Food food = item.getFood();
@@ -90,17 +111,13 @@ public class CulinaryConstructConfig {
       foodAmount = food.getHealing();
       saturationAmount = food.getSaturation();
     }
-    int maxFood = CulinaryConstructConfig.SERVER.maxIngredientFood.get();
-    double maxSaturation = CulinaryConstructConfig.SERVER.maxIngredientSaturation.get();
-    List<? extends String> blacklist = CulinaryConstructConfig.SERVER.ingredientBlacklist.get();
+    int maxFood = CulinaryConstructConfig.maxIngredientFood;
+    double maxSaturation = CulinaryConstructConfig.maxIngredientSaturation;
+    List<Item> blacklist = CulinaryConstructConfig.ingredientBlacklist;
     boolean blacklisted = false;
 
     if (!blacklist.isEmpty()) {
-      ResourceLocation location = item.getRegistryName();
-
-      if (location != null) {
-        blacklisted = blacklist.contains(location.toString());
-      }
+      blacklisted = blacklist.contains(item);
     }
     return (maxFood < 0 || foodAmount <= maxFood) && (maxSaturation < 0
         || saturationAmount <= maxSaturation) && !blacklisted;

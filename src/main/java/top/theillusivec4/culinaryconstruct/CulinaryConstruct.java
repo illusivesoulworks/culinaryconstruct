@@ -31,6 +31,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.config.ModConfig.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -55,6 +56,7 @@ public class CulinaryConstruct {
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     eventBus.addListener(this::setup);
     eventBus.addListener(this::clientSetup);
+    eventBus.addListener(this::config);
     ModLoadingContext.get()
         .registerConfig(ModConfig.Type.SERVER, CulinaryConstructConfig.serverSpec);
   }
@@ -63,6 +65,13 @@ public class CulinaryConstruct {
     CulinaryConstructNetwork.register();
     CapabilityCulinaryFood.register();
     CulinaryTriggers.register();
+  }
+
+  private void config(final ModConfigEvent evt) {
+
+    if (evt.getConfig().getModId().equals(MODID)) {
+      CulinaryConstructConfig.bake();
+    }
   }
 
   private void clientSetup(final FMLClientSetupEvent evt) {
