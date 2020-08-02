@@ -298,6 +298,7 @@ public class CulinaryStationContainer extends Container {
       if (base != null) {
         base.getStackInSlot(0).shrink(1);
       }
+      CulinaryStationContainer.this.updateOutput();
       return stack;
     }
   }
