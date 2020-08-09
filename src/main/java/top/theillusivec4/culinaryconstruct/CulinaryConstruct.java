@@ -24,6 +24,7 @@ import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -77,17 +78,21 @@ public class CulinaryConstruct {
   private void clientSetup(final FMLClientSetupEvent evt) {
     ScreenManager
         .registerFactory(CulinaryConstructRegistry.CULINARY_STATION_CONTAINER, CulinaryScreen::new);
-    ModelLoaderRegistry
-        .registerLoader(new ResourceLocation(CulinaryConstruct.MODID, "sandwich_loader"),
-            SandwichLoader.INSTANCE);
-    ModelLoaderRegistry
-        .registerLoader(new ResourceLocation(CulinaryConstruct.MODID, "food_bowl_loader"),
-            FoodBowlLoader.INSTANCE);
+    
   }
 
   @Mod.EventBusSubscriber(modid = MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
   public static class ClientProxy {
-
+    
+    @SubscribeEvent
+    public static void registerModels(final ModelRegistryEvent evt) {
+        ModelLoaderRegistry
+                .registerLoader(new ResourceLocation(CulinaryConstruct.MODID, "sandwich_loader"),
+                        SandwichLoader.INSTANCE);
+        ModelLoaderRegistry
+                .registerLoader(new ResourceLocation(CulinaryConstruct.MODID, "food_bowl_loader"),
+                        FoodBowlLoader.INSTANCE);
+    }
     @SubscribeEvent
     public static void registerTextures(final TextureStitchEvent.Pre evt) {
       AtlasTexture map = evt.getMap();
