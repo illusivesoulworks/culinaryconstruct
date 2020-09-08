@@ -53,22 +53,22 @@ public class CulinaryScreen extends ContainerScreen<CulinaryStationContainer> im
     super(screenContainer, inv, titleIn);
     this.xSize = WIDTH;
     this.ySize = HEIGHT;
-    this.field_238742_p_ = 60;
-    this.field_238743_q_ = 6;
-    this.field_238744_r_ = 8;
-    this.field_238745_s_ = 67;
+    this.titleX = 60;
+    this.titleY = 6;
+    this.playerInventoryTitleX = 8;
+    this.playerInventoryTitleY = 67;
   }
 
   @Override
-  protected void func_231160_c_() {
-    super.func_231160_c_();
+  protected void init() {
+    super.init();
 
-    if (this.field_230706_i_ != null) {
-      this.field_230706_i_.keyboardListener.enableRepeatEvents(true);
+    if (this.minecraft != null) {
+      this.minecraft.keyboardListener.enableRepeatEvents(true);
     }
-    int i = (this.field_230708_k_ - this.xSize) / 2;
-    int j = (this.field_230709_l_ - this.ySize) / 2;
-    this.nameField = new TextFieldWidget(this.field_230712_o_, i + 62, j + 20, 103, 12,
+    int i = (this.width - this.xSize) / 2;
+    int j = (this.height - this.ySize) / 2;
+    this.nameField = new TextFieldWidget(this.font, i + 62, j + 20, 103, 12,
         new TranslationTextComponent("culinaryconstruct.culinary_container"));
     this.nameField.setCanLoseFocus(false);
     this.nameField.setTextColor(-1);
@@ -76,45 +76,44 @@ public class CulinaryScreen extends ContainerScreen<CulinaryStationContainer> im
     this.nameField.setEnableBackgroundDrawing(false);
     this.nameField.setMaxStringLength(35);
     this.nameField.setResponder(this::updateName);
-    this.field_230705_e_.add(this.nameField);
+    this.children.add(this.nameField);
     this.setFocusedDefault(this.nameField);
     this.container.addListener(this);
   }
 
   @Override
-  public void func_231152_a_(@Nonnull Minecraft minecraft, int mouse1, int mouse2) {
+  public void resize(@Nonnull Minecraft minecraft, int mouse1, int mouse2) {
     String s = this.nameField.getText();
-    this.func_231158_b_(minecraft, mouse1, mouse2);
+    this.init(minecraft, mouse1, mouse2);
     this.nameField.setText(s);
   }
 
   @Override
-  public void func_231164_f_() {
-    super.func_231164_f_();
+  public void onClose() {
+    super.onClose();
     this.container.removeListener(this);
 
-    if (this.field_230706_i_ != null) {
-      this.field_230706_i_.keyboardListener.enableRepeatEvents(false);
+    if (this.minecraft != null) {
+      this.minecraft.keyboardListener.enableRepeatEvents(false);
     }
   }
 
   @Override
-  public boolean func_231046_a_(int key1, int key2, int key3) {
+  public boolean keyPressed(int key1, int key2, int key3) {
 
-    if (key1 == 256 && this.field_230706_i_ != null && this.field_230706_i_.player != null) {
-      this.field_230706_i_.player.closeScreen();
+    if (key1 == 256 && this.minecraft != null && this.minecraft.player != null) {
+      this.minecraft.player.closeScreen();
     }
-    return this.nameField.func_231046_a_(key1, key2, key3) || this.nameField.canWrite() || super
-        .func_231046_a_(key1, key2, key3);
+    return this.nameField.keyPressed(key1, key2, key3) || this.nameField.canWrite() || super
+        .keyPressed(key1, key2, key3);
   }
 
   @Override
-  public void func_230430_a_(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY,
-      float partialTicks) {
-    this.func_230446_a_(matrixStack);
-    super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+  public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    this.renderBackground(matrixStack);
+    super.render(matrixStack, mouseX, mouseY, partialTicks);
     RenderSystem.disableBlend();
-    this.nameField.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+    this.nameField.render(matrixStack, mouseX, mouseY, partialTicks);
     this.func_230459_a_(matrixStack, mouseX, mouseY);
   }
 
@@ -122,7 +121,7 @@ public class CulinaryScreen extends ContainerScreen<CulinaryStationContainer> im
     if (this.container.getSlot(6).getHasStack()) {
       this.container.updateItemName(name);
 
-      if (this.field_230706_i_ != null) {
+      if (this.minecraft != null) {
         CulinaryConstructNetwork.INSTANCE.sendToServer(new CPacketRename(name));
       }
     }
@@ -130,20 +129,20 @@ public class CulinaryScreen extends ContainerScreen<CulinaryStationContainer> im
 
   @SuppressWarnings("deprecation")
   @Override
-  protected void func_230450_a_(@Nonnull MatrixStack matrixStack, float partialTicks, int mouseX,
-      int mouseY) {
+  protected void drawGuiContainerBackgroundLayer(@Nonnull MatrixStack matrixStack,
+      float partialTicks, int mouseX, int mouseY) {
 
-    if (this.field_230706_i_ != null) {
+    if (this.minecraft != null) {
       RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-      this.field_230706_i_.getTextureManager().bindTexture(GUI_BACKGROUND);
-      int i = (this.field_230708_k_ - this.xSize) / 2;
-      int j = (this.field_230709_l_ - this.ySize) / 2;
-      this.func_238474_b_(matrixStack, i, j, 0, 0, this.xSize, this.ySize);
-      this.func_238474_b_(matrixStack, i + 59, j + 16, 0,
+      this.minecraft.getTextureManager().bindTexture(GUI_BACKGROUND);
+      int i = (this.width - this.xSize) / 2;
+      int j = (this.height - this.ySize) / 2;
+      this.blit(matrixStack, i, j, 0, 0, this.xSize, this.ySize);
+      this.blit(matrixStack, i + 59, j + 16, 0,
           this.ySize + (this.container.getSlot(0).getHasStack() ? 0 : 16), 110, 16);
 
       if (this.container.getSlot(0).getHasStack() && !this.container.getSlot(6).getHasStack()) {
-        this.func_238474_b_(matrixStack, i + 133, j + 43, this.xSize, 0, 18, 18);
+        this.blit(matrixStack, i + 133, j + 43, this.xSize, 0, 18, 18);
       }
     }
   }
@@ -161,13 +160,8 @@ public class CulinaryScreen extends ContainerScreen<CulinaryStationContainer> im
     if (slotInd == 6) {
       this.nameField.setText(stack.isEmpty() ? "" : this.nameField.getText());
       this.nameField.setEnabled(!stack.isEmpty());
-      this.func_231035_a_(this.nameField);
+      this.setListener(this.nameField);
     }
-  }
-
-  public void func_230452_b_(MatrixStack p_230452_1_, int p_230452_2_, int p_230452_3_,
-      float p_230452_4_) {
-    this.nameField.func_230430_a_(p_230452_1_, p_230452_2_, p_230452_3_, p_230452_4_);
   }
 
   @Override

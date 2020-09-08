@@ -37,7 +37,6 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -119,20 +118,20 @@ public class CulinaryItemBase extends Item {
         StringBuilder builder = new StringBuilder();
 
         if (count > 1) {
-          TranslationTextComponent trans = new TranslationTextComponent("tooltip.culinaryconstruct.count." + count);
+          TranslationTextComponent trans = new TranslationTextComponent(
+              "tooltip.culinaryconstruct.count." + count);
           builder.append(trans.getString());
           builder.append(" ");
         }
-        builder.append(
-            new TranslationTextComponent(item.getTranslationKey()).getString());
+        builder.append(new TranslationTextComponent(item.getTranslationKey()).getString());
         names.add(builder.toString());
       });
       fullName.append(new TranslationTextComponent("tooltip.culinaryconstruct.list." + names.size(),
           names.toArray()).getString());
     }
     fullName.append(" ");
-    fullName.append(
-        new TranslationTextComponent(this.getTranslationKey(stack)).getString());
+    fullName.append(new TranslationTextComponent(this.getTranslationKey(stack)).getString());
+
     return new StringTextComponent(fullName.toString());
   }
 
@@ -142,27 +141,27 @@ public class CulinaryItemBase extends Item {
     ItemStack base = CulinaryNBTHelper.getBase(stack);
     int quality = CulinaryNBTHelper.getQuality(stack);
     tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.quality." + quality)
-        .func_240699_a_(TextFormatting.GREEN));
+        .mergeStyle(TextFormatting.GREEN));
     tooltip.add(
-        new TranslationTextComponent(base.getTranslationKey()).func_240699_a_(TextFormatting.GRAY));
+        new TranslationTextComponent(base.getTranslationKey()).mergeStyle(TextFormatting.GRAY));
     tooltip.add(new StringTextComponent(""));
 
     if (InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 340)
         || InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 344)) {
       NonNullList<ItemStack> ingredients = CulinaryNBTHelper.getIngredientsList(stack);
       tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.ingredients.name")
-          .func_240699_a_(TextFormatting.GRAY).func_240699_a_(TextFormatting.UNDERLINE));
+          .mergeStyle(TextFormatting.GRAY).mergeStyle(TextFormatting.UNDERLINE));
 
       for (ItemStack ing : ingredients) {
 
         if (!ing.isEmpty()) {
           tooltip.add(new TranslationTextComponent(ing.getTranslationKey())
-              .func_240699_a_(TextFormatting.GRAY));
+              .mergeStyle(TextFormatting.GRAY));
         }
       }
     } else {
       tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.ingredients")
-          .func_240699_a_(TextFormatting.GRAY));
+          .mergeStyle(TextFormatting.GRAY));
     }
   }
 }

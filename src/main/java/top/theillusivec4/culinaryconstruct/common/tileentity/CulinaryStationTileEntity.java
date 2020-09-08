@@ -67,8 +67,8 @@ public class CulinaryStationTileEntity extends TileEntity {
   }
 
   @Override
-  public void func_230337_a_(BlockState state, @Nonnull CompoundNBT compound) {
-    super.func_230337_a_(state, compound);
+  public void read(BlockState state, @Nonnull CompoundNBT compound) {
+    super.read(state, compound);
 
     if (compound.contains("Holder", 10)) {
       this.base.deserializeNBT(compound.getCompound("Holder"));

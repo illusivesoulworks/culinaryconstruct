@@ -16,9 +16,9 @@ apply plugin: 'com.matthewprenger.cursegradle'
 apply plugin: "com.wynprice.cursemaven"
 apply plugin: 'maven-publish'
 
-version = "${version_minecraft}-${mod_version}"
+version = "${mod_version}"
 group = "${mod_group}"
-archivesBaseName = "${mod_id}"
+archivesBaseName = "${mod_id}-forge"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
@@ -85,38 +85,29 @@ jar {
     manifest {
         attributes(["Specification-Title": "${mod_name}",
                     "Specification-Vendor": "${mod_author}",
-                    "Specification-Version": "${version}",
+                    "Specification-Version": "${getArchiveVersion()}",
                     "Implementation-Title": "${mod_name}",
-                    "Implementation-Version": "${version}",
+                    "Implementation-Version": "${getArchiveVersion()}",
                     "Implementation-Vendor" :"${mod_author}",
                     "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")],)
     }
 }
 
-def reobfFile = file("build/reobfJar/output.jar")
-def reobfArtifact = artifacts.add('default', reobfFile) {
-    type 'jar'
-    builtBy 'reobfJar'
-}
+jar.finalizedBy('reobfJar')
 
 task apiJar(type: Jar) {
-    classifier = 'api'
+    setArchiveClassifier('api')
     include 'top/theillusivec4/culinaryconstruct/api/**/*'
     from sourceSets.main.allSource
     from sourceSets.main.output
 }
 
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
+    setArchiveClassifier('sources')
     from sourceSets.main.allJava
 }
 
-task deobfJar(type: Jar) {
-    classifier = 'deobf'
-    from sourceSets.main.output
-}
-
-tasks.build.dependsOn apiJar, sourcesJar, deobfJar
+tasks.build.dependsOn apiJar, sourcesJar
 
 processResources {
 
@@ -140,7 +131,6 @@ curseforge {
         changelog = file('docs/CHANGELOG.md')
         addArtifact(sourcesJar)
         addArtifact(apiJar)
-        addArtifact(deobfJar)
     }
 }
 
@@ -151,8 +141,7 @@ publishing {
         mavenJava(MavenPublication) {
             artifactId project.archivesBaseName
 
-            artifact reobfArtifact
-            artifact deobfJar
+            artifact jar
             artifact sourcesJar
             artifact apiJar
         }

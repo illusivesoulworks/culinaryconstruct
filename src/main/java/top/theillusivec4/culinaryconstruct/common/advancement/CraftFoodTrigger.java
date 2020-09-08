@@ -51,14 +51,14 @@ public class CraftFoodTrigger extends AbstractCriterionTrigger<Instance> {
 
   @Nonnull
   @Override
-  public Instance func_230241_b_(@Nonnull JsonObject p_230241_1_,
+  public Instance deserializeTrigger(@Nonnull JsonObject p_230241_1_,
       @Nonnull EntityPredicate.AndPredicate p_230241_2_,
       @Nonnull ConditionArrayParser p_230241_3_) {
     return new Instance(p_230241_2_);
   }
 
   public void trigger(ServerPlayerEntity player) {
-    this.func_235959_a_(player, (p_241523_0_) -> true);
+    this.triggerListeners(player, (p_241523_0_) -> true);
   }
 
   public static class Instance extends CriterionInstance {
