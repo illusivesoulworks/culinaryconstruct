@@ -70,7 +70,7 @@ public abstract class CulinaryOverrideHandler<T extends IModelGeometry<T>> exten
 
   @Nonnull
   @Override
-  public IBakedModel func_239290_a_(@Nonnull IBakedModel originalModel, @Nonnull ItemStack stack,
+  public IBakedModel getOverrideModel(@Nonnull IBakedModel originalModel, @Nonnull ItemStack stack,
       @Nullable ClientWorld worldIn, @Nullable LivingEntity entityIn) {
     CompoundNBT data = CulinaryNBTHelper.getTagSafe(stack);
     IBakedModel output = originalModel;

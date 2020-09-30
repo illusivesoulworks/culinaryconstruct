@@ -114,7 +114,7 @@ public class CulinaryScreen extends ContainerScreen<CulinaryStationContainer> im
     super.render(matrixStack, mouseX, mouseY, partialTicks);
     RenderSystem.disableBlend();
     this.nameField.render(matrixStack, mouseX, mouseY, partialTicks);
-    this.func_230459_a_(matrixStack, mouseX, mouseY);
+    this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
   }
 
   private void updateName(String name) {
