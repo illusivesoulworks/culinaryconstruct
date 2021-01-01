@@ -26,18 +26,23 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.IWorldPosCallable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.items.CapabilityItemHandler;
 import top.theillusivec4.culinaryconstruct.common.inventory.CulinaryStationContainer;
 import top.theillusivec4.culinaryconstruct.common.registry.RegistryReference;
 import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
@@ -55,12 +60,43 @@ public class CulinaryStationBlock extends Block {
   @Nonnull
   @SuppressWarnings("deprecation")
   @Override
-  public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos,
-      PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+  public ActionResultType onBlockActivated(BlockState state, @Nonnull World worldIn,
+                                           @Nonnull BlockPos pos,
+                                           PlayerEntity player, @Nonnull Hand handIn,
+                                           @Nonnull BlockRayTraceResult hit) {
     player.openContainer(state.getContainer(worldIn, pos));
     return ActionResultType.SUCCESS;
   }
 
+  @SuppressWarnings("deprecation")
+  @Override
+  public void onReplaced(BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos,
+                         BlockState newState, boolean isMoving) {
+
+    if (state.getBlock() != newState.getBlock()) {
+      TileEntity tileentity = worldIn.getTileEntity(pos);
+
+      if (tileentity instanceof CulinaryStationTileEntity) {
+        CulinaryStationTileEntity cte = (CulinaryStationTileEntity) tileentity;
+        NonNullList<ItemStack> items = NonNullList.create();
+        cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP)
+            .ifPresent(cap -> {
+              for (int i = 0; i < cap.getSlots(); i++) {
+                items.add(cap.getStackInSlot(i));
+              }
+            });
+        cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.EAST)
+            .ifPresent(cap -> {
+              for (int i = 0; i < cap.getSlots(); i++) {
+                items.add(cap.getStackInSlot(i));
+              }
+            });
+        InventoryHelper.dropItems(worldIn, pos, items);
+        worldIn.updateComparatorOutputLevel(pos, this);
+      }
+      super.onReplaced(state, worldIn, pos, newState, isMoving);
+    }
+  }
 
   @Override
   public boolean hasTileEntity(BlockState state) {
@@ -75,7 +111,8 @@ public class CulinaryStationBlock extends Block {
 
   @SuppressWarnings("deprecation")
   @Override
-  public INamedContainerProvider getContainer(BlockState state, World worldIn, BlockPos pos) {
+  public INamedContainerProvider getContainer(@Nonnull BlockState state, @Nonnull World worldIn,
+                                              @Nonnull BlockPos pos) {
     return new SimpleNamedContainerProvider(
         (windowId, playerInventory, playerEntity) -> new CulinaryStationContainer(windowId,
             playerInventory, IWorldPosCallable.of(worldIn, pos), worldIn.getTileEntity(pos)),
