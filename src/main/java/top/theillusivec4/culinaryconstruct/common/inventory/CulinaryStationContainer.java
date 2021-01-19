@@ -272,21 +272,24 @@ public class CulinaryStationContainer extends Container {
       if (!playerEntity.world.isRemote) {
         CraftFoodTrigger.INSTANCE.trigger((ServerPlayerEntity) playerEntity);
       }
-      IItemHandler ingredients = CulinaryStationContainer.this.ingredients;
+      ItemStackHandler ingredients = CulinaryStationContainer.this.ingredients;
 
       if (ingredients != null) {
 
         for (int i = 0; i < ingredients.getSlots(); i++) {
           ItemStack slot = ingredients.getStackInSlot(i);
-          boolean isPotion = slot.getItem() instanceof PotionItem;
 
-          ItemStack container = slot.getItem().getContainerItem(slot);
-          slot.shrink(1);
+          if (!slot.isEmpty()) {
+            boolean isPotion = slot.getItem() instanceof PotionItem;
 
-          if (!container.isEmpty()) {
-            ingredients.insertItem(i, container, false);
-          } else if (isPotion) {
-            ingredients.insertItem(i, new ItemStack(Items.GLASS_BOTTLE), false);
+            ItemStack container = slot.getItem().getContainerItem(slot);
+            slot.shrink(1);
+
+            if (!container.isEmpty()) {
+              ingredients.setStackInSlot(i, container);
+            } else if (isPotion) {
+              ingredients.setStackInSlot(i, new ItemStack(Items.GLASS_BOTTLE));
+            }
           }
         }
       }
