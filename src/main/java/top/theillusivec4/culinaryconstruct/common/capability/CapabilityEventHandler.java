@@ -117,8 +117,9 @@ public class CapabilityEventHandler {
             @Override
             public List<Pair<EffectInstance, Float>> getEffects() {
               List<Pair<EffectInstance, Float>> list = new ArrayList<>();
-              PotionUtils.getEffectsFromStack(stack)
-                  .forEach(effectInstance -> list.add(Pair.of(effectInstance, 1.0F)));
+              PotionUtils.getEffectsFromStack(stack).forEach(effect -> list.add(Pair.of(
+                  new EffectInstance(effect.getPotion(), effect.getDuration(),
+                      effect.getAmplifier()), 1.0F)));
               return list;
             }
 
