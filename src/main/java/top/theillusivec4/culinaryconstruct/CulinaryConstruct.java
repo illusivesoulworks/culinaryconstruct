@@ -29,12 +29,14 @@ import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.config.ModConfig.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,6 +46,7 @@ import top.theillusivec4.culinaryconstruct.client.model.SandwichLoader;
 import top.theillusivec4.culinaryconstruct.common.CulinaryConstructConfig;
 import top.theillusivec4.culinaryconstruct.common.advancement.CulinaryTriggers;
 import top.theillusivec4.culinaryconstruct.common.capability.CapabilityCulinaryFood;
+import top.theillusivec4.culinaryconstruct.common.integration.DietIntegration;
 import top.theillusivec4.culinaryconstruct.common.network.CulinaryConstructNetwork;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 
@@ -58,6 +61,7 @@ public class CulinaryConstruct {
     eventBus.addListener(this::setup);
     eventBus.addListener(this::clientSetup);
     eventBus.addListener(this::config);
+    eventBus.addListener(this::enqueue);
     ModLoadingContext.get()
         .registerConfig(ModConfig.Type.SERVER, CulinaryConstructConfig.serverSpec);
   }
@@ -72,6 +76,13 @@ public class CulinaryConstruct {
 
     if (evt.getConfig().getModId().equals(MODID)) {
       CulinaryConstructConfig.bake();
+    }
+  }
+
+  private void enqueue(final InterModEnqueueEvent evt) {
+
+    if (ModList.get().isLoaded("diet")) {
+      DietIntegration.setup();
     }
   }
 
