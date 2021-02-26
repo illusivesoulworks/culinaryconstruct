@@ -29,6 +29,7 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.PotionItem;
+import net.minecraft.item.SoupItem;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IWorldPosCallable;
@@ -36,6 +37,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import org.apache.commons.lang3.StringUtils;
@@ -167,7 +169,7 @@ public class CulinaryStationContainer extends Container {
 
   @Nonnull
   @Override
-  public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+  public ItemStack transferStackInSlot(@Nonnull PlayerEntity playerIn, int index) {
     ItemStack itemstack = ItemStack.EMPTY;
     Slot slot = this.inventorySlots.get(index);
 
@@ -281,14 +283,22 @@ public class CulinaryStationContainer extends Container {
 
           if (!slot.isEmpty()) {
             boolean isPotion = slot.getItem() instanceof PotionItem;
+            boolean isSoup = slot.getItem() instanceof SoupItem;
 
             ItemStack container = slot.getItem().getContainerItem(slot);
             slot.shrink(1);
 
+            if (container.isEmpty()) {
+
+              if (isPotion) {
+                container = new ItemStack(Items.GLASS_BOTTLE);
+              } else if (isSoup) {
+                container = new ItemStack(Items.BOWL);
+              }
+            }
+
             if (!container.isEmpty()) {
-              ingredients.setStackInSlot(i, container);
-            } else if (isPotion) {
-              ingredients.setStackInSlot(i, new ItemStack(Items.GLASS_BOTTLE));
+              ItemHandlerHelper.giveItemToPlayer(playerEntity, container);
             }
           }
         }
