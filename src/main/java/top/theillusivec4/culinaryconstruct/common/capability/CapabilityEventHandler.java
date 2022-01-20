@@ -31,6 +31,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.MilkBucketItem;
 import net.minecraft.item.PotionItem;
+import net.minecraft.item.SuspiciousStewItem;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.PotionUtils;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -131,6 +135,34 @@ public class CapabilityEventHandler {
             @Override
             public Integer getLiquidColor() {
               return PotionUtils.getColor(stack);
+            }
+          }));
+    } else if (item instanceof SuspiciousStewItem) {
+      evt.addCapability(CulinaryConstructCapability.INGREDIENT_ID,
+          CapabilityCulinaryFood.createCulinaryIngredient(new ICulinaryIngredient() {
+            @Override
+            public List<Pair<EffectInstance, Float>> getEffects() {
+              List<Pair<EffectInstance, Float>> list = new ArrayList<>();
+              CompoundNBT compoundnbt = stack.getTag();
+
+              if (compoundnbt != null && compoundnbt.contains("Effects", 9)) {
+                ListNBT listnbt = compoundnbt.getList("Effects", 10);
+
+                for (int i = 0; i < listnbt.size(); ++i) {
+                  int j = 160;
+                  CompoundNBT compoundnbt1 = listnbt.getCompound(i);
+
+                  if (compoundnbt1.contains("EffectDuration", 3)) {
+                    j = compoundnbt1.getInt("EffectDuration");
+                  }
+                  Effect effect = Effect.get(compoundnbt1.getByte("EffectId"));
+
+                  if (effect != null) {
+                    list.add(Pair.of(new EffectInstance(effect, j), 1.0F));
+                  }
+                }
+              }
+              return list;
             }
           }));
     }
