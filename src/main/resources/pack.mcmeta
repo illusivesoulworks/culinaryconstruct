@@ -1,7 +1,6 @@
 {
     "pack": {
         "description": "Culinary Construct resources",
-        "pack_format": 4,
-        "_comment": "Resources used for Culinary Construct"
+        "pack_format": 8
     }
 }

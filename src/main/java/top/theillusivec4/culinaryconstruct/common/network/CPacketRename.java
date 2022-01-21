@@ -22,12 +22,12 @@ package top.theillusivec4.culinaryconstruct.common.network;
 import java.util.function.Supplier;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 import top.theillusivec4.culinaryconstruct.common.inventory.CulinaryStationContainer;
 
 public class CPacketRename {
 
-  private String name;
+  private final String name;
 
   public CPacketRename(String name) {
     this.name = name;

@@ -114,7 +114,7 @@ public class CulinaryConstruct {
 
     @SubscribeEvent
     public static void registerTextures(final TextureStitchEvent.Pre evt) {
-      TextureAtlas map = evt.getMap();
+      TextureAtlas map = evt.getAtlas();
 
       if (map.location() == InventoryMenu.BLOCK_ATLAS) {
 

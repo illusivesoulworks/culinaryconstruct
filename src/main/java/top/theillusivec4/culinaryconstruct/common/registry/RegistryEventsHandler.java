@@ -25,7 +25,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.common.extensions.IForgeContainerType;
+import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -53,7 +53,7 @@ public class RegistryEventsHandler {
 
   @SubscribeEvent
   public static void onContainerRegistry(final RegistryEvent.Register<MenuType<?>> evt) {
-    evt.getRegistry().register(IForgeContainerType.create(CulinaryStationContainer::new)
+    evt.getRegistry().register(IForgeMenuType.create(CulinaryStationContainer::new)
         .setRegistryName(RegistryReference.CULINARY_STATION));
   }
 
