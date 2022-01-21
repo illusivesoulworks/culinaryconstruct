@@ -21,22 +21,22 @@ package top.theillusivec4.culinaryconstruct.common.capability;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.block.CakeBlock;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BucketItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.MilkBucketItem;
-import net.minecraft.item.PotionItem;
-import net.minecraft.item.SuspiciousStewItem;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.PotionUtils;
+import net.minecraft.world.level.block.CakeBlock;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.MilkBucketItem;
+import net.minecraft.world.item.PotionItem;
+import net.minecraft.world.item.SuspiciousStewItem;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidAttributes;
@@ -99,8 +99,8 @@ public class CapabilityEventHandler {
       evt.addCapability(CulinaryConstructCapability.INGREDIENT_ID,
           CapabilityCulinaryFood.createCulinaryIngredient(new ICulinaryIngredient() {
             @Override
-            public void onEaten(PlayerEntity player) {
-              if (!player.world.isRemote) {
+            public void onEaten(Player player) {
+              if (!player.level.isClientSide) {
                 player.curePotionEffects(stack);
               }
             }
@@ -119,10 +119,10 @@ public class CapabilityEventHandler {
       evt.addCapability(CulinaryConstructCapability.INGREDIENT_ID,
           CapabilityCulinaryFood.createCulinaryIngredient(new ICulinaryIngredient() {
             @Override
-            public List<Pair<EffectInstance, Float>> getEffects() {
-              List<Pair<EffectInstance, Float>> list = new ArrayList<>();
-              PotionUtils.getEffectsFromStack(stack).forEach(effect -> list.add(Pair.of(
-                  new EffectInstance(effect.getPotion(), effect.getDuration(),
+            public List<Pair<MobEffectInstance, Float>> getEffects() {
+              List<Pair<MobEffectInstance, Float>> list = new ArrayList<>();
+              PotionUtils.getMobEffects(stack).forEach(effect -> list.add(Pair.of(
+                  new MobEffectInstance(effect.getEffect(), effect.getDuration(),
                       effect.getAmplifier()), 1.0F)));
               return list;
             }
@@ -141,24 +141,24 @@ public class CapabilityEventHandler {
       evt.addCapability(CulinaryConstructCapability.INGREDIENT_ID,
           CapabilityCulinaryFood.createCulinaryIngredient(new ICulinaryIngredient() {
             @Override
-            public List<Pair<EffectInstance, Float>> getEffects() {
-              List<Pair<EffectInstance, Float>> list = new ArrayList<>();
-              CompoundNBT compoundnbt = stack.getTag();
+            public List<Pair<MobEffectInstance, Float>> getEffects() {
+              List<Pair<MobEffectInstance, Float>> list = new ArrayList<>();
+              CompoundTag compoundnbt = stack.getTag();
 
               if (compoundnbt != null && compoundnbt.contains("Effects", 9)) {
-                ListNBT listnbt = compoundnbt.getList("Effects", 10);
+                ListTag listnbt = compoundnbt.getList("Effects", 10);
 
                 for (int i = 0; i < listnbt.size(); ++i) {
                   int j = 160;
-                  CompoundNBT compoundnbt1 = listnbt.getCompound(i);
+                  CompoundTag compoundnbt1 = listnbt.getCompound(i);
 
                   if (compoundnbt1.contains("EffectDuration", 3)) {
                     j = compoundnbt1.getInt("EffectDuration");
                   }
-                  Effect effect = Effect.get(compoundnbt1.getByte("EffectId"));
+                  MobEffect effect = MobEffect.byId(compoundnbt1.getByte("EffectId"));
 
                   if (effect != null) {
-                    list.add(Pair.of(new EffectInstance(effect, j), 1.0F));
+                    list.add(Pair.of(new MobEffectInstance(effect, j), 1.0F));
                   }
                 }
               }

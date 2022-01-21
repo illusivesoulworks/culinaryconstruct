@@ -19,7 +19,7 @@
 
 package top.theillusivec4.culinaryconstruct.api;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.LazyOptional;
 import top.theillusivec4.culinaryconstruct.api.capability.CulinaryConstructCapability;
 import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;

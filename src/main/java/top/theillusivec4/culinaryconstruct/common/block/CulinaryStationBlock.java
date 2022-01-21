@@ -20,63 +20,61 @@
 package top.theillusivec4.culinaryconstruct.common.block;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.inventory.container.SimpleNamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.IWorldPosCallable;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.items.CapabilityItemHandler;
+import top.theillusivec4.culinaryconstruct.common.blockentity.CulinaryStationBlockEntity;
 import top.theillusivec4.culinaryconstruct.common.inventory.CulinaryStationContainer;
 import top.theillusivec4.culinaryconstruct.common.registry.RegistryReference;
-import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
 
-public class CulinaryStationBlock extends Block {
+public class CulinaryStationBlock extends Block implements EntityBlock {
 
-  private static final ITextComponent CONTAINER_NAME = new TranslationTextComponent(
+  private static final Component CONTAINER_NAME = new TranslatableComponent(
       "culinaryconstruct.culinary_container");
 
   public CulinaryStationBlock() {
-    super(Block.Properties.create(Material.WOOD).hardnessAndResistance(2.5F).sound(SoundType.WOOD));
+    super(Block.Properties.of(Material.WOOD).strength(2.5F).sound(SoundType.WOOD));
     this.setRegistryName(RegistryReference.CULINARY_STATION);
   }
 
   @Nonnull
   @SuppressWarnings("deprecation")
   @Override
-  public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos,
-                                           PlayerEntity player, Hand handIn,
-                                           BlockRayTraceResult hit) {
-    player.openContainer(state.getContainer(worldIn, pos));
-    return ActionResultType.SUCCESS;
+  public InteractionResult use(BlockState state, @Nonnull Level worldIn, @Nonnull BlockPos pos,
+                               @Nonnull Player player, @Nonnull InteractionHand handIn,
+                               @Nonnull BlockHitResult hit) {
+    player.openMenu(state.getMenuProvider(worldIn, pos));
+    return InteractionResult.SUCCESS;
   }
 
   @SuppressWarnings("deprecation")
   @Override
-  public void onReplaced(BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos,
-                         BlockState newState, boolean isMoving) {
+  public void onRemove(BlockState state, @Nonnull Level worldIn, @Nonnull BlockPos pos,
+                       BlockState newState, boolean isMoving) {
 
     if (state.getBlock() != newState.getBlock()) {
-      TileEntity tileentity = worldIn.getTileEntity(pos);
+      BlockEntity tileentity = worldIn.getBlockEntity(pos);
 
-      if (tileentity instanceof CulinaryStationTileEntity) {
-        CulinaryStationTileEntity cte = (CulinaryStationTileEntity) tileentity;
+      if (tileentity instanceof CulinaryStationBlockEntity cte) {
         NonNullList<ItemStack> items = NonNullList.create();
         cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP)
             .ifPresent(cap -> {
@@ -90,30 +88,26 @@ public class CulinaryStationBlock extends Block {
                 items.add(cap.getStackInSlot(i));
               }
             });
-        InventoryHelper.dropItems(worldIn, pos, items);
-        worldIn.updateComparatorOutputLevel(pos, this);
+        Containers.dropContents(worldIn, pos, items);
+        worldIn.updateNeighbourForOutputSignal(pos, this);
       }
-      super.onReplaced(state, worldIn, pos, newState, isMoving);
+      super.onRemove(state, worldIn, pos, newState, isMoving);
     }
   }
 
   @Override
-  public boolean hasTileEntity(BlockState state) {
-    return true;
-  }
-
-  @Nullable
-  @Override
-  public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-    return new CulinaryStationTileEntity();
+  public BlockEntity newBlockEntity(@Nonnull BlockPos pos, @Nonnull BlockState state) {
+    return new CulinaryStationBlockEntity(pos, state);
   }
 
   @SuppressWarnings("deprecation")
   @Override
-  public INamedContainerProvider getContainer(BlockState state, World worldIn, BlockPos pos) {
-    return new SimpleNamedContainerProvider(
+  public MenuProvider getMenuProvider(@Nonnull BlockState state, @Nonnull Level worldIn,
+                                      @Nonnull BlockPos pos) {
+    return new SimpleMenuProvider(
         (windowId, playerInventory, playerEntity) -> new CulinaryStationContainer(windowId,
-            playerInventory, IWorldPosCallable.of(worldIn, pos), worldIn.getTileEntity(pos)),
+            playerInventory, ContainerLevelAccess.create(worldIn, pos),
+            worldIn.getBlockEntity(pos)),
         CONTAINER_NAME);
   }
 }

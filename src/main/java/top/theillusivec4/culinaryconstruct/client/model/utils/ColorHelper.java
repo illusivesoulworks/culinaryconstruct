@@ -26,17 +26,17 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.TreeMap;
 import javax.annotation.Nonnull;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.VertexFormatElement;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 import net.minecraftforge.client.model.pipeline.VertexTransformer;
 
 public class ColorHelper {
 
-  public static void colorQuads(IBakedModel bakedModel, int color, Random random,
+  public static void colorQuads(BakedModel bakedModel, int color, Random random,
       ImmutableList.Builder<BakedQuad> builder) {
     List<BakedQuad> quads = bakedModel.getQuads(null, null, random, EmptyModelData.INSTANCE);
 

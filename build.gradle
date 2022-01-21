@@ -1,29 +1,29 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
-        maven { url 'https://plugins.gradle.org/m2/' }
-        jcenter()
+        maven { url = 'https://maven.parchmentmc.org' }
+        maven { url = 'https://plugins.gradle.org/m2/' }
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.4.0'
-        classpath "com.wynprice.cursemaven:CurseMaven:2.1.1"
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'gradle.plugin.com.matthewprenger', name: 'CurseGradle', version: '1.4.0'
+		classpath group: 'org.parchmentmc', name: 'librarian', version: '1.+'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'com.matthewprenger.cursegradle'
-apply plugin: "com.wynprice.cursemaven"
 apply plugin: 'maven-publish'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 version = "${mod_version}"
-group = "${mod_group}"
-archivesBaseName = "${mod_id}-forge"
+group = "top.theillusivec4.culinaryconstruct"
+archivesBaseName = "culinaryconstruct-forge"
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
 minecraft {
-    mappings channel: 'snapshot', version: "${version_mcp}".toString()
+    mappings channel: 'parchment', version: '2021.12.12-1.17.1'
 
     runs {
         client {
@@ -70,7 +70,23 @@ minecraft {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${version_forge}"
+    minecraft "net.minecraftforge:forge:${forge_version}"
+}
+
+def replaceResources = tasks.register("replaceResources", Copy) {
+    it.outputs.upToDateWhen { false }
+
+    it.from(sourceSets.main.resources) {
+        include "META-INF/mods.toml"
+        expand 'version': version, 'mc_version_range': mc_version_range, 'forge_version_range': forge_version_range, 'loader_version': loader_version
+    }
+    it.into "$buildDir/resources/main/"
+}
+
+processResources {
+    duplicatesStrategy(DuplicatesStrategy.FAIL)
+    exclude('META-INF/mods.toml')
+    configure { finalizedBy(replaceResources) }
 }
 
 sourceSets {
@@ -83,49 +99,40 @@ sourceSets {
 
 jar {
     manifest {
-        attributes(["Specification-Title": "${mod_name}",
-                    "Specification-Vendor": "${mod_author}",
-                    "Specification-Version": "${getArchiveVersion()}",
-                    "Implementation-Title": "${mod_name}",
-                    "Implementation-Version": "${getArchiveVersion()}",
-                    "Implementation-Vendor" :"${mod_author}",
-                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")],)
+        attributes(["Specification-Title"		: "Culinary Construct",
+                    "Specification-Vendor"		: "C4",
+                    "Specification-Version"		: "1",
+                    "Implementation-Title"		: "Culinary Construct",
+                    "Implementation-Version"	: "${getArchiveVersion()}",
+                    "Implementation-Vendor" 	: "C4",
+                    "Implementation-Timestamp"	: new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")],)
     }
 }
 
-jar.finalizedBy('reobfJar')
-
 task apiJar(type: Jar) {
-    setArchiveClassifier('api')
+    archiveClassifier.set('api')
     include 'top/theillusivec4/culinaryconstruct/api/**/*'
     from sourceSets.main.allSource
     from sourceSets.main.output
 }
 
 task sourcesJar(type: Jar) {
-    setArchiveClassifier('sources')
+    archiveClassifier.set('sources')
     from sourceSets.main.allJava
 }
 
-tasks.build.dependsOn apiJar, sourcesJar
-
-processResources {
-
-    from(sourceSets.main.resources.srcDirs) {
-        include 'META-INF/mods.toml'
-        expand 'version': project.version, 'mod_id' : mod_id, 'mod_name': mod_name, 'mod_url': mod_url, 'mod_author': mod_author, 'mod_description': mod_description, 'mod_icon': mod_icon
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'META-INF/mods.toml'
-    }
+artifacts {
+    archives apiJar
+    archives sourcesJar
 }
+
+jar.finalizedBy('reobfJar')
 
 curseforge {
 
     project {
         apiKey = findProperty('curseKey') ?: 0
-        id = "${curse_id}"
+        id = "296676"
         releaseType = "${curse_release}"
         changelogType = 'markdown'
         changelog = file('docs/CHANGELOG.md')
@@ -139,7 +146,7 @@ curseforge {
 }
 
 publishing {
-    tasks.publish.dependsOn 'build'
+
     publications {
 
         mavenJava(MavenPublication) {

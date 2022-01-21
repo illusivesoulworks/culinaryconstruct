@@ -21,10 +21,10 @@ package top.theillusivec4.culinaryconstruct.common;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.item.Food;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -37,7 +37,7 @@ public class CulinaryConstructConfig {
 
   public static final ForgeConfigSpec serverSpec;
   public static final Server SERVER;
-  private static final String CONFIG_PREFIX = "gui." + CulinaryConstruct.MODID + ".config.";
+  private static final String CONFIG_PREFIX = "gui." + CulinaryConstruct.MOD_ID + ".config.";
 
   static {
     final Pair<Server, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder()
@@ -99,7 +99,7 @@ public class CulinaryConstructConfig {
 
   public static boolean isValidIngredient(ItemStack stack) {
     Item item = stack.getItem();
-    Food food = item.getFood();
+    FoodProperties food = item.getFoodProperties();
     LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructApi.getCulinaryIngredient(stack);
     int foodAmount = 0;
     float saturationAmount = 0;
@@ -108,8 +108,8 @@ public class CulinaryConstructConfig {
       foodAmount = culinary.map(ICulinaryIngredient::getFoodAmount).orElse(0);
       saturationAmount = culinary.map(ICulinaryIngredient::getSaturation).orElse(0.0F);
     } else if (food != null) {
-      foodAmount = food.getHealing();
-      saturationAmount = food.getSaturation();
+      foodAmount = food.getNutrition();
+      saturationAmount = food.getSaturationModifier();
     }
     int maxFood = CulinaryConstructConfig.maxIngredientFood;
     double maxSaturation = CulinaryConstructConfig.maxIngredientSaturation;

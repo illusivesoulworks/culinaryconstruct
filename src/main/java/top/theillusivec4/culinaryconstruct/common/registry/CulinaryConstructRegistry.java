@@ -19,26 +19,26 @@
 
 package top.theillusivec4.culinaryconstruct.common.registry;
 
-import net.minecraft.block.Block;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
 import top.theillusivec4.culinaryconstruct.common.inventory.CulinaryStationContainer;
-import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
+import top.theillusivec4.culinaryconstruct.common.blockentity.CulinaryStationBlockEntity;
 
-@ObjectHolder(CulinaryConstruct.MODID)
+@ObjectHolder(CulinaryConstruct.MOD_ID)
 public class CulinaryConstructRegistry {
 
   @ObjectHolder(RegistryReference.CULINARY_STATION)
   public static final Block CULINARY_STATION;
 
   @ObjectHolder(RegistryReference.CULINARY_STATION)
-  public static final ContainerType<CulinaryStationContainer> CULINARY_STATION_CONTAINER;
+  public static final MenuType<CulinaryStationContainer> CULINARY_STATION_CONTAINER;
 
   @ObjectHolder(RegistryReference.CULINARY_STATION)
-  public static final TileEntityType<CulinaryStationTileEntity> CULINARY_STATION_TE;
+  public static final BlockEntityType<CulinaryStationBlockEntity> CULINARY_STATION_TE;
 
   @ObjectHolder(RegistryReference.SANDWICH)
   public static final Item SANDWICH;

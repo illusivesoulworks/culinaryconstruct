@@ -19,29 +19,22 @@
 
 package top.theillusivec4.culinaryconstruct.common.advancement;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import java.util.Map;
-import java.util.Set;
 import javax.annotation.Nonnull;
-import net.minecraft.advancements.ICriterionTrigger;
-import net.minecraft.advancements.PlayerAdvancements;
-import net.minecraft.advancements.criterion.AbstractCriterionTrigger;
-import net.minecraft.advancements.criterion.CriterionInstance;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.loot.ConditionArrayParser;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
+import net.minecraft.advancements.critereon.DeserializationContext;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
 import top.theillusivec4.culinaryconstruct.common.advancement.CraftFoodTrigger.Instance;
 
-public class CraftFoodTrigger extends AbstractCriterionTrigger<Instance> {
+public class CraftFoodTrigger extends SimpleCriterionTrigger<Instance> {
 
   public static final CraftFoodTrigger INSTANCE = new CraftFoodTrigger();
-  public static final ResourceLocation ID = new ResourceLocation(CulinaryConstruct.MODID, "craft_food");
+  public static final ResourceLocation ID =
+      new ResourceLocation(CulinaryConstruct.MOD_ID, "craft_food");
 
   @Nonnull
   @Override
@@ -51,19 +44,19 @@ public class CraftFoodTrigger extends AbstractCriterionTrigger<Instance> {
 
   @Nonnull
   @Override
-  public Instance deserializeTrigger(@Nonnull JsonObject p_230241_1_,
-      @Nonnull EntityPredicate.AndPredicate p_230241_2_,
-      @Nonnull ConditionArrayParser p_230241_3_) {
+  public Instance createInstance(@Nonnull JsonObject p_230241_1_,
+                                 @Nonnull EntityPredicate.Composite p_230241_2_,
+                                 @Nonnull DeserializationContext p_230241_3_) {
     return new Instance(p_230241_2_);
   }
 
-  public void trigger(ServerPlayerEntity player) {
-    this.triggerListeners(player, (p_241523_0_) -> true);
+  public void trigger(ServerPlayer player) {
+    this.trigger(player, (p_241523_0_) -> true);
   }
 
-  public static class Instance extends CriterionInstance {
+  public static class Instance extends AbstractCriterionTriggerInstance {
 
-    public Instance(EntityPredicate.AndPredicate p_i232007_1_) {
+    public Instance(EntityPredicate.Composite p_i232007_1_) {
       super(ID, p_i232007_1_);
     }
   }

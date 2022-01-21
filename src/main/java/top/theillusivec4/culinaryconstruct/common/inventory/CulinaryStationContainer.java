@@ -21,20 +21,20 @@ package top.theillusivec4.culinaryconstruct.common.inventory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.PotionItem;
-import net.minecraft.item.SoupItem;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IWorldPosCallable;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.BowlFoodItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.PotionItem;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -45,27 +45,28 @@ import top.theillusivec4.culinaryconstruct.api.CulinaryConstructApi;
 import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
 import top.theillusivec4.culinaryconstruct.common.CulinaryConstructConfig;
 import top.theillusivec4.culinaryconstruct.common.advancement.CraftFoodTrigger;
+import top.theillusivec4.culinaryconstruct.common.blockentity.CulinaryStationBlockEntity;
 import top.theillusivec4.culinaryconstruct.common.item.CulinaryItemBase;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 import top.theillusivec4.culinaryconstruct.common.tag.CulinaryTags;
-import top.theillusivec4.culinaryconstruct.common.tileentity.CulinaryStationTileEntity;
 
-public class CulinaryStationContainer extends Container {
+public class CulinaryStationContainer extends AbstractContainerMenu {
 
-  private final IWorldPosCallable worldPosCallable;
+  private final ContainerLevelAccess worldPosCallable;
 
   private ItemStackHandler base = new ItemStackHandler();
   private ItemStackHandler ingredients = new ItemStackHandler(5);
   private ItemStackHandler output = new ItemStackHandler();
   private String outputItemName;
 
-  public CulinaryStationContainer(int windowId, PlayerInventory playerInventory,
-      PacketBuffer unused) {
-    this(windowId, playerInventory, IWorldPosCallable.DUMMY, null);
+  public CulinaryStationContainer(int windowId, Inventory playerInventory,
+                                  FriendlyByteBuf unused) {
+    this(windowId, playerInventory, ContainerLevelAccess.NULL, null);
   }
 
-  public CulinaryStationContainer(int windowId, PlayerInventory playerInventory,
-      IWorldPosCallable worldPosCallable, @Nullable TileEntity tileEntity) {
+  public CulinaryStationContainer(int windowId, Inventory playerInventory,
+                                  ContainerLevelAccess worldPosCallable,
+                                  @Nullable BlockEntity tileEntity) {
     super(CulinaryConstructRegistry.CULINARY_STATION_CONTAINER, windowId);
     this.worldPosCallable = worldPosCallable;
     this.init(tileEntity);
@@ -73,9 +74,9 @@ public class CulinaryStationContainer extends Container {
     addPlayerSlots(playerInventory);
   }
 
-  private void init(@Nullable TileEntity tileEntity) {
-    if (tileEntity instanceof CulinaryStationTileEntity) {
-      CulinaryStationTileEntity te = (CulinaryStationTileEntity) tileEntity;
+  private void init(@Nullable BlockEntity tileEntity) {
+
+    if (tileEntity instanceof CulinaryStationBlockEntity te) {
       this.base = te.base;
       this.ingredients = te.ingredients;
       this.output = te.output;
@@ -91,7 +92,7 @@ public class CulinaryStationContainer extends Container {
     this.addSlot(new OutputSlot(this.output, 0, 152, 44));
   }
 
-  private void addPlayerSlots(PlayerInventory playerInventory) {
+  private void addPlayerSlots(Inventory playerInventory) {
 
     // Main inventory
     for (int row = 0; row < 3; row++) {
@@ -107,8 +108,8 @@ public class CulinaryStationContainer extends Container {
   }
 
   @Override
-  public boolean canInteractWith(@Nonnull PlayerEntity playerIn) {
-    return isWithinUsableDistance(this.worldPosCallable, playerIn,
+  public boolean stillValid(@Nonnull Player playerIn) {
+    return stillValid(this.worldPosCallable, playerIn,
         CulinaryConstructRegistry.CULINARY_STATION);
   }
 
@@ -146,16 +147,16 @@ public class CulinaryStationContainer extends Container {
     }
 
     if (StringUtils.isBlank(this.outputItemName)) {
-      result.clearCustomName();
-    } else if (!this.outputItemName.equals(result.getDisplayName().getString())) {
-      result.setDisplayName(new StringTextComponent(this.outputItemName));
+      result.resetHoverName();
+    } else if (!this.outputItemName.equals(result.getHoverName().getString())) {
+      result.setHoverName(new TextComponent(this.outputItemName));
     }
     setOutput(result);
   }
 
   private void setOutput(ItemStack stack) {
     this.output.setStackInSlot(0, stack);
-    this.detectAndSendChanges();
+    this.broadcastChanges();
   }
 
   private void resetOutput() {
@@ -163,40 +164,40 @@ public class CulinaryStationContainer extends Container {
 
     if (!outputStack.isEmpty()) {
       this.output.setStackInSlot(0, ItemStack.EMPTY);
-      this.detectAndSendChanges();
+      this.broadcastChanges();
     }
   }
 
   @Nonnull
   @Override
-  public ItemStack transferStackInSlot(@Nonnull PlayerEntity playerIn, int index) {
+  public ItemStack quickMoveStack(@Nonnull Player playerIn, int index) {
     ItemStack itemstack = ItemStack.EMPTY;
-    Slot slot = this.inventorySlots.get(index);
+    Slot slot = this.slots.get(index);
 
-    if (slot != null && slot.getHasStack()) {
-      ItemStack itemstack1 = slot.getStack();
+    if (slot.hasItem()) {
+      ItemStack itemstack1 = slot.getItem();
       itemstack = itemstack1.copy();
 
       if (index == 6) {
 
-        if (!this.mergeItemStack(itemstack1, 7, 43, true)) {
+        if (!this.moveItemStackTo(itemstack1, 7, 43, true)) {
           return ItemStack.EMPTY;
         }
-        slot.onSlotChange(itemstack1, itemstack);
+        slot.onQuickCraft(itemstack1, itemstack);
       } else if (index >= 7 && index < 43) {
 
-        if (!this.mergeItemStack(itemstack1, 0, 1, false) && !this
-            .mergeItemStack(itemstack1, 1, 6, false)) {
+        if (!this.moveItemStackTo(itemstack1, 0, 1, false) && !this
+            .moveItemStackTo(itemstack1, 1, 6, false)) {
           return ItemStack.EMPTY;
         }
-      } else if (!this.mergeItemStack(itemstack1, 7, 43, false)) {
+      } else if (!this.moveItemStackTo(itemstack1, 7, 43, false)) {
         return ItemStack.EMPTY;
       }
 
       if (itemstack1.isEmpty()) {
-        slot.putStack(ItemStack.EMPTY);
+        slot.set(ItemStack.EMPTY);
       } else {
-        slot.onSlotChanged();
+        slot.setChanged();
       }
 
       if (itemstack1.getCount() == itemstack.getCount()) {
@@ -219,13 +220,14 @@ public class CulinaryStationContainer extends Container {
     }
 
     @Override
-    public void onSlotChanged() {
+    public void setChanged() {
       CulinaryStationContainer.this.updateOutput();
     }
 
     @Override
-    public boolean isItemValid(@Nonnull ItemStack stack) {
-      return stack.getItem().isIn(CulinaryTags.BREAD) || stack.getItem().isIn(CulinaryTags.BOWL);
+    public boolean mayPlace(@Nonnull ItemStack stack) {
+      return CulinaryTags.BREAD.contains(stack.getItem()) ||
+          CulinaryTags.BOWL.contains(stack.getItem());
     }
   }
 
@@ -236,16 +238,17 @@ public class CulinaryStationContainer extends Container {
     }
 
     @Override
-    public void onSlotChanged() {
+    public void setChanged() {
       CulinaryStationContainer.this.updateOutput();
     }
 
     @Override
-    public boolean isItemValid(@Nonnull ItemStack stack) {
+    public boolean mayPlace(@Nonnull ItemStack stack) {
       LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructApi
           .getCulinaryIngredient(stack);
-      return !(stack.getItem() instanceof CulinaryItemBase) && (stack.getItem().isFood() || culinary
-          .map(ICulinaryIngredient::isValid).orElse(false)) && CulinaryConstructConfig
+      return !(stack.getItem() instanceof CulinaryItemBase) &&
+          (stack.getItem().isEdible() || culinary
+              .map(ICulinaryIngredient::isValid).orElse(false)) && CulinaryConstructConfig
           .isValidIngredient(stack);
     }
   }
@@ -257,22 +260,21 @@ public class CulinaryStationContainer extends Container {
     }
 
     @Override
-    public boolean isItemValid(@Nonnull ItemStack stack) {
+    public boolean mayPlace(@Nonnull ItemStack stack) {
       return false;
     }
 
     @Override
-    public void onSlotChanged() {
+    public void setChanged() {
       CulinaryStationContainer.this.updateOutput();
-      CulinaryStationContainer.this.detectAndSendChanges();
+      CulinaryStationContainer.this.broadcastChanges();
     }
 
-    @Nonnull
     @Override
-    public ItemStack onTake(PlayerEntity playerEntity, @Nonnull ItemStack stack) {
+    public void onTake(Player playerEntity, @Nonnull ItemStack stack) {
 
-      if (!playerEntity.world.isRemote) {
-        CraftFoodTrigger.INSTANCE.trigger((ServerPlayerEntity) playerEntity);
+      if (!playerEntity.level.isClientSide) {
+        CraftFoodTrigger.INSTANCE.trigger((ServerPlayer) playerEntity);
       }
       ItemStackHandler ingredients = CulinaryStationContainer.this.ingredients;
 
@@ -283,7 +285,7 @@ public class CulinaryStationContainer extends Container {
 
           if (!slot.isEmpty()) {
             boolean isPotion = slot.getItem() instanceof PotionItem;
-            boolean isSoup = slot.getItem() instanceof SoupItem;
+            boolean isSoup = slot.getItem() instanceof BowlFoodItem;
 
             ItemStack container = slot.getItem().getContainerItem(slot);
             slot.shrink(1);
@@ -309,7 +311,6 @@ public class CulinaryStationContainer extends Container {
         base.getStackInSlot(0).shrink(1);
       }
       CulinaryStationContainer.this.updateOutput();
-      return stack;
     }
   }
 }

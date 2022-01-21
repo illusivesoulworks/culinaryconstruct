@@ -19,6 +19,7 @@
 
 package top.theillusivec4.culinaryconstruct.common.item;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,22 +27,21 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Food;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import top.theillusivec4.culinaryconstruct.api.CulinaryConstructApi;
@@ -52,13 +52,14 @@ public class CulinaryItemBase extends Item {
   public static final Random RANDOM = new Random();
 
   public CulinaryItemBase() {
-    super(new Item.Properties().group(ItemGroup.FOOD).food(new Food.Builder().build()));
+    super(new Item.Properties().tab(CreativeModeTab.TAB_FOOD)
+        .food(new FoodProperties.Builder().build()));
   }
 
   protected static void generateCreativeNBT(ItemStack sub) {
     CulinaryNBTHelper.setSize(sub, 5);
     CulinaryNBTHelper.setIngredientsList(sub, NonNullList
-        .from(ItemStack.EMPTY, new ItemStack(Items.NETHER_STAR), new ItemStack(Items.NETHER_STAR),
+        .of(ItemStack.EMPTY, new ItemStack(Items.NETHER_STAR), new ItemStack(Items.NETHER_STAR),
             new ItemStack(Items.NETHER_STAR), new ItemStack(Items.NETHER_STAR),
             new ItemStack(Items.NETHER_STAR)));
     CulinaryNBTHelper.setFoodAmount(sub, 20);
@@ -68,14 +69,13 @@ public class CulinaryItemBase extends Item {
 
   @Nonnull
   @Override
-  public ItemStack onItemUseFinish(@Nonnull ItemStack stack, @Nonnull World worldIn,
-      @Nonnull LivingEntity livingEntity) {
+  public ItemStack finishUsingItem(@Nonnull ItemStack stack, @Nonnull Level worldIn,
+                                   @Nonnull LivingEntity livingEntity) {
 
-    if (livingEntity instanceof PlayerEntity) {
-      PlayerEntity player = (PlayerEntity) livingEntity;
+    if (livingEntity instanceof Player player) {
       int food = CulinaryNBTHelper.getFoodAmount(stack);
       float saturation = CulinaryNBTHelper.getSaturation(stack);
-      player.getFoodStats().addStats(food, saturation);
+      player.getFoodData().eat(food, saturation);
       List<ItemStack> consumed = new ArrayList<>(CulinaryNBTHelper.getIngredientsList(stack));
       consumed.add(CulinaryNBTHelper.getBase(stack));
       consumed.forEach(itemstack -> {
@@ -84,29 +84,29 @@ public class CulinaryItemBase extends Item {
             culinary.onEaten(player);
             culinary.getEffects().forEach(effect -> {
               if (RANDOM.nextFloat() < effect.getRight()) {
-                player.addPotionEffect(effect.getLeft());
+                player.addEffect(effect.getLeft());
               }
             });
           });
 
-          Food foodie = itemstack.getItem().getFood();
+          FoodProperties foodie = itemstack.getItem().getFoodProperties();
 
           if (foodie != null) {
             foodie.getEffects().forEach(effect -> {
               if (RANDOM.nextFloat() < effect.getSecond()) {
-                player.addPotionEffect(effect.getFirst());
+                player.addEffect(effect.getFirst());
               }
             });
           }
         }
       });
     }
-    return livingEntity.onFoodEaten(worldIn, stack);
+    return livingEntity.eat(worldIn, stack);
   }
 
   @Nonnull
   @Override
-  public ITextComponent getDisplayName(@Nonnull ItemStack stack) {
+  public Component getName(@Nonnull ItemStack stack) {
     StringBuilder fullName = new StringBuilder();
     NonNullList<ItemStack> ingredients = CulinaryNBTHelper.getIngredientsList(stack);
 
@@ -118,50 +118,50 @@ public class CulinaryItemBase extends Item {
         StringBuilder builder = new StringBuilder();
 
         if (count > 1) {
-          TranslationTextComponent trans = new TranslationTextComponent(
+          TranslatableComponent trans = new TranslatableComponent(
               "tooltip.culinaryconstruct.count." + count);
           builder.append(trans.getString());
           builder.append(" ");
         }
-        builder.append(new TranslationTextComponent(item.getTranslationKey()).getString());
+        builder.append(new TranslatableComponent(item.getDescriptionId()).getString());
         names.add(builder.toString());
       });
-      fullName.append(new TranslationTextComponent("tooltip.culinaryconstruct.list." + names.size(),
+      fullName.append(new TranslatableComponent("tooltip.culinaryconstruct.list." + names.size(),
           names.toArray()).getString());
     }
     fullName.append(" ");
-    fullName.append(new TranslationTextComponent(this.getTranslationKey(stack)).getString());
+    fullName.append(new TranslatableComponent(this.getDescriptionId(stack)).getString());
 
-    return new StringTextComponent(fullName.toString());
+    return new TextComponent(fullName.toString());
   }
 
   @OnlyIn(Dist.CLIENT)
-  public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip,
-      ITooltipFlag flagIn) {
+  public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level worldIn,
+                              List<Component> tooltip, @Nonnull TooltipFlag flagIn) {
     ItemStack base = CulinaryNBTHelper.getBase(stack);
     int quality = CulinaryNBTHelper.getQuality(stack);
-    tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.quality." + quality)
-        .mergeStyle(TextFormatting.GREEN));
+    tooltip.add(new TranslatableComponent("tooltip.culinaryconstruct.quality." + quality)
+        .withStyle(ChatFormatting.GREEN));
     tooltip.add(
-        new TranslationTextComponent(base.getTranslationKey()).mergeStyle(TextFormatting.GRAY));
-    tooltip.add(new StringTextComponent(""));
+        new TranslatableComponent(base.getDescriptionId()).withStyle(ChatFormatting.GRAY));
+    tooltip.add(new TextComponent(""));
 
-    if (InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 340)
-        || InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 344)) {
+    if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 340)
+        || InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 344)) {
       NonNullList<ItemStack> ingredients = CulinaryNBTHelper.getIngredientsList(stack);
-      tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.ingredients.name")
-          .mergeStyle(TextFormatting.GRAY).mergeStyle(TextFormatting.UNDERLINE));
+      tooltip.add(new TranslatableComponent("tooltip.culinaryconstruct.ingredients.name")
+          .withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.UNDERLINE));
 
       for (ItemStack ing : ingredients) {
 
         if (!ing.isEmpty()) {
-          tooltip.add(new TranslationTextComponent(ing.getTranslationKey())
-              .mergeStyle(TextFormatting.GRAY));
+          tooltip.add(new TranslatableComponent(ing.getDescriptionId())
+              .withStyle(ChatFormatting.GRAY));
         }
       }
     } else {
-      tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.ingredients")
-          .mergeStyle(TextFormatting.GRAY));
+      tooltip.add(new TranslatableComponent("tooltip.culinaryconstruct.ingredients")
+          .withStyle(ChatFormatting.GRAY));
     }
   }
 }

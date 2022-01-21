@@ -22,11 +22,11 @@ package top.theillusivec4.culinaryconstruct.common.inventory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import net.minecraft.item.Food;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.core.NonNullList;
+import net.minecraft.util.Mth;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.LazyOptional;
 import top.theillusivec4.culinaryconstruct.api.CulinaryConstructApi;
 import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
@@ -41,11 +41,11 @@ public class CulinaryCalculator {
   private final NonNullList<ItemStack> solids;
   private final List<ItemStack> processed = new ArrayList<>();
   private final ItemStack base;
+  private final List<Integer> liquidColors;
 
   private int food;
   private float saturation;
   private int complexity;
-  private List<Integer> liquidColors;
 
   public CulinaryCalculator(ItemStack baseIn, NonNullList<ItemStack> ingredientsIn) {
     this.base = baseIn;
@@ -96,7 +96,7 @@ public class CulinaryCalculator {
       count = (int) Math.ceil(this.food / (double) maxFood);
     }
     this.food = (int) Math.ceil(this.food / (double) count);
-    int quality = MathHelper.clamp(this.complexity - (this.getSize() / 2) + 1, 0, 4);
+    int quality = Mth.clamp(this.complexity - (this.getSize() / 2) + 1, 0, 4);
     this.saturation *= 1.0F + ((quality - 2) * 0.3F);
     ItemStack result =
         type == OutputType.SANDWICH ? new ItemStack(CulinaryConstructRegistry.SANDWICH)
@@ -120,7 +120,7 @@ public class CulinaryCalculator {
 
   public boolean processStack(ItemStack stack) {
     Item item = stack.getItem();
-    Food food = item.getFood();
+    FoodProperties food = item.getFoodProperties();
     LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructApi.getCulinaryIngredient(stack);
     int foodAmount = 0;
     float saturationAmount = 0;
@@ -138,8 +138,8 @@ public class CulinaryCalculator {
       foodAmount = culinary.map(ICulinaryIngredient::getFoodAmount).orElse(0);
       saturationAmount = culinary.map(ICulinaryIngredient::getSaturation).orElse(0.0F);
     } else if (food != null) {
-      foodAmount = food.getHealing();
-      saturationAmount = food.getSaturation();
+      foodAmount = food.getNutrition();
+      saturationAmount = food.getSaturationModifier();
       this.solids.add(stack);
     }
 
@@ -151,7 +151,7 @@ public class CulinaryCalculator {
     boolean unique = true;
 
     for (ItemStack existing : this.processed) {
-      if (!existing.isEmpty() && ItemStack.areItemStacksEqual(existing, stack)) {
+      if (!existing.isEmpty() && ItemStack.matches(existing, stack)) {
         unique = false;
         break;
       }

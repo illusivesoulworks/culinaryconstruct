@@ -2,34 +2,34 @@ package top.theillusivec4.culinaryconstruct.client.model.base;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import javax.annotation.Nonnull;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
-import net.minecraft.client.renderer.model.ItemOverrideList;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.block.model.ItemTransforms.TransformType;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.math.vector.TransformationMatrix;
+import com.mojang.math.Transformation;
 import net.minecraftforge.client.model.BakedItemModel;
 import net.minecraftforge.client.model.PerspectiveMapWrapper;
 
 @SuppressWarnings("deprecation")
 public class PerspectiveItemModel extends BakedItemModel {
 
-  private ItemCameraTransforms cameraTransforms;
+  private ItemTransforms cameraTransforms;
 
   public PerspectiveItemModel(ImmutableList<BakedQuad> quads, TextureAtlasSprite particle,
-      ImmutableMap<TransformType, TransformationMatrix> transforms, ItemOverrideList overrides,
-      boolean untransformed, boolean isSideLit, ItemCameraTransforms cameraTransforms) {
+      ImmutableMap<TransformType, Transformation> transforms, ItemOverrides overrides,
+      boolean untransformed, boolean isSideLit, ItemTransforms cameraTransforms) {
     super(quads, particle, transforms, overrides, untransformed, isSideLit);
     this.cameraTransforms = cameraTransforms;
   }
 
   @Nonnull
   @Override
-  public IBakedModel handlePerspective(@Nonnull ItemCameraTransforms.TransformType type,
-      @Nonnull MatrixStack mat) {
+  public BakedModel handlePerspective(@Nonnull ItemTransforms.TransformType type,
+      @Nonnull PoseStack mat) {
 
     if (cameraTransforms != null) {
       return net.minecraftforge.client.ForgeHooksClient.handlePerspective(this, type, mat);
@@ -45,7 +45,7 @@ public class PerspectiveItemModel extends BakedItemModel {
   @Deprecated
   @Nonnull
   @Override
-  public ItemCameraTransforms getItemCameraTransforms() {
+  public ItemTransforms getTransforms() {
     return cameraTransforms;
   }
 }

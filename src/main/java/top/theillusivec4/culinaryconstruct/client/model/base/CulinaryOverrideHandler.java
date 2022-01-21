@@ -26,18 +26,18 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.IModelTransform;
-import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.model.ModelBakery;
-import net.minecraft.client.renderer.model.RenderMaterial;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
 import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
@@ -45,20 +45,21 @@ import top.theillusivec4.culinaryconstruct.client.model.utils.ModelHelper.CacheK
 import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
 public abstract class CulinaryOverrideHandler<T extends IModelGeometry<T>> extends
-    ItemOverrideList {
+    ItemOverrides {
 
   protected final T model;
   protected final ModelBakery bakery;
   protected final IModelConfiguration owner;
-  protected final Function<RenderMaterial, TextureAtlasSprite> spriteGetter;
-  protected final IModelTransform modelTransform;
+  protected final Function<Material, TextureAtlasSprite> spriteGetter;
+  protected final ModelState modelTransform;
   protected final ResourceLocation modelLocation;
-  private Cache<CacheKey, IBakedModel> bakedModelCache = CacheBuilder.newBuilder().maximumSize(1000)
+  private Cache<CacheKey, BakedModel> bakedModelCache = CacheBuilder.newBuilder().maximumSize(1000)
       .expireAfterWrite(5, TimeUnit.MINUTES).build();
 
   public CulinaryOverrideHandler(T model, IModelConfiguration owner, ModelBakery bakery,
-      Function<RenderMaterial, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform,
-      ResourceLocation modelLocation) {
+                                 Function<Material, TextureAtlasSprite> spriteGetter,
+                                 ModelState modelTransform,
+                                 ResourceLocation modelLocation) {
     super();
     this.model = model;
     this.owner = owner;
@@ -70,16 +71,16 @@ public abstract class CulinaryOverrideHandler<T extends IModelGeometry<T>> exten
 
   @Nonnull
   @Override
-  public IBakedModel getOverrideModel(@Nonnull IBakedModel originalModel, @Nonnull ItemStack stack,
-      @Nullable ClientWorld worldIn, @Nullable LivingEntity entityIn) {
-    CompoundNBT data = CulinaryNBTHelper.getTagSafe(stack);
-    IBakedModel output = originalModel;
+  public BakedModel resolve(@Nonnull BakedModel originalModel, @Nonnull ItemStack stack,
+                            @Nullable ClientLevel level, @Nullable LivingEntity entity, int pSeed) {
+    CompoundTag data = CulinaryNBTHelper.getTagSafe(stack);
+    BakedModel output = originalModel;
 
     if (!data.isEmpty()) {
       CacheKey key = getCacheKey(originalModel, stack);
       try {
         output = bakedModelCache
-            .get(key, () -> getBakedModel(originalModel, stack, worldIn, entityIn));
+            .get(key, () -> getBakedModel(originalModel, stack, level, entity));
       } catch (ExecutionException e) {
         CulinaryConstruct.LOGGER.error("Error baking model!");
       }
@@ -87,10 +88,10 @@ public abstract class CulinaryOverrideHandler<T extends IModelGeometry<T>> exten
     return output;
   }
 
-  protected abstract IBakedModel getBakedModel(IBakedModel originalModel, ItemStack stack,
-      @Nullable World world, @Nullable LivingEntity entity);
+  protected abstract BakedModel getBakedModel(BakedModel originalModel, ItemStack stack,
+                                              @Nullable Level world, @Nullable LivingEntity entity);
 
-  CacheKey getCacheKey(IBakedModel original, ItemStack stack) {
+  CacheKey getCacheKey(BakedModel original, ItemStack stack) {
     return new CacheKey(original, stack);
   }
 }

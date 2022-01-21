@@ -17,16 +17,17 @@
  * License along with Culinary Construct.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package top.theillusivec4.culinaryconstruct.common.tileentity;
+package top.theillusivec4.culinaryconstruct.common.blockentity;
 
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -39,7 +40,7 @@ import top.theillusivec4.culinaryconstruct.common.item.CulinaryItemBase;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 import top.theillusivec4.culinaryconstruct.common.tag.CulinaryTags;
 
-public class CulinaryStationTileEntity extends TileEntity {
+public class CulinaryStationBlockEntity extends BlockEntity {
 
   public final ItemStackHandler base;
   public final ItemStackHandler ingredients;
@@ -48,16 +49,16 @@ public class CulinaryStationTileEntity extends TileEntity {
   protected final LazyOptional<IItemHandler> ingredientsOpt;
   protected final LazyOptional<IItemHandler> outputOpt;
 
-  public CulinaryStationTileEntity() {
-    super(CulinaryConstructRegistry.CULINARY_STATION_TE);
-    this.base = new CulinaryStackHandler(
-        stack -> stack.getItem().isIn(CulinaryTags.BREAD) || stack.getItem()
-            .isIn(CulinaryTags.BOWL), 1);
+  public CulinaryStationBlockEntity(BlockPos pos, BlockState state) {
+    super(CulinaryConstructRegistry.CULINARY_STATION_TE, pos, state);
+    this.base = new CulinaryStackHandler(stack -> CulinaryTags.BREAD.contains(stack.getItem()) ||
+        CulinaryTags.BOWL.contains(stack.getItem()), 1);
     this.ingredients = new CulinaryStackHandler(stack -> {
       LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructApi
           .getCulinaryIngredient(stack);
-      return !(stack.getItem() instanceof CulinaryItemBase) && (stack.getItem().isFood() || culinary
-          .map(ICulinaryIngredient::isValid).orElse(false)) && CulinaryConstructConfig
+      return !(stack.getItem() instanceof CulinaryItemBase) &&
+          (stack.getItem().isEdible() || culinary
+              .map(ICulinaryIngredient::isValid).orElse(false)) && CulinaryConstructConfig
           .isValidIngredient(stack);
     }, 5);
     this.output = new CulinaryStackHandler(stack -> false, 1);
@@ -67,8 +68,8 @@ public class CulinaryStationTileEntity extends TileEntity {
   }
 
   @Override
-  public void read(BlockState state, @Nonnull CompoundNBT compound) {
-    super.read(state, compound);
+  public void load(@Nonnull CompoundTag compound) {
+    super.load(compound);
 
     if (compound.contains("Holder", 10)) {
       this.base.deserializeNBT(compound.getCompound("Holder"));
@@ -83,8 +84,8 @@ public class CulinaryStationTileEntity extends TileEntity {
 
   @Nonnull
   @Override
-  public CompoundNBT write(@Nonnull CompoundNBT compound) {
-    super.write(compound);
+  public CompoundTag save(@Nonnull CompoundTag compound) {
+    super.save(compound);
     compound.put("Holder", this.base.serializeNBT());
     compound.put("Ingredients", this.ingredients.serializeNBT());
     compound.put("Output", this.output.serializeNBT());
@@ -94,8 +95,8 @@ public class CulinaryStationTileEntity extends TileEntity {
   @Nonnull
   @Override
   public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability,
-      @Nullable Direction facing) {
-    if (!this.removed && facing != null
+                                           @Nullable Direction facing) {
+    if (!this.remove && facing != null
         && capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
       if (facing == Direction.UP) {
         return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(capability, this.baseOpt);
@@ -108,8 +109,8 @@ public class CulinaryStationTileEntity extends TileEntity {
   }
 
   @Override
-  public void remove() {
-    super.remove();
+  public void setRemoved() {
+    super.setRemoved();
     baseOpt.invalidate();
     ingredientsOpt.invalidate();
     outputOpt.invalidate();
@@ -132,7 +133,7 @@ public class CulinaryStationTileEntity extends TileEntity {
     @Override
     protected void onContentsChanged(int slot) {
       super.onContentsChanged(slot);
-      CulinaryStationTileEntity.this.markDirty();
+      CulinaryStationBlockEntity.this.setChanged();
     }
   }
 }

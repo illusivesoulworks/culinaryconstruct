@@ -20,10 +20,10 @@
 package top.theillusivec4.culinaryconstruct.common.item;
 
 import javax.annotation.Nonnull;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.NonNullList;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.core.NonNullList;
 import top.theillusivec4.culinaryconstruct.common.registry.RegistryReference;
 import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
@@ -35,8 +35,8 @@ public class SandwichItem extends CulinaryItemBase {
   }
 
   @Override
-  public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
-    if (this.isInGroup(group)) {
+  public void fillItemCategory(@Nonnull CreativeModeTab group, @Nonnull NonNullList<ItemStack> items) {
+    if (this.allowdedIn(group)) {
       ItemStack sub = new ItemStack(this);
       CulinaryNBTHelper.setBase(sub, new ItemStack(Items.BREAD));
       generateCreativeNBT(sub);

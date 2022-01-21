@@ -19,27 +19,29 @@
 
 package top.theillusivec4.culinaryconstruct;
 
-import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.client.renderer.texture.AtlasTexture;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.config.ModConfig.ModConfigEvent;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
 import top.theillusivec4.culinaryconstruct.client.CulinaryScreen;
 import top.theillusivec4.culinaryconstruct.client.model.FoodBowlLoader;
 import top.theillusivec4.culinaryconstruct.client.model.SandwichLoader;
@@ -50,10 +52,10 @@ import top.theillusivec4.culinaryconstruct.common.integration.DietIntegration;
 import top.theillusivec4.culinaryconstruct.common.network.CulinaryConstructNetwork;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 
-@Mod(CulinaryConstruct.MODID)
+@Mod(CulinaryConstruct.MOD_ID)
 public class CulinaryConstruct {
 
-  public static final String MODID = "culinaryconstruct";
+  public static final String MOD_ID = "culinaryconstruct";
   public static final Logger LOGGER = LogManager.getLogger();
 
   public CulinaryConstruct() {
@@ -62,6 +64,7 @@ public class CulinaryConstruct {
     eventBus.addListener(this::clientSetup);
     eventBus.addListener(this::config);
     eventBus.addListener(this::enqueue);
+    eventBus.addListener(this::registerCaps);
     ModLoadingContext.get()
         .registerConfig(ModConfig.Type.SERVER, CulinaryConstructConfig.serverSpec);
   }
@@ -74,9 +77,13 @@ public class CulinaryConstruct {
 
   private void config(final ModConfigEvent evt) {
 
-    if (evt.getConfig().getModId().equals(MODID)) {
+    if (evt.getConfig().getModId().equals(MOD_ID)) {
       CulinaryConstructConfig.bake();
     }
+  }
+
+  private void registerCaps(final RegisterCapabilitiesEvent evt) {
+    evt.register(ICulinaryIngredient.class);
   }
 
   private void enqueue(final InterModEnqueueEvent evt) {
@@ -87,36 +94,37 @@ public class CulinaryConstruct {
   }
 
   private void clientSetup(final FMLClientSetupEvent evt) {
-    ScreenManager
-        .registerFactory(CulinaryConstructRegistry.CULINARY_STATION_CONTAINER, CulinaryScreen::new);
-    
+    MenuScreens
+        .register(CulinaryConstructRegistry.CULINARY_STATION_CONTAINER, CulinaryScreen::new);
+
   }
 
-  @Mod.EventBusSubscriber(modid = MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+  @Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
   public static class ClientProxy {
-    
+
     @SubscribeEvent
     public static void registerModels(final ModelRegistryEvent evt) {
-        ModelLoaderRegistry
-                .registerLoader(new ResourceLocation(CulinaryConstruct.MODID, "sandwich_loader"),
-                        SandwichLoader.INSTANCE);
-        ModelLoaderRegistry
-                .registerLoader(new ResourceLocation(CulinaryConstruct.MODID, "food_bowl_loader"),
-                        FoodBowlLoader.INSTANCE);
+      ModelLoaderRegistry
+          .registerLoader(new ResourceLocation(CulinaryConstruct.MOD_ID, "sandwich_loader"),
+              SandwichLoader.INSTANCE);
+      ModelLoaderRegistry
+          .registerLoader(new ResourceLocation(CulinaryConstruct.MOD_ID, "food_bowl_loader"),
+              FoodBowlLoader.INSTANCE);
     }
+
     @SubscribeEvent
     public static void registerTextures(final TextureStitchEvent.Pre evt) {
-      AtlasTexture map = evt.getMap();
+      TextureAtlas map = evt.getMap();
 
-      if (map.getTextureLocation() == PlayerContainer.LOCATION_BLOCKS_TEXTURE) {
+      if (map.location() == InventoryMenu.BLOCK_ATLAS) {
 
         for (int i = 0; i < 5; i++) {
-          evt.addSprite(new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/bread" + i));
-          evt.addSprite(new ResourceLocation(CulinaryConstruct.MODID, "item/sandwich/layer" + i));
-          evt.addSprite(new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/layer" + i));
+          evt.addSprite(new ResourceLocation(CulinaryConstruct.MOD_ID, "item/sandwich/bread" + i));
+          evt.addSprite(new ResourceLocation(CulinaryConstruct.MOD_ID, "item/sandwich/layer" + i));
+          evt.addSprite(new ResourceLocation(CulinaryConstruct.MOD_ID, "item/bowl/layer" + i));
         }
-        evt.addSprite(new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/liquid_base"));
-        evt.addSprite(new ResourceLocation(CulinaryConstruct.MODID, "item/bowl/liquid_overflow"));
+        evt.addSprite(new ResourceLocation(CulinaryConstruct.MOD_ID, "item/bowl/liquid_base"));
+        evt.addSprite(new ResourceLocation(CulinaryConstruct.MOD_ID, "item/bowl/liquid_overflow"));
       }
     }
   }

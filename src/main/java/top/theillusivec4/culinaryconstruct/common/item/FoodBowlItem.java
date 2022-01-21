@@ -20,13 +20,13 @@
 package top.theillusivec4.culinaryconstruct.common.item;
 
 import javax.annotation.Nonnull;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.NonNullList;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.items.ItemHandlerHelper;
 import top.theillusivec4.culinaryconstruct.common.registry.RegistryReference;
 import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
@@ -50,26 +50,26 @@ public class FoodBowlItem extends CulinaryItemBase {
 
   @Nonnull
   @Override
-  public ItemStack onItemUseFinish(@Nonnull ItemStack stack, @Nonnull World worldIn,
+  public ItemStack finishUsingItem(@Nonnull ItemStack stack, @Nonnull Level worldIn,
       @Nonnull LivingEntity livingEntity) {
-    ItemStack output = super.onItemUseFinish(stack, worldIn, livingEntity);
+    ItemStack output = super.finishUsingItem(stack, worldIn, livingEntity);
     ItemStack container = getContainerItem(stack);
 
-    if (!container.isEmpty() && livingEntity instanceof PlayerEntity) {
-      ItemHandlerHelper.giveItemToPlayer((PlayerEntity) livingEntity, container);
+    if (!container.isEmpty() && livingEntity instanceof Player) {
+      ItemHandlerHelper.giveItemToPlayer((Player) livingEntity, container);
     }
     return output;
   }
 
   @Override
-  public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
-    if (this.isInGroup(group)) {
+  public void fillItemCategory(@Nonnull CreativeModeTab group, @Nonnull NonNullList<ItemStack> items) {
+    if (this.allowdedIn(group)) {
       ItemStack sub = new ItemStack(this);
       CulinaryNBTHelper.setBase(sub, new ItemStack(Items.BOWL));
       generateCreativeNBT(sub);
       CulinaryNBTHelper.setSolidsSize(sub, 5);
       CulinaryNBTHelper.setSolids(sub, NonNullList
-          .from(ItemStack.EMPTY, new ItemStack(Items.NETHER_STAR), new ItemStack(Items.NETHER_STAR),
+          .of(ItemStack.EMPTY, new ItemStack(Items.NETHER_STAR), new ItemStack(Items.NETHER_STAR),
               new ItemStack(Items.NETHER_STAR), new ItemStack(Items.NETHER_STAR),
               new ItemStack(Items.NETHER_STAR)));
       items.add(sub);
@@ -78,8 +78,8 @@ public class FoodBowlItem extends CulinaryItemBase {
 
   @Nonnull
   @Override
-  public String getTranslationKey(ItemStack stack) {
+  public String getDescriptionId(@Nonnull ItemStack stack) {
     return CulinaryNBTHelper.getLiquids(stack) != null ? "item.culinaryconstruct.stew"
-        : this.getTranslationKey();
+        : this.getDescriptionId();
   }
 }

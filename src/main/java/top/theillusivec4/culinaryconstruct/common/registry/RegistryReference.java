@@ -23,7 +23,7 @@ import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
 
 public class RegistryReference {
 
-  public static final String CULINARY_STATION = CulinaryConstruct.MODID + ":culinary_station";
-  public static final String SANDWICH = CulinaryConstruct.MODID + ":sandwich";
-  public static final String FOOD_BOWL = CulinaryConstruct.MODID + ":food_bowl";
+  public static final String CULINARY_STATION = CulinaryConstruct.MOD_ID + ":culinary_station";
+  public static final String SANDWICH = CulinaryConstruct.MOD_ID + ":sandwich";
+  public static final String FOOD_BOWL = CulinaryConstruct.MOD_ID + ":food_bowl";
 }

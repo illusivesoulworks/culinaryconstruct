@@ -20,9 +20,9 @@
 package top.theillusivec4.culinaryconstruct.common.network;
 
 import java.util.function.Supplier;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import top.theillusivec4.culinaryconstruct.common.inventory.CulinaryStationContainer;
 
 public class CPacketRename {
@@ -33,21 +33,21 @@ public class CPacketRename {
     this.name = name;
   }
 
-  public static void encode(CPacketRename msg, PacketBuffer buf) {
-    buf.writeString(msg.name);
+  public static void encode(CPacketRename msg, FriendlyByteBuf buf) {
+    buf.writeUtf(msg.name);
   }
 
-  public static CPacketRename decode(PacketBuffer buf) {
-    return new CPacketRename(buf.readString(35));
+  public static CPacketRename decode(FriendlyByteBuf buf) {
+    return new CPacketRename(buf.readUtf(35));
   }
 
-  public static void handle(CPacketRename msg, Supplier<Context> ctx) {
+  public static void handle(CPacketRename msg, Supplier<NetworkEvent.Context> ctx) {
     ctx.get().enqueueWork(() -> {
-      ServerPlayerEntity playerEntity = ctx.get().getSender();
+      ServerPlayer playerEntity = ctx.get().getSender();
       String name = msg.name;
 
-      if (playerEntity != null && playerEntity.openContainer instanceof CulinaryStationContainer) {
-        ((CulinaryStationContainer) playerEntity.openContainer).updateItemName(name);
+      if (playerEntity != null && playerEntity.containerMenu instanceof CulinaryStationContainer) {
+        ((CulinaryStationContainer) playerEntity.containerMenu).updateItemName(name);
       }
     });
     ctx.get().setPacketHandled(true);

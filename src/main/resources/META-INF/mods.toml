@@ -1,26 +1,26 @@
 modLoader="javafml"
-loaderVersion="[34,)"
+loaderVersion="${loader_version}"
 issueTrackerURL="https://github.com/TheIllusiveC4/CulinaryConstruct/issues"
-logoFile="${mod_icon}"
+logoFile="culinaryconstruct_icon.png"
 license="LGPL-3.0-or-later"
 [[mods]]
-modId="${mod_id}"
+modId="culinaryconstruct"
 version="${version}"
-displayName="${mod_name}"
-displayURL="${mod_url}"
-authors="${mod_author}"
+displayName="Culinary Construct"
+displayURL="https://github.com/TheIllusiveC4/CulinaryConstruct"
+authors="C4"
 description='''
-${mod_description}
+Make sandwiches and bowls/stews out of your favorite food items! And maybe your not so favorite, anything's possible.
 '''
 [[dependencies.culinaryconstruct]]
     modId="forge"
     mandatory=true
-    versionRange="[34,)"
+    versionRange="${forge_version_range}"
     ordering="NONE"
     side="BOTH"
 [[dependencies.culinaryconstruct]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.3,1.17)"
+    versionRange="${mc_version_range}"
     ordering="NONE"
     side="BOTH"

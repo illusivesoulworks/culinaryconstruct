@@ -19,16 +19,16 @@
 
 package top.theillusivec4.culinaryconstruct.common.tag;
 
-import net.minecraft.item.Item;
-import net.minecraft.tags.ITag.INamedTag;
+import net.minecraft.world.item.Item;
+import net.minecraft.tags.Tag.Named;
 import net.minecraft.tags.ItemTags;
 
 public class CulinaryTags {
 
-  public static final INamedTag<Item> BREAD = tag("bread");
-  public static final INamedTag<Item> BOWL = tag("bowls");
+  public static final Named<Item> BREAD = tag("bread");
+  public static final Named<Item> BOWL = tag("bowls");
 
-  private static INamedTag<Item> tag(String name) {
-    return ItemTags.makeWrapperTag("forge:" + name);
+  private static Named<Item> tag(String name) {
+    return ItemTags.bind("forge:" + name);
   }
 }

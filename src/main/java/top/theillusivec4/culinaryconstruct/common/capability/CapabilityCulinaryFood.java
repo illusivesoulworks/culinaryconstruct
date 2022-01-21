@@ -21,12 +21,9 @@ package top.theillusivec4.culinaryconstruct.common.capability;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.Capability.IStorage;
-import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import top.theillusivec4.culinaryconstruct.api.capability.CulinaryConstructCapability;
@@ -35,30 +32,11 @@ import top.theillusivec4.culinaryconstruct.api.capability.ICulinaryIngredient;
 public class CapabilityCulinaryFood {
 
   public static void register() {
-    CapabilityManager.INSTANCE
-        .register(ICulinaryIngredient.class, new IStorage<ICulinaryIngredient>() {
-          @Nullable
-          @Override
-          public INBT writeNBT(Capability<ICulinaryIngredient> capability,
-              ICulinaryIngredient instance, Direction side) {
-            return null;
-          }
-
-          @Override
-          public void readNBT(Capability<ICulinaryIngredient> capability,
-              ICulinaryIngredient instance, Direction side, INBT nbt) {
-
-          }
-        }, CulinaryFoodWrapper::new);
     MinecraftForge.EVENT_BUS.register(new CapabilityEventHandler());
   }
 
   public static ICapabilityProvider createCulinaryIngredient(final ICulinaryIngredient ingredient) {
     return new Provider(ingredient);
-  }
-
-  private static class CulinaryFoodWrapper implements ICulinaryIngredient {
-
   }
 
   public static class Provider implements ICapabilityProvider {

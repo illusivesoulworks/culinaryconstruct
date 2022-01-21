@@ -22,8 +22,8 @@ package top.theillusivec4.culinaryconstruct.api.capability;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.potion.EffectInstance;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.player.Player;
 import org.apache.commons.lang3.tuple.Pair;
 
 public interface ICulinaryIngredient {
@@ -36,11 +36,11 @@ public interface ICulinaryIngredient {
     return 0.0F;
   }
 
-  default List<Pair<EffectInstance, Float>> getEffects() {
+  default List<Pair<MobEffectInstance, Float>> getEffects() {
     return Collections.emptyList();
   }
 
-  default void onEaten(PlayerEntity player) {
+  default void onEaten(Player player) {
 
   }
 

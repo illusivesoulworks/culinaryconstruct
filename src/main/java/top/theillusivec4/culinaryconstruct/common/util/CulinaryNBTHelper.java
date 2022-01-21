@@ -22,12 +22,12 @@ package top.theillusivec4.culinaryconstruct.common.util;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.IntNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.NonNullList;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.core.NonNullList;
 
 public class CulinaryNBTHelper {
 
@@ -41,71 +41,71 @@ public class CulinaryNBTHelper {
   public static final String TAG_SOLIDS = "Solids";
   public static final String TAG_SOLIDS_SIZE = "SolidsSize";
 
-  public static CompoundNBT getTagSafe(ItemStack stack) {
+  public static CompoundTag getTagSafe(ItemStack stack) {
     return stack.getOrCreateTag();
   }
 
   public static ItemStack getBase(ItemStack stack) {
-    CompoundNBT compound = getTagSafe(stack);
-    return ItemStack.read(compound.getCompound(TAG_BASE));
+    CompoundTag compound = getTagSafe(stack);
+    return ItemStack.of(compound.getCompound(TAG_BASE));
   }
 
   public static int getQuality(ItemStack stack) {
-    CompoundNBT compound = getTagSafe(stack);
+    CompoundTag compound = getTagSafe(stack);
     return compound.getInt(TAG_QUALITY);
   }
 
   public static int getSize(ItemStack stack) {
-    CompoundNBT compound = getTagSafe(stack);
+    CompoundTag compound = getTagSafe(stack);
     return compound.getInt(TAG_SIZE);
   }
 
   public static int getFoodAmount(ItemStack stack) {
-    CompoundNBT compound = getTagSafe(stack);
+    CompoundTag compound = getTagSafe(stack);
     return compound.getInt(TAG_FOOD);
   }
 
   public static float getSaturation(ItemStack stack) {
-    CompoundNBT compound = getTagSafe(stack);
+    CompoundTag compound = getTagSafe(stack);
     return compound.getFloat(TAG_SATURATION);
   }
 
   public static NonNullList<ItemStack> getIngredientsList(ItemStack stack) {
-    CompoundNBT compound = getTagSafe(stack);
-    CompoundNBT tag = compound.getCompound(TAG_INGREDIENTS);
+    CompoundTag compound = getTagSafe(stack);
+    CompoundTag tag = compound.getCompound(TAG_INGREDIENTS);
     NonNullList<ItemStack> list = NonNullList.withSize(getSize(stack), ItemStack.EMPTY);
-    ItemStackHelper.loadAllItems(tag, list);
+    ContainerHelper.loadAllItems(tag, list);
     return list;
   }
 
   @Nullable
   public static List<Integer> getLiquids(ItemStack stack) {
-    CompoundNBT compound = getTagSafe(stack);
+    CompoundTag compound = getTagSafe(stack);
 
     if (!compound.contains(TAG_LIQUIDS)) {
       return null;
     }
-    ListNBT tag = compound.getList(TAG_LIQUIDS, 3);
+    ListTag tag = compound.getList(TAG_LIQUIDS, 3);
     List<Integer> liquids = new ArrayList<>();
-    tag.forEach(nbt -> liquids.add(((IntNBT) nbt).getInt()));
+    tag.forEach(nbt -> liquids.add(((IntTag) nbt).getAsInt()));
     return liquids;
   }
 
   public static int getSolidsSize(ItemStack stack) {
-    CompoundNBT compound = getTagSafe(stack);
+    CompoundTag compound = getTagSafe(stack);
     return compound.getInt(TAG_SOLIDS_SIZE);
   }
 
   public static NonNullList<ItemStack> getSolids(ItemStack stack) {
-    CompoundNBT compound = getTagSafe(stack);
-    CompoundNBT tag = compound.getCompound(TAG_SOLIDS);
+    CompoundTag compound = getTagSafe(stack);
+    CompoundTag tag = compound.getCompound(TAG_SOLIDS);
     NonNullList<ItemStack> list = NonNullList.withSize(getSolidsSize(stack), ItemStack.EMPTY);
-    ItemStackHelper.loadAllItems(tag, list);
+    ContainerHelper.loadAllItems(tag, list);
     return list;
   }
 
   public static void setBase(ItemStack stack, ItemStack base) {
-    getTagSafe(stack).put(TAG_BASE, base.write(new CompoundNBT()));
+    getTagSafe(stack).put(TAG_BASE, base.save(new CompoundTag()));
   }
 
   public static void setQuality(ItemStack stack, int quality) {
@@ -125,16 +125,16 @@ public class CulinaryNBTHelper {
   }
 
   public static void setIngredientsList(ItemStack stack, NonNullList<ItemStack> ingredients) {
-    CompoundNBT compound = getTagSafe(stack);
-    CompoundNBT tag = new CompoundNBT();
-    ItemStackHelper.saveAllItems(tag, ingredients);
+    CompoundTag compound = getTagSafe(stack);
+    CompoundTag tag = new CompoundTag();
+    ContainerHelper.saveAllItems(tag, ingredients);
     compound.put(TAG_INGREDIENTS, tag);
   }
 
   public static void setLiquids(ItemStack stack, List<Integer> liquids) {
-    CompoundNBT compound = getTagSafe(stack);
-    ListNBT tag = new ListNBT();
-    liquids.forEach(liquid -> tag.add(IntNBT.valueOf(liquid)));
+    CompoundTag compound = getTagSafe(stack);
+    ListTag tag = new ListTag();
+    liquids.forEach(liquid -> tag.add(IntTag.valueOf(liquid)));
     compound.put(TAG_LIQUIDS, tag);
   }
 
@@ -143,9 +143,9 @@ public class CulinaryNBTHelper {
   }
 
   public static void setSolids(ItemStack stack, NonNullList<ItemStack> solids) {
-    CompoundNBT compound = getTagSafe(stack);
-    CompoundNBT tag = new CompoundNBT();
-    ItemStackHelper.saveAllItems(tag, solids);
+    CompoundTag compound = getTagSafe(stack);
+    CompoundTag tag = new CompoundTag();
+    ContainerHelper.saveAllItems(tag, solids);
     compound.put(TAG_SOLIDS, tag);
   }
 }

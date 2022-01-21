@@ -3,9 +3,9 @@ package top.theillusivec4.culinaryconstruct.common.integration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.fml.InterModComms;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
@@ -22,7 +22,7 @@ public class DietIntegration {
 
   private static void sendCulinaryMessage(Item item) {
     InterModComms.sendTo("diet", "item",
-        () -> new Tuple<Item, BiFunction<PlayerEntity, ItemStack, Triple<List<ItemStack>, Integer, Float>>>(
+        () -> new Tuple<Item, BiFunction<Player, ItemStack, Triple<List<ItemStack>, Integer, Float>>>(
             item, (player, stack) -> new ImmutableTriple<>(getIngredients(stack),
             CulinaryNBTHelper.getFoodAmount(stack), CulinaryNBTHelper.getSaturation(stack))));
   }

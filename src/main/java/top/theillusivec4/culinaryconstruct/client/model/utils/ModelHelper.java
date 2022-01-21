@@ -22,37 +22,37 @@ package top.theillusivec4.culinaryconstruct.client.model.utils;
 import com.google.common.collect.ImmutableList;
 import java.util.Objects;
 import java.util.function.Function;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.IModelTransform;
-import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.model.ModelBakery;
-import net.minecraft.client.renderer.model.RenderMaterial;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.ItemLayerModel;
 import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
 public class ModelHelper {
 
-  public static IBakedModel getBakedLayerModel(IModelConfiguration owner, ModelBakery bakery,
-      Function<RenderMaterial, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform,
-      ItemOverrideList overrides, ResourceLocation modelLocation) {
+  public static BakedModel getBakedLayerModel(IModelConfiguration owner, ModelBakery bakery,
+      Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform,
+      ItemOverrides overrides, ResourceLocation modelLocation) {
     return new ItemLayerModel(ImmutableList
-        .of(new RenderMaterial(PlayerContainer.LOCATION_BLOCKS_TEXTURE, modelLocation)))
+        .of(new Material(InventoryMenu.BLOCK_ATLAS, modelLocation)))
         .bake(owner, bakery, spriteGetter, modelTransform, overrides, modelLocation);
   }
 
   //Cache Key from Tinkers' Construct
   public static class CacheKey {
 
-    final IBakedModel parent;
-    final CompoundNBT data;
+    final BakedModel parent;
+    final CompoundTag data;
 
-    public CacheKey(IBakedModel parent, ItemStack stack) {
+    public CacheKey(BakedModel parent, ItemStack stack) {
       this.parent = parent;
       this.data = CulinaryNBTHelper.getTagSafe(stack);
     }

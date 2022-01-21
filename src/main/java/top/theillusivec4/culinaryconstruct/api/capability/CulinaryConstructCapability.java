@@ -19,19 +19,17 @@
 
 package top.theillusivec4.culinaryconstruct.api.capability;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import top.theillusivec4.culinaryconstruct.CulinaryConstruct;
 
 public class CulinaryConstructCapability {
 
-  @CapabilityInject(ICulinaryIngredient.class)
-  public static final Capability<ICulinaryIngredient> CULINARY_INGREDIENT;
-  public static final ResourceLocation INGREDIENT_ID = new ResourceLocation(CulinaryConstruct.MODID,
+  public static final Capability<ICulinaryIngredient> CULINARY_INGREDIENT =
+      CapabilityManager.get(new CapabilityToken<>() {
+      });
+  public static final ResourceLocation INGREDIENT_ID = new ResourceLocation(CulinaryConstruct.MOD_ID,
       "ingredient");
-
-  static {
-    CULINARY_INGREDIENT = null;
-  }
 }
