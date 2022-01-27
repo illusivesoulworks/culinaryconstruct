@@ -82,14 +82,12 @@ public class CulinaryStationBlockEntity extends BlockEntity {
     }
   }
 
-  @Nonnull
   @Override
-  public CompoundTag save(@Nonnull CompoundTag compound) {
-    super.save(compound);
-    compound.put("Holder", this.base.serializeNBT());
-    compound.put("Ingredients", this.ingredients.serializeNBT());
-    compound.put("Output", this.output.serializeNBT());
-    return compound;
+  protected void saveAdditional(@Nonnull CompoundTag pTag) {
+    super.saveAdditional(pTag);
+    pTag.put("Holder", this.base.serializeNBT());
+    pTag.put("Ingredients", this.ingredients.serializeNBT());
+    pTag.put("Output", this.output.serializeNBT());
   }
 
   @Nonnull
