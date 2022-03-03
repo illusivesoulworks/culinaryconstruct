@@ -51,8 +51,9 @@ public class CulinaryStationBlockEntity extends BlockEntity {
 
   public CulinaryStationBlockEntity(BlockPos pos, BlockState state) {
     super(CulinaryConstructRegistry.CULINARY_STATION_TE, pos, state);
-    this.base = new CulinaryStackHandler(stack -> CulinaryTags.BREAD.contains(stack.getItem()) ||
-        CulinaryTags.BOWL.contains(stack.getItem()), 1);
+    this.base =
+        new CulinaryStackHandler(stack -> CulinaryTags.isBread(stack) || CulinaryTags.isBowl(stack),
+            1);
     this.ingredients = new CulinaryStackHandler(stack -> {
       LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructApi
           .getCulinaryIngredient(stack);

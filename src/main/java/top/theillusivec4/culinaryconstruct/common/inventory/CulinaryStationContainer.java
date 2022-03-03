@@ -226,8 +226,7 @@ public class CulinaryStationContainer extends AbstractContainerMenu {
 
     @Override
     public boolean mayPlace(@Nonnull ItemStack stack) {
-      return CulinaryTags.BREAD.contains(stack.getItem()) ||
-          CulinaryTags.BOWL.contains(stack.getItem());
+      return CulinaryTags.isBread(stack) || CulinaryTags.isBowl(stack);
     }
   }
 
