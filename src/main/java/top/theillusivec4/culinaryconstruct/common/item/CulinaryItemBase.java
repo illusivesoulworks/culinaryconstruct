@@ -20,10 +20,10 @@
 package top.theillusivec4.culinaryconstruct.common.item;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,6 +33,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
@@ -49,11 +50,40 @@ import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
 public class CulinaryItemBase extends Item {
 
-  public static final Random RANDOM = new Random();
-
   public CulinaryItemBase() {
     super(new Item.Properties().tab(CreativeModeTab.TAB_FOOD)
-        .food(new FoodProperties.Builder().build()));
+        .food(new FoodProperties.Builder().nutrition(1).saturationMod(1.0f).build()));
+  }
+
+  @Nullable
+  @Override
+  public FoodProperties getFoodProperties(ItemStack stack, @Nullable LivingEntity entity) {
+    FoodProperties.Builder builder = new FoodProperties.Builder();
+    builder.nutrition(CulinaryNBTHelper.getFoodAmount(stack));
+    builder.saturationMod(CulinaryNBTHelper.getSaturation(stack));
+    List<ItemStack> foods = new ArrayList<>(CulinaryNBTHelper.getIngredientsList(stack));
+    foods.add(CulinaryNBTHelper.getBase(stack));
+
+    for (ItemStack food : foods) {
+      FoodProperties props = food.getFoodProperties(entity);
+
+      if (props != null) {
+
+        if (props.isMeat()) {
+          builder.meat();
+        }
+
+        for (Pair<MobEffectInstance, Float> effect : props.getEffects()) {
+          builder.effect(effect::getFirst, effect.getSecond());
+        }
+      }
+      CulinaryConstructApi.getCulinaryIngredient(food).ifPresent(culinary -> {
+        for (org.apache.commons.lang3.tuple.Pair<MobEffectInstance, Float> effect : culinary.getEffects()) {
+          builder.effect(effect::getLeft, effect.getRight());
+        }
+      });
+    }
+    return builder.build();
   }
 
   protected static void generateCreativeNBT(ItemStack sub) {
@@ -73,35 +103,16 @@ public class CulinaryItemBase extends Item {
                                    @Nonnull LivingEntity livingEntity) {
 
     if (livingEntity instanceof Player player) {
-      int food = CulinaryNBTHelper.getFoodAmount(stack);
-      float saturation = CulinaryNBTHelper.getSaturation(stack);
-      player.getFoodData().eat(food, saturation);
       List<ItemStack> consumed = new ArrayList<>(CulinaryNBTHelper.getIngredientsList(stack));
       consumed.add(CulinaryNBTHelper.getBase(stack));
       consumed.forEach(itemstack -> {
         if (!itemstack.isEmpty()) {
-          CulinaryConstructApi.getCulinaryIngredient(itemstack).ifPresent(culinary -> {
-            culinary.onEaten(player);
-            culinary.getEffects().forEach(effect -> {
-              if (RANDOM.nextFloat() < effect.getRight()) {
-                player.addEffect(effect.getLeft());
-              }
-            });
-          });
-
-          FoodProperties foodie = itemstack.getItem().getFoodProperties();
-
-          if (foodie != null) {
-            foodie.getEffects().forEach(effect -> {
-              if (RANDOM.nextFloat() < effect.getSecond()) {
-                player.addEffect(effect.getFirst());
-              }
-            });
-          }
+          CulinaryConstructApi.getCulinaryIngredient(itemstack)
+              .ifPresent(culinary -> culinary.onEaten(player));
         }
       });
     }
-    return livingEntity.eat(worldIn, stack);
+    return super.finishUsingItem(stack, worldIn, livingEntity);
   }
 
   @Nonnull

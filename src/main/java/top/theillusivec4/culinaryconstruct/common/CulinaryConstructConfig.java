@@ -21,10 +21,10 @@ package top.theillusivec4.culinaryconstruct.common;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -62,7 +62,7 @@ public class CulinaryConstructConfig {
           .defineInRange("maxFoodPerSandwich", 10, 1, 100);
 
       maxIngredientSaturation = builder.comment(
-          "Blacklist ingredients with more than this max saturation modifier, -1 to disable")
+              "Blacklist ingredients with more than this max saturation modifier, -1 to disable")
           .translation(CONFIG_PREFIX + "maxIngredientSaturation")
           .defineInRange("maxIngredientSaturation", -1.0D, -1.0D, 100.0D);
 
@@ -99,7 +99,7 @@ public class CulinaryConstructConfig {
 
   public static boolean isValidIngredient(ItemStack stack) {
     Item item = stack.getItem();
-    FoodProperties food = item.getFoodProperties();
+    FoodProperties food = item.getFoodProperties(stack, null);
     LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructApi.getCulinaryIngredient(stack);
     int foodAmount = 0;
     float saturationAmount = 0;

@@ -120,7 +120,7 @@ public class CulinaryCalculator {
 
   public boolean processStack(ItemStack stack) {
     Item item = stack.getItem();
-    FoodProperties food = item.getFoodProperties();
+    FoodProperties food = item.getFoodProperties(stack, null);
     LazyOptional<ICulinaryIngredient> culinary = CulinaryConstructApi.getCulinaryIngredient(stack);
     int foodAmount = 0;
     float saturationAmount = 0;
