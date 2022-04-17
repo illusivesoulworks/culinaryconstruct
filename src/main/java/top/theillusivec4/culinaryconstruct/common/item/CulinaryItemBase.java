@@ -19,6 +19,7 @@
 
 package top.theillusivec4.culinaryconstruct.common.item;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import top.theillusivec4.culinaryconstruct.api.CulinaryConstructApi;
+import top.theillusivec4.culinaryconstruct.common.CulinaryConstructConfig;
 import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
 public class CulinaryItemBase extends Item {
@@ -69,7 +71,7 @@ public class CulinaryItemBase extends Item {
   @Nonnull
   @Override
   public ItemStack onItemUseFinish(@Nonnull ItemStack stack, @Nonnull World worldIn,
-      @Nonnull LivingEntity livingEntity) {
+                                   @Nonnull LivingEntity livingEntity) {
 
     if (livingEntity instanceof PlayerEntity) {
       PlayerEntity player = (PlayerEntity) livingEntity;
@@ -135,9 +137,11 @@ public class CulinaryItemBase extends Item {
     return new StringTextComponent(fullName.toString());
   }
 
+  private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(".#");
+
   @OnlyIn(Dist.CLIENT)
   public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip,
-      ITooltipFlag flagIn) {
+                             ITooltipFlag flagIn) {
     ItemStack base = CulinaryNBTHelper.getBase(stack);
     int quality = CulinaryNBTHelper.getQuality(stack);
     tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.quality." + quality)
@@ -158,6 +162,18 @@ public class CulinaryItemBase extends Item {
           tooltip.add(new TranslationTextComponent(ing.getTranslationKey())
               .mergeStyle(TextFormatting.GRAY));
         }
+      }
+
+      if (CulinaryConstructConfig.showNutritionInfo) {
+        tooltip.add(new StringTextComponent(""));
+        int food = CulinaryNBTHelper.getFoodAmount(stack);
+        tooltip.add(
+            new TranslationTextComponent("tooltip.culinaryconstruct.nutrition").appendString(
+                ": " + food).mergeStyle(TextFormatting.RED));
+        tooltip.add(
+            new TranslationTextComponent("tooltip.culinaryconstruct.saturation").appendString(
+                    ": " + DECIMAL_FORMAT.format(food * 2.0F * CulinaryNBTHelper.getSaturation(stack)))
+                .mergeStyle(TextFormatting.YELLOW));
       }
     } else {
       tooltip.add(new TranslationTextComponent("tooltip.culinaryconstruct.ingredients")

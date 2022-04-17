@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project does not adhere to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 This project uses MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
 
+## [1.16.5-4.0.1.0] - 2022.04.17
+### Added
+- Added AppleSkin integration [#34](https://github.com/TheIllusiveC4/CulinaryConstruct/issues/34)
+- Added `showNutritionInfo` configuration option for showing nutrition and saturation information in tooltips for
+sandwiches and food bowls
+
 ## [1.16.5-4.0.0.7] - 2022.01.19
 ### Added
 - Added `es_es.json` localization (thanks albertosaurio65!) [#53](https://github.com/TheIllusiveC4/CulinaryConstruct/pull/53)
