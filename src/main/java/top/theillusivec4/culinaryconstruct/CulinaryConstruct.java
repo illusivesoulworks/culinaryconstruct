@@ -48,6 +48,7 @@ import top.theillusivec4.culinaryconstruct.client.model.SandwichLoader;
 import top.theillusivec4.culinaryconstruct.common.CulinaryConstructConfig;
 import top.theillusivec4.culinaryconstruct.common.advancement.CulinaryTriggers;
 import top.theillusivec4.culinaryconstruct.common.capability.CapabilityCulinaryFood;
+import top.theillusivec4.culinaryconstruct.common.integration.AppleSkinIntegration;
 import top.theillusivec4.culinaryconstruct.common.integration.DietIntegration;
 import top.theillusivec4.culinaryconstruct.common.network.CulinaryConstructNetwork;
 import top.theillusivec4.culinaryconstruct.common.registry.CulinaryConstructRegistry;
@@ -73,6 +74,10 @@ public class CulinaryConstruct {
     CulinaryConstructNetwork.register();
     CapabilityCulinaryFood.register();
     CulinaryTriggers.register();
+
+    if (ModList.get().isLoaded("appleskin")) {
+      AppleSkinIntegration.setup();
+    }
   }
 
   private void config(final ModConfigEvent evt) {

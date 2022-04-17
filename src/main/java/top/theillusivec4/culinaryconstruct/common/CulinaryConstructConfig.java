@@ -52,6 +52,7 @@ public class CulinaryConstructConfig {
     public final ForgeConfigSpec.DoubleValue maxIngredientSaturation;
     public final ForgeConfigSpec.IntValue maxIngredientFood;
     public final ForgeConfigSpec.ConfigValue<List<? extends String>> ingredientBlacklist;
+    public final ForgeConfigSpec.BooleanValue showNutritionInfo;
 
     public Server(ForgeConfigSpec.Builder builder) {
       builder.push("server");
@@ -74,6 +75,10 @@ public class CulinaryConstructConfig {
       ingredientBlacklist = builder.comment("List of items to blacklist as ingredients")
           .translation(CONFIG_PREFIX + "ingredientBlacklist")
           .defineList("ingredientBlacklist", new ArrayList<>(), s -> s instanceof String);
+
+      showNutritionInfo = builder.comment(
+              "Set to true to show nutrition and saturation information in the extended tooltip")
+          .translation(CONFIG_PREFIX + "showNutritionInfo").define("showNutritionInfo", false);
     }
   }
 
@@ -81,11 +86,13 @@ public class CulinaryConstructConfig {
   public static double maxIngredientSaturation;
   public static int maxIngredientFood;
   public static List<Item> ingredientBlacklist;
+  public static boolean showNutritionInfo;
 
   public static void bake() {
     maxFoodPerSandwich = SERVER.maxFoodPerSandwich.get();
     maxIngredientFood = SERVER.maxIngredientFood.get();
     maxIngredientSaturation = SERVER.maxIngredientSaturation.get();
+    showNutritionInfo = SERVER.showNutritionInfo.get();
     ingredientBlacklist = new ArrayList<>();
 
     SERVER.ingredientBlacklist.get().forEach(item -> {

@@ -21,6 +21,7 @@ package top.theillusivec4.culinaryconstruct.common.item;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.datafixers.util.Pair;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import top.theillusivec4.culinaryconstruct.api.CulinaryConstructApi;
+import top.theillusivec4.culinaryconstruct.common.CulinaryConstructConfig;
 import top.theillusivec4.culinaryconstruct.common.util.CulinaryNBTHelper;
 
 public class CulinaryItemBase extends Item {
@@ -146,6 +148,8 @@ public class CulinaryItemBase extends Item {
     return new TextComponent(fullName.toString());
   }
 
+  private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(".#");
+
   @OnlyIn(Dist.CLIENT)
   public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level worldIn,
                               List<Component> tooltip, @Nonnull TooltipFlag flagIn) {
@@ -169,6 +173,18 @@ public class CulinaryItemBase extends Item {
           tooltip.add(new TranslatableComponent(ing.getDescriptionId())
               .withStyle(ChatFormatting.GRAY));
         }
+      }
+
+      if (CulinaryConstructConfig.showNutritionInfo) {
+        tooltip.add(new TextComponent(""));
+        int food = CulinaryNBTHelper.getFoodAmount(stack);
+        tooltip.add(
+            new TranslatableComponent("tooltip.culinaryconstruct.nutrition").append(
+                ": " + food).withStyle(ChatFormatting.RED));
+        tooltip.add(
+            new TranslatableComponent("tooltip.culinaryconstruct.saturation").append(
+                    ": " + DECIMAL_FORMAT.format(food * 2.0F * CulinaryNBTHelper.getSaturation(stack)))
+                .withStyle(ChatFormatting.YELLOW));
       }
     } else {
       tooltip.add(new TranslatableComponent("tooltip.culinaryconstruct.ingredients")

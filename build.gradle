@@ -69,8 +69,16 @@ minecraft {
     }
 }
 
+repositories {
+    maven {
+        url = "https://www.cursemaven.com/"
+    }
+}
+
 dependencies {
     minecraft "net.minecraftforge:forge:${forge_version}"
+
+    implementation fg.deobf("curse.maven:appleskin-248787:3686482")
 }
 
 def replaceResources = tasks.register("replaceResources", Copy) {
