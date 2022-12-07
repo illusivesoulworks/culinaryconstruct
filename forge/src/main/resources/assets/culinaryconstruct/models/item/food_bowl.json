@@ -1,0 +1,14 @@
+{
+  "parent": "forge:item/default",
+  "loader": "culinaryconstruct:food_bowl",
+  "textures": {
+    "bowl": "minecraft:item/bowl",
+    "layer0": "culinaryconstruct:item/food_bowl/layer0",
+    "layer1": "culinaryconstruct:item/food_bowl/layer1",
+    "layer2": "culinaryconstruct:item/food_bowl/layer2",
+    "layer3": "culinaryconstruct:item/food_bowl/layer3",
+    "layer4": "culinaryconstruct:item/food_bowl/layer4",
+    "liquid_base": "culinaryconstruct:item/food_bowl/liquid_base",
+    "liquid_overflow": "culinaryconstruct:item/food_bowl/liquid_overflow"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.illusivesoulworks.culinaryconstruct.mixin.core",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "CulinaryConstructFoodDataMixin",
+    "CulinaryConstructLivingEntityMixin",
+    "CulinaryConstructWolfMixin"
+  ],
+  "client": [
+    "CulinaryConstructSpriteMixin"
+  ],
+  "server": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

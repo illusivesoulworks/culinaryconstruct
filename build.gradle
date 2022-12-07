@@ -1,185 +1,80 @@
-buildscript {
+subprojects {
+
+    apply plugin: 'java'
+
+    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+    java.withSourcesJar()
+    java.withJavadocJar()
+
+    jar {
+        archiveClassifier.set("slim")
+        from(rootProject.file("LICENSE"))
+        from(rootProject.file("COPYING"))
+        from(rootProject.file("COPYING.LESSER"))
+        from(rootProject.file("README.md"))
+        from(rootProject.file("CHANGELOG.md"))
+        manifest {
+            attributes([
+                    'Specification-Title'     : mod_name,
+                    'Specification-Vendor'    : mod_author,
+                    'Specification-Version'   : project.jar.archiveVersion,
+                    'Implementation-Title'    : project.name,
+                    'Implementation-Version'  : project.jar.archiveVersion,
+                    'Implementation-Vendor'   : mod_author,
+                    'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                    'Timestampe'              : System.currentTimeMillis(),
+                    'Built-On-Java'           : "${System.getProperty('java.vm.version')} (${System.getProperty('java.vm.vendor')})",
+                    'Build-On-Minecraft'      : minecraft_version
+            ])
+        }
+    }
+
+    sourcesJar {
+        from(rootProject.file("LICENSE"))
+        from(rootProject.file("COPYING"))
+        from(rootProject.file("COPYING.LESSER"))
+        from(rootProject.file("README.md"))
+        from(rootProject.file("CHANGELOG.md"))
+    }
+
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        maven { url = 'https://maven.parchmentmc.org' }
-        maven { url = 'https://plugins.gradle.org/m2/' }
         mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath group: 'gradle.plugin.com.matthewprenger', name: 'CurseGradle', version: '1.4.0'
-		classpath group: 'org.parchmentmc', name: 'librarian', version: '1.+'
-    }
-}
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'com.matthewprenger.cursegradle'
-apply plugin: 'maven-publish'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
-version = "${mod_version}"
-group = "top.theillusivec4.culinaryconstruct"
-archivesBaseName = "culinaryconstruct-forge"
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
-minecraft {
-    mappings channel: 'parchment', version: '2022.03.13-1.18.2'
-
-    runs {
-        client {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                culinaryconstruct {
-                    source sourceSets.main
-                }
-            }
+        maven {
+            name = 'Ladysnake Mods'
+            url = 'https://ladysnake.jfrog.io/artifactory/mods'
         }
 
-        server {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                culinaryconstruct {
-                    source sourceSets.main
-                }
-            }
+        maven {
+            name = 'Sponge / Mixin'
+            url = 'https://repo.spongepowered.org/repository/maven-public/'
         }
 
-        data {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
-
-            args '--mod', 'culinaryconstruct', '--all', '--output', file('src/generated/resources/')
-
-            mods {
-                culinaryconstruct {
-                    source sourceSets.main
-                }
-            }
+        maven {
+            name = 'BlameJared Maven (CrT / Bookshelf)'
+            url = 'https://maven.blamejared.com'
         }
-    }
-}
 
-repositories {
-    maven {
-        url = "https://www.cursemaven.com/"
-    }
-}
-
-dependencies {
-    minecraft "net.minecraftforge:forge:${forge_version}"
-
-    implementation fg.deobf("curse.maven:appleskin-248787:3686482")
-}
-
-def replaceResources = tasks.register("replaceResources", Copy) {
-    it.outputs.upToDateWhen { false }
-
-    it.from(sourceSets.main.resources) {
-        include "META-INF/mods.toml"
-        expand 'version': version, 'mc_version_range': mc_version_range, 'forge_version_range': forge_version_range, 'loader_version': loader_version
-    }
-    it.into "$buildDir/resources/main/"
-}
-
-processResources {
-    duplicatesStrategy(DuplicatesStrategy.FAIL)
-    exclude('META-INF/mods.toml')
-    configure { finalizedBy(replaceResources) }
-}
-
-sourceSets {
-    main {
-        resources {
-            srcDirs += 'docs'
+        maven {
+            name = 'ParchmentMC'
+            url = 'https://maven.parchmentmc.org/'
         }
-    }
-}
 
-jar {
-    manifest {
-        attributes(["Specification-Title"		: "Culinary Construct",
-                    "Specification-Vendor"		: "C4",
-                    "Specification-Version"		: "1",
-                    "Implementation-Title"		: "Culinary Construct",
-                    "Implementation-Version"	: "${getArchiveVersion()}",
-                    "Implementation-Vendor" 	: "C4",
-                    "Implementation-Timestamp"	: new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")],)
-    }
-}
-
-task apiJar(type: Jar) {
-    archiveClassifier.set('api')
-    include 'top/theillusivec4/culinaryconstruct/api/**/*'
-    from sourceSets.main.allSource
-    from sourceSets.main.output
-}
-
-task sourcesJar(type: Jar) {
-    archiveClassifier.set('sources')
-    from sourceSets.main.allJava
-}
-
-artifacts {
-    archives apiJar
-    archives sourcesJar
-}
-
-jar.finalizedBy('reobfJar')
-
-curseforge {
-
-    project {
-        apiKey = findProperty('curseKey') ?: 0
-        id = "296676"
-        releaseType = "${curse_release}"
-        changelogType = 'markdown'
-        changelog = file('docs/CHANGELOG.md')
-        addArtifact(sourcesJar)
-        addArtifact(apiJar)
-
-        "${curse_versions}".split(',').each {
-            addGameVersion "${it}"
-        }
-    }
-}
-
-publishing {
-
-    publications {
-
-        mavenJava(MavenPublication) {
-            artifactId project.archivesBaseName
-
-            artifact jar
-            artifact sourcesJar
-            artifact apiJar
+        maven {
+            name = 'Illusive Soulworks'
+            url = 'https://maven.theillusivec4.top/'
         }
     }
 
-    repositories {
+    tasks.withType(JavaCompile).configureEach {
+        it.options.encoding = 'UTF-8'
+        it.options.release = 17
+    }
 
-        if (project.hasProperty('urlMaven')) {
-
-            if (project.hasProperty('userMaven') && project.hasProperty('passMaven')) {
-
-                maven {
-                    url urlMaven
-                    credentials {
-                        username userMaven
-                        password passMaven
-                    }
-                }
-            }
-        }
+    // Disables Gradle's custom module metadata from being published to maven. The
+    // metadata includes mapped dependencies which are not reasonably consumable by
+    // other mod developers.
+    tasks.withType(GenerateModuleMetadata) {
+        enabled = false
     }
 }

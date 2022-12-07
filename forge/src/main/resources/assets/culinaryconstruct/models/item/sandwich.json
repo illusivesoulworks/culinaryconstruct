@@ -1,0 +1,16 @@
+{
+  "parent": "forge:item/default",
+  "loader": "culinaryconstruct:sandwich",
+  "textures": {
+    "layer0": "culinaryconstruct:item/sandwich/layer0",
+    "layer1": "culinaryconstruct:item/sandwich/layer1",
+    "layer2": "culinaryconstruct:item/sandwich/layer2",
+    "layer3": "culinaryconstruct:item/sandwich/layer3",
+    "layer4": "culinaryconstruct:item/sandwich/layer4",
+    "bread0": "culinaryconstruct:item/sandwich/bread0",
+    "bread1": "culinaryconstruct:item/sandwich/bread1",
+    "bread2": "culinaryconstruct:item/sandwich/bread2",
+    "bread3": "culinaryconstruct:item/sandwich/bread3",
+    "bread4": "culinaryconstruct:item/sandwich/bread4"
+  }
+}
