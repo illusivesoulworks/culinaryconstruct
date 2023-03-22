@@ -55,6 +55,12 @@ public class CulinaryStationScreen extends AbstractContainerScreen<CulinaryStati
   }
 
   @Override
+  public void containerTick() {
+    super.containerTick();
+    this.nameField.tick();
+  }
+
+  @Override
   protected void init() {
     super.init();
 
@@ -65,14 +71,14 @@ public class CulinaryStationScreen extends AbstractContainerScreen<CulinaryStati
     int j = (this.height - this.imageHeight) / 2;
     this.nameField = new EditBox(this.font, i + 62, j + 20, 103, 12,
         Component.translatable("culinaryconstruct.culinary_container"));
-    this.nameField.setCanLoseFocus(false);
+    this.nameField.setCanLoseFocus(true);
     this.nameField.setTextColor(-1);
     this.nameField.setTextColorUneditable(-1);
     this.nameField.setBordered(false);
     this.nameField.setMaxLength(35);
     this.nameField.setResponder(this::updateName);
     this.addWidget(this.nameField);
-    this.setInitialFocus(this.nameField);
+    this.nameField.setEditable(false);
     this.menu.addSlotListener(this);
   }
 
@@ -148,7 +154,6 @@ public class CulinaryStationScreen extends AbstractContainerScreen<CulinaryStati
     if (slotInd == 6) {
       this.nameField.setValue(stack.isEmpty() ? "" : this.nameField.getValue());
       this.nameField.setEditable(!stack.isEmpty());
-      this.setFocused(this.nameField);
     }
   }
 
