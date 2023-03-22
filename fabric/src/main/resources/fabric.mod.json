@@ -19,6 +19,12 @@
     ],
     "client": [
       "com.illusivesoulworks.culinaryconstruct.client.CulinaryConstructFabricClientMod"
+    ],
+    "appleskin": [
+      "com.illusivesoulworks.culinaryconstruct.common.integration.appleskin.AppleSkinIntegration"
+    ],
+    "mealapi": [
+      "com.illusivesoulworks.culinaryconstruct.common.integration.mealapi.MealApiIntegration"
     ]
   },
   "mixins": [

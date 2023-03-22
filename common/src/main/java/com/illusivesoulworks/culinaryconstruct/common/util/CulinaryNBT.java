@@ -38,6 +38,7 @@ public class CulinaryNBT {
   public static final String TAG_LIQUIDS = "Liquids";
   public static final String TAG_SOLIDS = "Solids";
   public static final String TAG_SOLIDS_SIZE = "SolidsSize";
+  public static final String TAG_COUNT = "Count";
 
   public static CompoundTag getTagSafe(ItemStack stack) {
     return stack.getOrCreateTag();
@@ -102,6 +103,11 @@ public class CulinaryNBT {
     return list;
   }
 
+  public static int getOriginalCount(ItemStack stack) {
+    CompoundTag compound = getTagSafe(stack);
+    return compound.getInt(TAG_COUNT);
+  }
+
   public static void setBase(ItemStack stack, ItemStack base) {
     getTagSafe(stack).put(TAG_BASE, base.save(new CompoundTag()));
   }
@@ -145,5 +151,9 @@ public class CulinaryNBT {
     CompoundTag tag = new CompoundTag();
     ContainerHelper.saveAllItems(tag, solids);
     compound.put(TAG_SOLIDS, tag);
+  }
+
+  public static void setOriginalCount(ItemStack stack, int count) {
+    getTagSafe(stack).putInt(TAG_COUNT, count);
   }
 }

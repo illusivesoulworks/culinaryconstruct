@@ -105,6 +105,7 @@ public class CulinaryCalculator {
     CulinaryNBT.setBase(result, this.base);
     CulinaryNBT.setSolids(result, this.solids);
     CulinaryNBT.setSolidsSize(result, this.solids.size());
+    CulinaryNBT.setOriginalCount(result, count);
 
     if (!this.liquidColors.isEmpty() && type != OutputType.SANDWICH) {
       this.liquidColors.removeIf(Objects::isNull);
