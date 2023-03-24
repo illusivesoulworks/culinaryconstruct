@@ -24,25 +24,24 @@ import com.illusivesoulworks.culinaryconstruct.common.block.CulinaryStationMenu;
 import com.illusivesoulworks.culinaryconstruct.common.item.FoodBowlItem;
 import com.illusivesoulworks.culinaryconstruct.common.item.SandwichItem;
 import com.illusivesoulworks.culinaryconstruct.platform.Services;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public class CulinaryConstructRegistry {
 
-  public static final RegistryProvider<Item> ITEMS = RegistryProvider.get(Registry.ITEM_REGISTRY,
+  public static final RegistryProvider<Item> ITEMS = RegistryProvider.get(Registries.ITEM,
       CulinaryConstructConstants.MOD_ID);
-  public static final RegistryProvider<Block> BLOCKS = RegistryProvider.get(Registry.BLOCK_REGISTRY,
+  public static final RegistryProvider<Block> BLOCKS = RegistryProvider.get(Registries.BLOCK,
       CulinaryConstructConstants.MOD_ID);
   public static final RegistryProvider<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
-      RegistryProvider.get(Registry.BLOCK_ENTITY_TYPE_REGISTRY,
+      RegistryProvider.get(Registries.BLOCK_ENTITY_TYPE,
           CulinaryConstructConstants.MOD_ID);
   public static final RegistryProvider<MenuType<?>> CONTAINER_MENUS =
-      RegistryProvider.get(Registry.MENU_REGISTRY, CulinaryConstructConstants.MOD_ID);
+      RegistryProvider.get(Registries.MENU, CulinaryConstructConstants.MOD_ID);
 
   public static final RegistryObject<Item> SANDWICH =
       ITEMS.register(CulinaryConstructConstants.SANDWICH_ID,
@@ -53,8 +52,7 @@ public class CulinaryConstructRegistry {
       BLOCKS.register(CulinaryConstructConstants.CULINARY_STATION_ID, CulinaryStationBlock::new);
   public static final RegistryObject<Item> CULINARY_STATION_ITEM =
       ITEMS.register(CulinaryConstructConstants.CULINARY_STATION_ID,
-          () -> new BlockItem(CULINARY_STATION_BLOCK.get(),
-              (new Item.Properties()).tab(CreativeModeTab.TAB_DECORATIONS)));
+          () -> new BlockItem(CULINARY_STATION_BLOCK.get(), (new Item.Properties())));
   public static final RegistryObject<BlockEntityType<CulinaryStationBlockEntity>>
       CULINARY_STATION_BLOCK_ENTITY =
       BLOCK_ENTITY_TYPES.register(CulinaryConstructConstants.CULINARY_STATION_ID,

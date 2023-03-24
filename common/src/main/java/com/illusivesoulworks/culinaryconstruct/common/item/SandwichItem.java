@@ -17,24 +17,17 @@
 
 package com.illusivesoulworks.culinaryconstruct.common.item;
 
+import com.illusivesoulworks.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 import com.illusivesoulworks.culinaryconstruct.common.util.CulinaryNBT;
-import javax.annotation.Nonnull;
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 public class SandwichItem extends CulinaryItemBase {
 
-  @Override
-  public void fillItemCategory(@Nonnull CreativeModeTab group,
-                               @Nonnull NonNullList<ItemStack> items) {
-
-    if (this.allowedIn(group)) {
-      ItemStack sub = new ItemStack(this);
-      CulinaryNBT.setBase(sub, new ItemStack(Items.BREAD));
-      generateCreativeNBT(sub);
-      items.add(sub);
-    }
+  public static ItemStack generateCreativeItem() {
+    ItemStack sub = new ItemStack(CulinaryConstructRegistry.SANDWICH.get());
+    CulinaryNBT.setBase(sub, new ItemStack(Items.BREAD));
+    generateCreativeNBT(sub);
+    return sub;
   }
 }

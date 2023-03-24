@@ -22,14 +22,10 @@ import com.illusivesoulworks.culinaryconstruct.CulinaryConstructConstants;
 import com.illusivesoulworks.culinaryconstruct.client.model.color.ColorMixer;
 import com.illusivesoulworks.culinaryconstruct.client.model.color.ColoredQuadTransformer;
 import com.illusivesoulworks.culinaryconstruct.common.util.CulinaryNBT;
-import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
@@ -40,9 +36,8 @@ import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -93,11 +88,12 @@ public final class SandwichGeometry implements IUnbakedGeometry<SandwichGeometry
   }
 
   public static RenderTypeGroup getLayerRenderTypes() {
-    return new RenderTypeGroup(RenderType.translucent(), ForgeRenderTypes.ITEM_UNSORTED_TRANSLUCENT.get());
+    return new RenderTypeGroup(RenderType.translucent(),
+        ForgeRenderTypes.ITEM_UNSORTED_TRANSLUCENT.get());
   }
 
   @Override
-  public BakedModel bake(IGeometryBakingContext context, ModelBakery bakery,
+  public BakedModel bake(IGeometryBakingContext context, ModelBaker baker,
                          Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState,
                          ItemOverrides overrides, ResourceLocation modelLocation) {
     int index = Math.max(0, this.ingredients.size() - 1);
@@ -107,12 +103,13 @@ public final class SandwichGeometry implements IUnbakedGeometry<SandwichGeometry
             .build(modelLocation);
     CompositeModel.Baked.Builder modelBuilder =
         CompositeModel.Baked.builder(itemContext, baseSprite,
-            new BakedSandwichOverrides(this, context, bakery, spriteGetter, modelState,
+            new BakedSandwichOverrides(this, context, baker, spriteGetter, modelState,
                 modelLocation), context.getTransforms());
     List<Integer> ingredientColors = new ArrayList<>();
     this.ingredients.forEach(
         sprite -> ingredientColors.add(ColorMixer.getDominantColor(sprite)));
-    List<BlockElement> unbaked = UnbakedGeometryHelper.createUnbakedItemElements(0, baseSprite);
+    List<BlockElement> unbaked =
+        UnbakedGeometryHelper.createUnbakedItemElements(0, baseSprite.contents());
     List<BakedQuad> quads =
         UnbakedGeometryHelper.bakeElements(unbaked, material -> baseSprite, modelState,
             modelLocation);
@@ -123,7 +120,7 @@ public final class SandwichGeometry implements IUnbakedGeometry<SandwichGeometry
     for (int i = 0; i < this.ingredients.size(); i++) {
       TextureAtlasSprite sprite =
           spriteGetter.apply(context.getMaterial("layer" + this.layers.get(i)));
-      unbaked = UnbakedGeometryHelper.createUnbakedItemElements(0, sprite);
+      unbaked = UnbakedGeometryHelper.createUnbakedItemElements(0, sprite.contents());
       quads = UnbakedGeometryHelper.bakeElements(unbaked, material -> sprite, modelState,
           modelLocation);
       coloredQuadTransformer.color(quads, ingredientColors.get(i));
@@ -133,34 +130,21 @@ public final class SandwichGeometry implements IUnbakedGeometry<SandwichGeometry
     return modelBuilder.build();
   }
 
-  @Override
-  public Collection<Material> getMaterials(IGeometryBakingContext context,
-                                           Function<ResourceLocation, UnbakedModel> modelGetter,
-                                           Set<Pair<String, String>> missingTextureErrors) {
-    Set<Material> textures = new HashSet<>();
-
-    for (int i = 0; i < 5; i++) {
-      textures.add(context.getMaterial("layer" + i));
-      textures.add(context.getMaterial("bread" + i));
-    }
-    return textures;
-  }
-
   private static final class BakedSandwichOverrides extends
       CulinaryOverrides<SandwichGeometry> {
 
     public BakedSandwichOverrides(SandwichGeometry model, IGeometryBakingContext context,
-                                  ModelBakery bakery,
+                                  ModelBaker baker,
                                   Function<Material, TextureAtlasSprite> spriteGetter,
                                   ModelState modelState, ResourceLocation modelLocation) {
-      super(model, context, bakery, spriteGetter, modelState, modelLocation);
+      super(model, context, baker, spriteGetter, modelState, modelLocation);
     }
 
     @Override
     protected BakedModel getBakedModel(BakedModel originalModel, ItemStack stack,
                                        @Nullable Level world, @Nullable LivingEntity entity) {
       SandwichGeometry unbaked = this.model.withStack(stack);
-      return unbaked.bake(this.context, this.bakery, this.spriteGetter, this.modelState,
+      return unbaked.bake(this.context, this.baker, this.spriteGetter, this.modelState,
           this, new ResourceLocation(CulinaryConstructConstants.MOD_ID,
               CulinaryConstructConstants.SANDWICH_ID));
     }

@@ -45,7 +45,7 @@ public class CulinaryConstructFabricClientMod implements ClientModInitializer {
   @SuppressWarnings("all")
   public static Integer getFluidColor(ItemStack stack) {
     Storage<FluidVariant> storage =
-        FluidStorage.ITEM.find(stack, ContainerItemContext.withInitial(stack));
+        FluidStorage.ITEM.find(stack, ContainerItemContext.withConstant(stack));
 
     if (storage != null) {
       Iterator<StorageView<FluidVariant>> iter = storage.iterator();

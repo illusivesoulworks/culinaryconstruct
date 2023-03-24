@@ -21,20 +21,26 @@ import com.illusivesoulworks.culinaryconstruct.api.CulinaryIngredientLookup;
 import com.illusivesoulworks.culinaryconstruct.api.ICulinaryIngredient;
 import com.illusivesoulworks.culinaryconstruct.common.advancement.CraftFoodTrigger;
 import com.illusivesoulworks.culinaryconstruct.common.capability.CulinaryIngredients;
+import com.illusivesoulworks.culinaryconstruct.common.item.FoodBowlItem;
+import com.illusivesoulworks.culinaryconstruct.common.item.SandwichItem;
 import com.illusivesoulworks.culinaryconstruct.common.network.CPacketRename;
 import com.illusivesoulworks.culinaryconstruct.common.network.CulinaryConstructPackets;
+import com.illusivesoulworks.culinaryconstruct.common.registry.CulinaryConstructRegistry;
+import com.illusivesoulworks.spectrelib.config.SpectreConfigInitializer;
 import com.mojang.datafixers.util.Pair;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public class CulinaryConstructFabricMod implements ModInitializer {
+public class CulinaryConstructFabricMod implements ModInitializer, SpectreConfigInitializer {
 
   @Override
   public void onInitialize() {
@@ -45,11 +51,18 @@ public class CulinaryConstructFabricMod implements ModInitializer {
           CPacketRename msg = CPacketRename.decode(buf);
           server.execute(() -> CPacketRename.handle(msg, player));
         });
-    for (Item item : Registry.ITEM) {
+    for (Item item : BuiltInRegistries.ITEM) {
       testIngredient(item);
     }
-    RegistryEntryAddedCallback.event(Registry.ITEM)
+    RegistryEntryAddedCallback.event(BuiltInRegistries.ITEM)
         .register((rawId, id, object) -> testIngredient(object));
+    ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(entries -> {
+      entries.accept(CulinaryConstructRegistry.CULINARY_STATION_ITEM.get());
+    });
+    ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FOOD_AND_DRINKS).register(entries -> {
+      entries.accept(SandwichItem.generateCreativeItem());
+      entries.accept(FoodBowlItem.generateCreativeItem());
+    });
   }
 
   private static void testIngredient(Item item) {
@@ -61,5 +74,10 @@ public class CulinaryConstructFabricMod implements ModInitializer {
             ((stack, context) -> entry.getSecond().apply(stack)), item);
       }
     }
+  }
+
+  @Override
+  public void onInitializeConfig() {
+    CulinaryConstructMod.setupConfig();
   }
 }

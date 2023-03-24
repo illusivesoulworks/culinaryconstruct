@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "com.illusivesoulworks.${mod_id}",
+    "id": "${mod_id}",
+    "version": "${version}",
+    "intermediate_mappings": "net.fabricmc:intermediary",
+    "entrypoints": {
+      "init": [
+        "com.illusivesoulworks.culinaryconstruct.CulinaryConstructQuiltMod"
+      ],
+      "client_init": [
+        "com.illusivesoulworks.culinaryconstruct.client.CulinaryConstructQuiltClientMod"
+      ],
+      "spectrelib": [
+        "com.illusivesoulworks.culinaryconstruct.CulinaryConstructQuiltMod"
+      ],
+      "appleskin": [
+        "com.illusivesoulworks.culinaryconstruct.common.integration.appleskin.AppleSkinIntegration"
+      ],
+      "mealapi": [
+        "com.illusivesoulworks.culinaryconstruct.common.integration.mealapi.MealApiIntegration"
+      ]
+    },
+    "depends": [
+      {
+        "id": "quilt_loader",
+        "version": "*"
+      },
+      {
+        "id": "quilt_base",
+        "version": "*"
+      },
+      {
+        "id": "minecraft",
+        "version": "${quilt_mc_version_range}"
+      },
+      {
+        "id": "java",
+        "version": ">=17"
+      },
+      {
+        "id": "spectrelib",
+        "version": ">=0.12.4"
+      },
+      {
+        "id": "quilted_fabric_api",
+        "version": "*"
+      }
+    ],
+    "metadata": {
+      "name": "${mod_name}",
+      "description": "${mod_description}",
+      "contributors": {
+        "${mod_author}": "Owner"
+      },
+      "license": "${license}"
+    }
+  },
+  "mixin": [
+    "culinaryconstruct.quilt.mixins.json"
+  ],
+  "minecraft": {
+    "environment": "*"
+  }
+}

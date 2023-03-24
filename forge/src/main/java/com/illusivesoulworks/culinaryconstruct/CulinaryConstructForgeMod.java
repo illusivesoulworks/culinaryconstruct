@@ -18,16 +18,21 @@
 package com.illusivesoulworks.culinaryconstruct;
 
 import com.illusivesoulworks.culinaryconstruct.api.ICulinaryIngredient;
-import com.illusivesoulworks.culinaryconstruct.common.capability.CulinaryIngredientCapability;
 import com.illusivesoulworks.culinaryconstruct.client.CulinaryConstructForgeClientMod;
 import com.illusivesoulworks.culinaryconstruct.client.CulinaryStationScreen;
 import com.illusivesoulworks.culinaryconstruct.common.advancement.CraftFoodTrigger;
+import com.illusivesoulworks.culinaryconstruct.common.capability.CulinaryIngredientCapability;
+import com.illusivesoulworks.culinaryconstruct.common.item.FoodBowlItem;
+import com.illusivesoulworks.culinaryconstruct.common.item.SandwichItem;
 import com.illusivesoulworks.culinaryconstruct.common.network.CulinaryConstructForgeNetwork;
 import com.illusivesoulworks.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -40,10 +45,12 @@ public class CulinaryConstructForgeMod {
 
   public CulinaryConstructForgeMod() {
     CulinaryConstructMod.setup();
+    CulinaryConstructMod.setupConfig();
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     eventBus.addListener(this::setup);
     eventBus.addListener(this::registerCaps);
     eventBus.addListener(this::clientSetup);
+    eventBus.addListener(this::creativeTabs);
     DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
         () -> () -> eventBus.register(new CulinaryConstructForgeClientMod()));
   }
@@ -63,5 +70,16 @@ public class CulinaryConstructForgeMod {
   private void clientSetup(final FMLClientSetupEvent evt) {
     MenuScreens.register(CulinaryConstructRegistry.CULINARY_STATION_MENU.get(),
         CulinaryStationScreen::new);
+  }
+
+  private void creativeTabs(final CreativeModeTabEvent.BuildContents evt) {
+    CreativeModeTab tab = evt.getTab();
+
+    if (tab == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
+      evt.accept(CulinaryConstructRegistry.CULINARY_STATION_ITEM.get());
+    } else if (tab == CreativeModeTabs.FOOD_AND_DRINKS) {
+      evt.accept(SandwichItem.generateCreativeItem());
+      evt.accept(FoodBowlItem.generateCreativeItem());
+    }
   }
 }

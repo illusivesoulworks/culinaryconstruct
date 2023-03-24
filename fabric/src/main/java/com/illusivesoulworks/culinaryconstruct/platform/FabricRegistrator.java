@@ -37,10 +37,12 @@ import net.fabricmc.fabric.impl.tag.convention.TagRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
@@ -54,7 +56,7 @@ public class FabricRegistrator implements IRegistrator {
 
   @Override
   public Optional<Item> getItem(ResourceLocation resourceLocation) {
-    return Optional.of(Registry.ITEM.get(resourceLocation));
+    return Optional.of(BuiltInRegistries.ITEM.get(resourceLocation));
   }
 
   @Override
@@ -88,7 +90,7 @@ public class FabricRegistrator implements IRegistrator {
   @Override
   public <I extends MenuType<?>> I createMenuType() {
     return (I) new MenuType<>((id, inventory) -> new CulinaryStationMenu(id, inventory,
-        PacketByteBufs.empty()));
+        PacketByteBufs.empty()), FeatureFlagSet.of());
   }
 
   private static class Provider<T> implements RegistryProvider<T> {
@@ -102,7 +104,7 @@ public class FabricRegistrator implements IRegistrator {
     private Provider(String modId, ResourceKey<? extends Registry<T>> key) {
       this.modId = modId;
 
-      final var reg = Registry.REGISTRY.get(key.location());
+      final var reg = BuiltInRegistries.REGISTRY.get(key.location());
       if (reg == null) {
         throw new RuntimeException("Registry with name " + key.location() + " was not found!");
       }
@@ -140,7 +142,7 @@ public class FabricRegistrator implements IRegistrator {
 
         @Override
         public Holder<I> asHolder() {
-          return (Holder<I>) registry.getOrCreateHolder((ResourceKey<T>) this.key);
+          return (Holder<I>) registry.getHolderOrThrow((ResourceKey<T>) this.key);
         }
       };
       entries.add((RegistryObject<T>) ro);

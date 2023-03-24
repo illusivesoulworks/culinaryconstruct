@@ -20,6 +20,9 @@
     "client": [
       "com.illusivesoulworks.culinaryconstruct.client.CulinaryConstructFabricClientMod"
     ],
+    "spectrelib": [
+      "com.illusivesoulworks.culinaryconstruct.CulinaryConstructFabricMod"
+    ],
     "appleskin": [
       "com.illusivesoulworks.culinaryconstruct.common.integration.appleskin.AppleSkinIntegration"
     ],

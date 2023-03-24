@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 Prior to version 5.0.0, this project used MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
 
+## [5.1.0+1.19.4] - 2023.03.23
+### Added
+- Added Quilt support
+### Changed
+- Updated to Minecraft 1.19.4
+
 ## [5.0.0+1.19.2] - 2023.03.21
 ### Added
 - Added AppleSkin integration [#66](https://github.com/illusivesoulworks/culinaryconstruct/issues/66)

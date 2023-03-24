@@ -20,12 +20,8 @@ package com.illusivesoulworks.culinaryconstruct.client;
 import com.illusivesoulworks.culinaryconstruct.CulinaryConstructConstants;
 import com.illusivesoulworks.culinaryconstruct.client.model.FoodBowlLoader;
 import com.illusivesoulworks.culinaryconstruct.client.model.SandwichLoader;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -35,18 +31,6 @@ public class CulinaryConstructForgeClientMod {
   public void registerModels(final ModelEvent.RegisterGeometryLoaders evt) {
     evt.register(CulinaryConstructConstants.SANDWICH_ID, SandwichLoader.INSTANCE);
     evt.register(CulinaryConstructConstants.FOOD_BOWL_ID, FoodBowlLoader.INSTANCE);
-  }
-
-  @SubscribeEvent
-  public void registerTextures(final TextureStitchEvent.Pre evt) {
-    TextureAtlas map = evt.getAtlas();
-
-    if (map.location() == InventoryMenu.BLOCK_ATLAS) {
-
-      for (ResourceLocation resourceLocation : CulinaryConstructSprites.get()) {
-        evt.addSprite(resourceLocation);
-      }
-    }
   }
 
   public static int getFluidColor(Fluid fluid) {

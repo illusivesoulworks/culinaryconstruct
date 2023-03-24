@@ -22,13 +22,9 @@ import com.illusivesoulworks.culinaryconstruct.CulinaryConstructConstants;
 import com.illusivesoulworks.culinaryconstruct.client.model.color.ColorMixer;
 import com.illusivesoulworks.culinaryconstruct.client.model.color.ColoredQuadTransformer;
 import com.illusivesoulworks.culinaryconstruct.common.util.CulinaryNBT;
-import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
@@ -39,9 +35,8 @@ import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -95,7 +90,7 @@ public final class FoodBowlGeometry implements IUnbakedGeometry<FoodBowlGeometry
   }
 
   @Override
-  public BakedModel bake(IGeometryBakingContext context, ModelBakery bakery,
+  public BakedModel bake(IGeometryBakingContext context, ModelBaker baker,
                          Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState,
                          ItemOverrides overrides, ResourceLocation modelLocation) {
     TextureAtlasSprite baseSprite = spriteGetter.apply(context.getMaterial("bowl"));
@@ -104,12 +99,13 @@ public final class FoodBowlGeometry implements IUnbakedGeometry<FoodBowlGeometry
             .build(modelLocation);
     CompositeModel.Baked.Builder modelBuilder =
         CompositeModel.Baked.builder(itemContext, baseSprite,
-            new FoodBowlGeometry.BakedFoodBowlOverrides(this, context, bakery, spriteGetter,
+            new FoodBowlGeometry.BakedFoodBowlOverrides(this, context, baker, spriteGetter,
                 modelState, modelLocation), context.getTransforms());
     List<Integer> ingredientColors = new ArrayList<>();
     this.ingredients.forEach(
         sprite -> ingredientColors.add(ColorMixer.getDominantColor(sprite)));
-    List<BlockElement> unbaked = UnbakedGeometryHelper.createUnbakedItemElements(0, baseSprite);
+    List<BlockElement> unbaked =
+        UnbakedGeometryHelper.createUnbakedItemElements(0, baseSprite.contents());
     List<BakedQuad> quads =
         UnbakedGeometryHelper.bakeElements(unbaked, material -> baseSprite, modelState,
             modelLocation);
@@ -128,7 +124,7 @@ public final class FoodBowlGeometry implements IUnbakedGeometry<FoodBowlGeometry
       int liquidColor = isOpaque ? ColorMixer.getMixedColor(this.liquids)
           : ColorMixer.getMixedColor(ingredientColors);
       TextureAtlasSprite sprite = spriteGetter.apply(context.getMaterial("liquid_base"));
-      unbaked = UnbakedGeometryHelper.createUnbakedItemElements(0, sprite);
+      unbaked = UnbakedGeometryHelper.createUnbakedItemElements(0, sprite.contents());
       quads = UnbakedGeometryHelper.bakeElements(unbaked, material -> sprite, modelState,
           modelLocation);
       coloredQuadTransformer.color(quads, liquidColor);
@@ -137,7 +133,7 @@ public final class FoodBowlGeometry implements IUnbakedGeometry<FoodBowlGeometry
       if (ingredients.size() >= 3) {
         TextureAtlasSprite overflowSprite =
             spriteGetter.apply(context.getMaterial("liquid_overflow"));
-        unbaked = UnbakedGeometryHelper.createUnbakedItemElements(0, overflowSprite);
+        unbaked = UnbakedGeometryHelper.createUnbakedItemElements(0, overflowSprite.contents());
         quads = UnbakedGeometryHelper.bakeElements(unbaked, material -> overflowSprite, modelState,
             modelLocation);
         coloredQuadTransformer.color(quads, liquidColor);
@@ -148,7 +144,7 @@ public final class FoodBowlGeometry implements IUnbakedGeometry<FoodBowlGeometry
     for (int i = 0; i < this.ingredients.size(); i++) {
       TextureAtlasSprite sprite =
           spriteGetter.apply(context.getMaterial("layer" + this.layers.get(i)));
-      unbaked = UnbakedGeometryHelper.createUnbakedItemElements(0, sprite);
+      unbaked = UnbakedGeometryHelper.createUnbakedItemElements(0, sprite.contents());
       quads = UnbakedGeometryHelper.bakeElements(unbaked, material -> sprite, modelState,
           modelLocation);
       coloredQuadTransformer.color(quads, ingredientColors.get(i));
@@ -158,36 +154,21 @@ public final class FoodBowlGeometry implements IUnbakedGeometry<FoodBowlGeometry
     return modelBuilder.build();
   }
 
-  @Override
-  public Collection<Material> getMaterials(IGeometryBakingContext context,
-                                           Function<ResourceLocation, UnbakedModel> modelGetter,
-                                           Set<Pair<String, String>> missingTextureErrors) {
-    Set<Material> textures = new HashSet<>();
-
-    for (int i = 0; i < 5; i++) {
-      textures.add(context.getMaterial("layer" + i));
-    }
-    textures.add(context.getMaterial("liquid_base"));
-    textures.add(context.getMaterial("liquid_overflow"));
-    textures.add(context.getMaterial("bowl"));
-    return textures;
-  }
-
   private static final class BakedFoodBowlOverrides extends
       CulinaryOverrides<FoodBowlGeometry> {
 
     public BakedFoodBowlOverrides(FoodBowlGeometry model, IGeometryBakingContext context,
-                                  ModelBakery bakery,
+                                  ModelBaker baker,
                                   Function<Material, TextureAtlasSprite> spriteGetter,
                                   ModelState modelState, ResourceLocation modelLocation) {
-      super(model, context, bakery, spriteGetter, modelState, modelLocation);
+      super(model, context, baker, spriteGetter, modelState, modelLocation);
     }
 
     @Override
     protected BakedModel getBakedModel(BakedModel originalModel, ItemStack stack,
                                        @Nullable Level world, @Nullable LivingEntity entity) {
       FoodBowlGeometry unbaked = this.model.withStack(stack);
-      return unbaked.bake(this.context, this.bakery, this.spriteGetter, this.modelState,
+      return unbaked.bake(this.context, this.baker, this.spriteGetter, this.modelState,
           this, new ResourceLocation(CulinaryConstructConstants.MOD_ID,
               CulinaryConstructConstants.FOOD_BOWL_ID));
     }

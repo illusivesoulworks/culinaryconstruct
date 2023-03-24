@@ -17,13 +17,13 @@
 
 package com.illusivesoulworks.culinaryconstruct.common.item;
 
+import com.illusivesoulworks.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 import com.illusivesoulworks.culinaryconstruct.common.util.CulinaryNBT;
 import com.illusivesoulworks.culinaryconstruct.platform.Services;
 import javax.annotation.Nonnull;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -51,20 +51,15 @@ public class FoodBowlItem extends CulinaryItemBase {
     return output;
   }
 
-  @Override
-  public void fillItemCategory(@Nonnull CreativeModeTab group,
-                               @Nonnull NonNullList<ItemStack> items) {
-
-    if (this.allowedIn(group)) {
-      ItemStack sub = new ItemStack(this);
-      CulinaryNBT.setBase(sub, new ItemStack(Items.BOWL));
-      generateCreativeNBT(sub);
-      CulinaryNBT.setSolidsSize(sub, 5);
-      CulinaryNBT.setSolids(sub, NonNullList.of(ItemStack.EMPTY, new ItemStack(Items.NETHER_STAR),
-          new ItemStack(Items.NETHER_STAR), new ItemStack(Items.NETHER_STAR),
-          new ItemStack(Items.NETHER_STAR), new ItemStack(Items.NETHER_STAR)));
-      items.add(sub);
-    }
+  public static ItemStack generateCreativeItem() {
+    ItemStack sub = new ItemStack(CulinaryConstructRegistry.BOWL.get());
+    CulinaryNBT.setBase(sub, new ItemStack(Items.BOWL));
+    generateCreativeNBT(sub);
+    CulinaryNBT.setSolidsSize(sub, 5);
+    CulinaryNBT.setSolids(sub, NonNullList.of(ItemStack.EMPTY, new ItemStack(Items.NETHER_STAR),
+        new ItemStack(Items.NETHER_STAR), new ItemStack(Items.NETHER_STAR),
+        new ItemStack(Items.NETHER_STAR), new ItemStack(Items.NETHER_STAR)));
+    return sub;
   }
 
   @Nonnull

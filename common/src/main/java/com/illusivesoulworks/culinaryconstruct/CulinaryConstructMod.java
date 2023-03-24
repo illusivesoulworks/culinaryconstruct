@@ -22,16 +22,18 @@ import com.illusivesoulworks.culinaryconstruct.common.config.CulinaryConstructCo
 import com.illusivesoulworks.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 import com.illusivesoulworks.spectrelib.config.SpectreConfig;
 import com.illusivesoulworks.spectrelib.config.SpectreConfigLoader;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public class CulinaryConstructMod {
 
   public static void setup() {
+    CulinaryIngredients.setup();
+    CulinaryConstructRegistry.setup();
+  }
+
+  public static void setupConfig() {
     SpectreConfig config = SpectreConfigLoader.add(SpectreConfig.Type.SERVER,
         CulinaryConstructConfig.serverSpec, CulinaryConstructConstants.MOD_ID);
     config.addLoadListener(cfg -> CulinaryConstructConfig.bake());
     config.addReloadListener(cfg -> CulinaryConstructConfig.bake());
-    CulinaryIngredients.setup();
-    CulinaryConstructRegistry.setup();
   }
 }

@@ -32,7 +32,7 @@ import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -46,7 +46,7 @@ public abstract class CulinaryOverrides<T extends IUnbakedGeometry<T>> extends
     ItemOverrides {
 
   protected final T model;
-  protected final ModelBakery bakery;
+  protected final ModelBaker baker;
   protected final IGeometryBakingContext context;
   protected final Function<Material, TextureAtlasSprite> spriteGetter;
   protected final ModelState modelState;
@@ -55,14 +55,14 @@ public abstract class CulinaryOverrides<T extends IUnbakedGeometry<T>> extends
   private final Cache<CacheKey, BakedModel> bakedModelCache =
       CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(5, TimeUnit.MINUTES).build();
 
-  public CulinaryOverrides(T model, IGeometryBakingContext context, ModelBakery bakery,
+  public CulinaryOverrides(T model, IGeometryBakingContext context, ModelBaker baker,
                            Function<Material, TextureAtlasSprite> spriteGetter,
                            ModelState modelState,
                            ResourceLocation modelLocation) {
     super();
     this.model = model;
     this.context = context;
-    this.bakery = bakery;
+    this.baker = baker;
     this.spriteGetter = spriteGetter;
     this.modelLocation = modelLocation;
     this.modelState = modelState;
