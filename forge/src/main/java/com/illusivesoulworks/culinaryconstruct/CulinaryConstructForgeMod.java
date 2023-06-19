@@ -28,11 +28,12 @@ import com.illusivesoulworks.culinaryconstruct.common.network.CulinaryConstructF
 import com.illusivesoulworks.culinaryconstruct.common.registry.CulinaryConstructRegistry;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
-import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -72,8 +73,8 @@ public class CulinaryConstructForgeMod {
         CulinaryStationScreen::new);
   }
 
-  private void creativeTabs(final CreativeModeTabEvent.BuildContents evt) {
-    CreativeModeTab tab = evt.getTab();
+  private void creativeTabs(final BuildCreativeModeTabContentsEvent evt) {
+    ResourceKey<CreativeModeTab> tab = evt.getTabKey();
 
     if (tab == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
       evt.accept(CulinaryConstructRegistry.CULINARY_STATION_ITEM.get());

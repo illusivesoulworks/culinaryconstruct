@@ -169,7 +169,7 @@ public class CulinaryItemBase extends Item {
         }
       }
 
-      if (CulinaryConstructConfig.showNutritionInfo) {
+      if (CulinaryConstructConfig.SERVER.showNutritionInfo.get()) {
         tooltip.add(Component.empty());
         int food = CulinaryNBT.getFoodAmount(stack);
         tooltip.add(

@@ -54,48 +54,40 @@ public class CulinaryConstructConfig {
     public final SpectreConfigSpec.BooleanValue showNutritionInfo;
 
     public Server(SpectreConfigSpec.Builder builder) {
-      builder.push("server");
 
       maxFoodPerSandwich = builder
-          .comment("The maximum amount of food that a single sandwich can give")
+          .comment("Maximum amount of food from eating a single sandwich.")
           .translation(CONFIG_PREFIX + "maxFoodPerSandwich")
           .defineInRange("maxFoodPerSandwich", 10, 1, 100);
 
       maxIngredientSaturation = builder.comment(
-              "Blacklist ingredients with more than this max saturation modifier, -1 to disable")
+              "If greater than -1, players cannot use ingredients with greater saturation than this amount.")
           .translation(CONFIG_PREFIX + "maxIngredientSaturation")
           .defineInRange("maxIngredientSaturation", -1.0D, -1.0D, 100.0D);
 
       maxIngredientFood = builder
-          .comment("Blacklist ingredients with more than this max food value, -1 to disable")
+          .comment(
+              "If greater than -1, players cannot use ingredients with greater food than this amount.")
           .translation(CONFIG_PREFIX + "maxIngredientFood")
           .defineInRange("maxIngredientFood", -1, -1, 100);
 
-      ingredientBlacklist = builder.comment("List of items to blacklist as ingredients")
+      ingredientBlacklist = builder.comment("Items or tags that cannot be used as ingredients.")
           .translation(CONFIG_PREFIX + "ingredientBlacklist")
-          .defineList("ingredientBlacklist", new ArrayList<>(), s -> s instanceof String);
+          .defineList("ingredientBlacklist", new ArrayList<>(),
+              s -> s instanceof String str && ResourceLocation.isValidResourceLocation(str));
 
       showNutritionInfo = builder.comment(
-              "Set to true to show nutrition and saturation information in the extended tooltip")
+              "If enabled, shows food and saturation amounts in the extended tooltip.")
           .translation(CONFIG_PREFIX + "showNutritionInfo").define("showNutritionInfo", false);
     }
   }
 
-  public static int maxFoodPerSandwich;
-  public static double maxIngredientSaturation;
-  public static int maxIngredientFood;
-  public static List<Item> ingredientBlacklist;
-  public static boolean showNutritionInfo;
+  private static final List<Item> BLACKLIST = new ArrayList<>();
+  private static boolean ingredientsInitialized = false;
 
-  public static void bake() {
-    maxFoodPerSandwich = SERVER.maxFoodPerSandwich.get();
-    maxIngredientFood = SERVER.maxIngredientFood.get();
-    maxIngredientSaturation = SERVER.maxIngredientSaturation.get();
-    showNutritionInfo = SERVER.showNutritionInfo.get();
-    ingredientBlacklist = new ArrayList<>();
-    SERVER.ingredientBlacklist.get().forEach(
-        item -> Services.REGISTRY.getItem(new ResourceLocation(item))
-            .ifPresent(ingredientBlacklist::add));
+
+  public static void reload() {
+    ingredientsInitialized = false;
   }
 
   public static boolean isValidIngredient(ItemStack stack) {
@@ -112,13 +104,21 @@ public class CulinaryConstructConfig {
       foodAmount = food.getNutrition();
       saturationAmount = food.getSaturationModifier();
     }
-    int maxFood = CulinaryConstructConfig.maxIngredientFood;
-    double maxSaturation = CulinaryConstructConfig.maxIngredientSaturation;
-    List<Item> blacklist = CulinaryConstructConfig.ingredientBlacklist;
+    int maxFood = CulinaryConstructConfig.SERVER.maxIngredientFood.get();
+    double maxSaturation = CulinaryConstructConfig.SERVER.maxIngredientSaturation.get();
+
+    if (!ingredientsInitialized) {
+      ingredientsInitialized = true;
+      BLACKLIST.clear();
+
+      for (String s : CulinaryConstructConfig.SERVER.ingredientBlacklist.get()) {
+        Services.REGISTRY.getItem(ResourceLocation.tryParse(s)).ifPresent(BLACKLIST::add);
+      }
+    }
     boolean blacklisted = false;
 
-    if (!blacklist.isEmpty()) {
-      blacklisted = blacklist.contains(item);
+    if (!BLACKLIST.isEmpty()) {
+      blacklisted = BLACKLIST.contains(item);
     }
     return (maxFood < 0 || foodAmount <= maxFood) && (maxSaturation < 0
         || saturationAmount <= maxSaturation) && !blacklisted;

@@ -26,7 +26,6 @@ import com.illusivesoulworks.culinaryconstruct.common.item.SandwichItem;
 import com.illusivesoulworks.culinaryconstruct.common.network.CPacketRename;
 import com.illusivesoulworks.culinaryconstruct.common.network.CulinaryConstructPackets;
 import com.illusivesoulworks.culinaryconstruct.common.registry.CulinaryConstructRegistry;
-import com.illusivesoulworks.spectrelib.config.SpectreConfigInitializer;
 import com.mojang.datafixers.util.Pair;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -41,7 +40,7 @@ import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
-public class CulinaryConstructQuiltMod implements ModInitializer, SpectreConfigInitializer {
+public class CulinaryConstructQuiltMod implements ModInitializer {
 
   @Override
   public void onInitialize(ModContainer modContainer) {
@@ -75,10 +74,5 @@ public class CulinaryConstructQuiltMod implements ModInitializer, SpectreConfigI
             ((stack, context) -> entry.getSecond().apply(stack)), item);
       }
     }
-  }
-
-  @Override
-  public void onInitializeConfig(ModContainer modContainer) {
-    CulinaryConstructMod.setupConfig();
   }
 }

@@ -26,7 +26,7 @@ import com.illusivesoulworks.culinaryconstruct.common.item.SandwichItem;
 import com.illusivesoulworks.culinaryconstruct.common.network.CPacketRename;
 import com.illusivesoulworks.culinaryconstruct.common.network.CulinaryConstructPackets;
 import com.illusivesoulworks.culinaryconstruct.common.registry.CulinaryConstructRegistry;
-import com.illusivesoulworks.spectrelib.config.SpectreConfigInitializer;
+import com.illusivesoulworks.spectrelib.config.SpectreLibInitializer;
 import com.mojang.datafixers.util.Pair;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -40,7 +40,7 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public class CulinaryConstructFabricMod implements ModInitializer, SpectreConfigInitializer {
+public class CulinaryConstructFabricMod implements ModInitializer {
 
   @Override
   public void onInitialize() {
@@ -74,10 +74,5 @@ public class CulinaryConstructFabricMod implements ModInitializer, SpectreConfig
             ((stack, context) -> entry.getSecond().apply(stack)), item);
       }
     }
-  }
-
-  @Override
-  public void onInitializeConfig() {
-    CulinaryConstructMod.setupConfig();
   }
 }

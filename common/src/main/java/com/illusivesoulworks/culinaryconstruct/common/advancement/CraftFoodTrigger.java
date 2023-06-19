@@ -21,6 +21,7 @@ import com.google.gson.JsonObject;
 import com.illusivesoulworks.culinaryconstruct.CulinaryConstructConstants;
 import javax.annotation.Nonnull;
 import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
+import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.DeserializationContext;
 import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
@@ -42,7 +43,7 @@ public class CraftFoodTrigger extends SimpleCriterionTrigger<CraftFoodTrigger.In
   @Nonnull
   @Override
   public Instance createInstance(@Nonnull JsonObject p_230241_1_,
-                                 @Nonnull EntityPredicate.Composite p_230241_2_,
+                                 @Nonnull ContextAwarePredicate p_230241_2_,
                                  @Nonnull DeserializationContext p_230241_3_) {
     return new Instance(p_230241_2_);
   }
@@ -53,7 +54,7 @@ public class CraftFoodTrigger extends SimpleCriterionTrigger<CraftFoodTrigger.In
 
   public static class Instance extends AbstractCriterionTriggerInstance {
 
-    public Instance(EntityPredicate.Composite p_i232007_1_) {
+    public Instance(ContextAwarePredicate p_i232007_1_) {
       super(ID, p_i232007_1_);
     }
   }

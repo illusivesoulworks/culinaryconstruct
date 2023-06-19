@@ -25,6 +25,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import javax.annotation.Nonnull;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -102,12 +103,12 @@ public class CulinaryStationScreen extends AbstractContainerScreen<CulinaryStati
   }
 
   @Override
-  public void render(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-    this.renderBackground(matrixStack);
-    super.render(matrixStack, mouseX, mouseY, partialTicks);
+  public void render(@Nonnull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    this.renderBackground(guiGraphics);
+    super.render(guiGraphics, mouseX, mouseY, partialTicks);
     RenderSystem.disableBlend();
-    this.nameField.render(matrixStack, mouseX, mouseY, partialTicks);
-    this.renderTooltip(matrixStack, mouseX, mouseY);
+    this.nameField.render(guiGraphics, mouseX, mouseY, partialTicks);
+    this.renderTooltip(guiGraphics, mouseX, mouseY);
   }
 
   private void updateName(String name) {
@@ -121,20 +122,19 @@ public class CulinaryStationScreen extends AbstractContainerScreen<CulinaryStati
   }
 
   @Override
-  protected void renderBg(@Nonnull PoseStack matrixStack,
+  protected void renderBg(@Nonnull GuiGraphics guiGraphics,
                           float partialTicks, int mouseX, int mouseY) {
 
     if (this.minecraft != null) {
       RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-      RenderSystem.setShaderTexture(0, GUI_BACKGROUND);
       int i = (this.width - this.imageWidth) / 2;
       int j = (this.height - this.imageHeight) / 2;
-      this.blit(matrixStack, i, j, 0, 0, this.imageWidth, this.imageHeight);
-      this.blit(matrixStack, i + 59, j + 16, 0,
+      guiGraphics.blit(GUI_BACKGROUND, i, j, 0, 0, this.imageWidth, this.imageHeight);
+      guiGraphics.blit(GUI_BACKGROUND, i + 59, j + 16, 0,
           this.imageHeight + (this.menu.getSlot(0).hasItem() ? 0 : 16), 110, 16);
 
       if (this.menu.getSlot(0).hasItem() && !this.menu.getSlot(6).hasItem()) {
-        this.blit(matrixStack, i + 133, j + 43, this.imageWidth, 0, 18, 18);
+        guiGraphics.blit(GUI_BACKGROUND, i + 133, j + 43, this.imageWidth, 0, 18, 18);
       }
     }
   }

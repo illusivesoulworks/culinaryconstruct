@@ -27,14 +27,14 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,7 +44,8 @@ public class CulinaryStationBlock extends Block implements EntityBlock {
       Component.translatable("culinaryconstruct.culinary_container");
 
   public CulinaryStationBlock() {
-    super(Block.Properties.of(Material.WOOD).strength(2.5F).sound(SoundType.WOOD));
+    super(Block.Properties.of().mapColor(MapColor.WOOD).ignitedByLava()
+        .instrument(NoteBlockInstrument.BASS).strength(2.5F).sound(SoundType.WOOD));
   }
 
   @Nonnull

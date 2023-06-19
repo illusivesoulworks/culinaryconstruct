@@ -159,8 +159,7 @@ public class CulinaryStationBlockEntity extends BaseContainerBlockEntity
   @Override
   public void setItem(int index, @Nonnull ItemStack stack) {
     ItemStack itemstack = this.items.get(index);
-    boolean flag =
-        !stack.isEmpty() && stack.sameItem(itemstack) && ItemStack.tagMatches(stack, itemstack);
+    boolean flag = !stack.isEmpty() && ItemStack.isSameItemSameTags(stack, itemstack);
     this.items.set(index, stack);
 
     if (stack.getCount() > this.getMaxStackSize()) {

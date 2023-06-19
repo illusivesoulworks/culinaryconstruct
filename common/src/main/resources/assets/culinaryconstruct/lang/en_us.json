@@ -23,5 +23,15 @@
   "tooltip.culinaryconstruct.list.4": "%s, %s, %s, and %s",
   "tooltip.culinaryconstruct.list.5": "%s, %s, %s, %s, and %s",
   "culinaryconstruct.advancements.culinary_station.title": "Culinarian",
-  "culinaryconstruct.advancements.culinary_station.description": "Craft a sandwich or bowl of food"
+  "culinaryconstruct.advancements.culinary_station.description": "Craft a sandwich or bowl of food",
+  "gui.culinaryconstruct.config.maxFoodPerSandwich.name": "Maximum food per sandwich",
+  "gui.culinaryconstruct.config.maxFoodPerSandwich.description": "Maximum amount of food from eating a single sandwich.",
+  "gui.culinaryconstruct.config.maxIngredientSaturation.name": "Maximum saturation for ingredients",
+  "gui.culinaryconstruct.config.maxIngredientSaturation.description": "If greater than -1, players cannot use ingredients with greater saturation than this amount.",
+  "gui.culinaryconstruct.config.maxIngredientFood.name": "Maximum food for ingredients",
+  "gui.culinaryconstruct.config.maxIngredientFood.description": "If greater than -1, players cannot use ingredients with greater food than this amount.",
+  "gui.culinaryconstruct.config.ingredientBlacklist.name": "Disallowed ingredients",
+  "gui.culinaryconstruct.config.ingredientBlacklist.description": "Items or tags that cannot be used as ingredients.",
+  "gui.culinaryconstruct.config.showNutritionInfo.name": "Show nutrition in extended tooltip",
+  "gui.culinaryconstruct.config.showNutritionInfo.description": "If enabled, shows food and saturation amounts in the extended tooltip."
 }

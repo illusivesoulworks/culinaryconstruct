@@ -33,7 +33,6 @@ public class CulinaryConstructMod {
   public static void setupConfig() {
     SpectreConfig config = SpectreConfigLoader.add(SpectreConfig.Type.SERVER,
         CulinaryConstructConfig.serverSpec, CulinaryConstructConstants.MOD_ID);
-    config.addLoadListener(cfg -> CulinaryConstructConfig.bake());
-    config.addReloadListener(cfg -> CulinaryConstructConfig.bake());
+    config.addLoadListener((cfg, flag) -> CulinaryConstructConfig.reload());
   }
 }

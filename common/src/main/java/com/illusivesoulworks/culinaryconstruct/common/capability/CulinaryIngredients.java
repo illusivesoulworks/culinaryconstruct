@@ -83,7 +83,7 @@ public class CulinaryIngredients {
           @Override
           public void onEaten(Player player) {
 
-            if (!player.getLevel().isClientSide()) {
+            if (!player.level().isClientSide()) {
               Services.PLATFORM.cureStatusEffects(stack, player);
             }
           }

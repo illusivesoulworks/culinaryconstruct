@@ -13,7 +13,7 @@
         "com.illusivesoulworks.culinaryconstruct.client.CulinaryConstructQuiltClientMod"
       ],
       "spectrelib": [
-        "com.illusivesoulworks.culinaryconstruct.CulinaryConstructQuiltMod"
+        "com.illusivesoulworks.culinaryconstruct.CulinaryConstructConfigInitializer"
       ],
       "appleskin": [
         "com.illusivesoulworks.culinaryconstruct.common.integration.appleskin.AppleSkinIntegration"
@@ -54,7 +54,11 @@
       "contributors": {
         "${mod_author}": "Owner"
       },
-      "license": "${license}"
+      "contact": {
+        "issues": "${issue_tracker}"
+      },
+      "license": "${license}",
+      "icon": "${mod_id}_icon.png"
     }
   },
   "mixin": [
