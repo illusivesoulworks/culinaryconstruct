@@ -2,10 +2,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 This is a copy of the changelog for the most recent version. For the full version history, go [here](https://github.com/illusivesoulworks/culinaryconstruct/blob/1.19.x/CHANGELOG.md).
 
-## [5.0.0+1.19.2] - 2023.03.21
-### Added
-- Added AppleSkin integration [#66](https://github.com/illusivesoulworks/culinaryconstruct/issues/66)
-- Added Meal API integration [#65](https://github.com/illusivesoulworks/culinaryconstruct/issues/65)
+## [5.0.1+1.19.2] - 2023.10.23
 ### Changed
-- Updated SpectreLib to 0.12.4+1.19.2
-- Naming text box for the Culinary Station now only focuses when clicked on [#63](https://github.com/illusivesoulworks/culinaryconstruct/issues/63)
+- Updated to SpectreLib 0.12.6
+- [Fabric] Requires Fabric Loader >=0.14.23
