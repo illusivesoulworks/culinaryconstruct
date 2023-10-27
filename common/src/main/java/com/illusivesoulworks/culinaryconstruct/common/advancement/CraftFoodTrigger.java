@@ -18,44 +18,34 @@
 package com.illusivesoulworks.culinaryconstruct.common.advancement;
 
 import com.google.gson.JsonObject;
-import com.illusivesoulworks.culinaryconstruct.CulinaryConstructConstants;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
 import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.DeserializationContext;
-import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 public class CraftFoodTrigger extends SimpleCriterionTrigger<CraftFoodTrigger.Instance> {
 
   public static final CraftFoodTrigger INSTANCE = new CraftFoodTrigger();
-  public static final ResourceLocation ID =
-      new ResourceLocation(CulinaryConstructConstants.MOD_ID, "craft_food");
 
   @Nonnull
   @Override
-  public ResourceLocation getId() {
-    return ID;
-  }
-
-  @Nonnull
-  @Override
-  public Instance createInstance(@Nonnull JsonObject p_230241_1_,
-                                 @Nonnull ContextAwarePredicate p_230241_2_,
-                                 @Nonnull DeserializationContext p_230241_3_) {
-    return new Instance(p_230241_2_);
+  protected Instance createInstance(@Nonnull JsonObject pJson,
+                                    @Nonnull Optional<ContextAwarePredicate> p_297533_,
+                                    @Nonnull DeserializationContext pDeserializationContext) {
+    return new Instance(p_297533_);
   }
 
   public void trigger(ServerPlayer player) {
-    this.trigger(player, (p_241523_0_) -> true);
+    this.trigger(player, (instance) -> true);
   }
 
   public static class Instance extends AbstractCriterionTriggerInstance {
 
-    public Instance(ContextAwarePredicate p_i232007_1_) {
-      super(ID, p_i232007_1_);
+    public Instance(Optional<ContextAwarePredicate> player) {
+      super(player);
     }
   }
 }

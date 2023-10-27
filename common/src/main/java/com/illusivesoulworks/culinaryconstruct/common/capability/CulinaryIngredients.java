@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.world.effect.MobEffect;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -38,6 +37,7 @@ import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.SuspiciousStewItem;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.block.CakeBlock;
+import net.minecraft.world.level.block.SuspiciousEffectHolder;
 
 public class CulinaryIngredients {
 
@@ -130,22 +130,10 @@ public class CulinaryIngredients {
             List<Pair<MobEffectInstance, Float>> list = new ArrayList<>();
             CompoundTag compoundnbt = stack.getTag();
 
-            if (compoundnbt != null && compoundnbt.contains("Effects", 9)) {
-              ListTag listnbt = compoundnbt.getList("Effects", 10);
-
-              for (int i = 0; i < listnbt.size(); ++i) {
-                int j = 160;
-                CompoundTag compoundnbt1 = listnbt.getCompound(i);
-
-                if (compoundnbt1.contains("EffectDuration", 3)) {
-                  j = compoundnbt1.getInt("EffectDuration");
-                }
-                MobEffect effect = MobEffect.byId(compoundnbt1.getByte("EffectId"));
-
-                if (effect != null) {
-                  list.add(Pair.of(new MobEffectInstance(effect, j), 1.0F));
-                }
-              }
+            if (compoundnbt != null && compoundnbt.contains("effects", 9)) {
+              SuspiciousEffectHolder.EffectEntry.LIST_CODEC.parse(NbtOps.INSTANCE,
+                  compoundnbt.getList("effects", 10)).result().ifPresent(li -> li.forEach(
+                  entry -> list.add(new Pair<>(entry.createEffectInstance(), 1.0F))));
             }
             return list;
           }

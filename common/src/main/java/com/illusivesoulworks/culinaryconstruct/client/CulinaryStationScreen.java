@@ -22,7 +22,6 @@ import com.illusivesoulworks.culinaryconstruct.common.block.CulinaryStationMenu;
 import com.illusivesoulworks.culinaryconstruct.common.network.CPacketRename;
 import com.illusivesoulworks.culinaryconstruct.platform.Services;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import javax.annotation.Nonnull;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -53,12 +52,6 @@ public class CulinaryStationScreen extends AbstractContainerScreen<CulinaryStati
     this.titleLabelY = 6;
     this.inventoryLabelX = 8;
     this.inventoryLabelY = 67;
-  }
-
-  @Override
-  public void containerTick() {
-    super.containerTick();
-    this.nameField.tick();
   }
 
   @Override
@@ -104,7 +97,7 @@ public class CulinaryStationScreen extends AbstractContainerScreen<CulinaryStati
 
   @Override
   public void render(@Nonnull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-    this.renderBackground(guiGraphics);
+    this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
     super.render(guiGraphics, mouseX, mouseY, partialTicks);
     RenderSystem.disableBlend();
     this.nameField.render(guiGraphics, mouseX, mouseY, partialTicks);

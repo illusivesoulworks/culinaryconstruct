@@ -33,6 +33,7 @@ import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.network.PacketDistributor;
 
 public class ForgePlatform implements IPlatform {
 
@@ -87,6 +88,6 @@ public class ForgePlatform implements IPlatform {
 
   @Override
   public void sendRenamePacket(CPacketRename msg) {
-    CulinaryConstructForgeNetwork.get().sendToServer(msg);
+    CulinaryConstructForgeNetwork.get().send(msg, PacketDistributor.SERVER.noArg());
   }
 }

@@ -26,7 +26,6 @@ import com.illusivesoulworks.culinaryconstruct.common.item.SandwichItem;
 import com.illusivesoulworks.culinaryconstruct.common.network.CPacketRename;
 import com.illusivesoulworks.culinaryconstruct.common.network.CulinaryConstructPackets;
 import com.illusivesoulworks.culinaryconstruct.common.registry.CulinaryConstructRegistry;
-import com.illusivesoulworks.spectrelib.config.SpectreLibInitializer;
 import com.mojang.datafixers.util.Pair;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -45,7 +44,8 @@ public class CulinaryConstructFabricMod implements ModInitializer {
   @Override
   public void onInitialize() {
     CulinaryConstructMod.setup();
-    CriteriaTriggers.register(CraftFoodTrigger.INSTANCE);
+    CriteriaTriggers.register(CulinaryConstructConstants.MOD_ID + ":craft_food",
+        CraftFoodTrigger.INSTANCE);
     ServerPlayNetworking.registerGlobalReceiver(CulinaryConstructPackets.RENAME,
         (server, player, handler, buf, responseSender) -> {
           CPacketRename msg = CPacketRename.decode(buf);

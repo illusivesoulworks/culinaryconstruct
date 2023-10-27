@@ -60,7 +60,8 @@ public class CulinaryConstructForgeMod {
     CulinaryConstructForgeNetwork.setup();
     CulinaryIngredientCapability.setup();
     evt.enqueueWork(() -> {
-      CriteriaTriggers.register(CraftFoodTrigger.INSTANCE);
+      CriteriaTriggers.register(CulinaryConstructConstants.MOD_ID + ":craft_food",
+          CraftFoodTrigger.INSTANCE);
     });
   }
 
